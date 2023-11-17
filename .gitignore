@@ -6,8 +6,11 @@
 *.received.txt
 *.verified.txt.bak
 
-.vscode
 .awcache
+.git
+.idea
+.vs
+.vscode
 
 # Build results
 bin/
@@ -21,7 +24,8 @@ _test-output/
 # NodeJS 
 node_modules/
 
+/backend/src/Notifo/Assets
+
 appsettings.Development.json
 appsettings.Production.json
 launchSettings.json
-/backend/src/Notifo/Assets

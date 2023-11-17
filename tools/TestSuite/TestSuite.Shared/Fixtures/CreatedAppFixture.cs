@@ -33,11 +33,11 @@ public class CreatedAppFixture : ClientFixture
                 var createRequest = new UpsertAppDto
                 {
                     Name = AppName,
-                    Languages = new List<string>
-                    {
+                    Languages =
+                    [
                         "en",
                         "de"
-                    }
+                    ]
                 };
 
                 await Client.Apps.PostAppAsync(createRequest);
@@ -63,7 +63,7 @@ public class CreatedAppFixture : ClientFixture
     {
         var app = await Client.Apps.GetAppAsync(AppId);
 
-        if (app.Contributors.Any(x => x.UserName == email))
+        if (app.Contributors.Exists(x => x.UserName == email))
         {
             return;
         }

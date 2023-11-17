@@ -22,7 +22,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
     const { notification } = props;
 
     const [isOpen, setIsOpen] = React.useState(0);
-    
+
     const nonWebStatus = Object.entries(props.notification.channels).filter(x => x[0] !== 'web').map(x => x[1]);
     const numSkipped = nonWebStatus.filter(x => !!Object.values(x.status).find(x => x.status === 'Skipped')).length;
     const numHandled = nonWebStatus.filter(x => !!Object.values(x.status).find(x => x.status === 'Handled')).length;

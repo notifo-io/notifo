@@ -51,7 +51,7 @@ export const AppSettings = (props: AppSettingsProps) => {
     const doSave = useEventCallback((params: UpsertAppDto) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
     });
-    
+
     const form = useForm<UpsertAppDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: appDetails, mode: 'onChange' });
 
     React.useEffect(() => {

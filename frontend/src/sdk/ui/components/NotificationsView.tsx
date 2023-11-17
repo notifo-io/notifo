@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { Fragment } from 'preact';
 import { useCallback } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotificationDto, SDKConfig } from '@sdk/shared';

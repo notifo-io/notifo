@@ -3,9 +3,14 @@
 *.user
 *.vs
 *.log
+*.received.txt
+*.verified.txt.bak
 
-.vs
+.awcache
 .git
+.idea
+.vs
+.vscode
 
 # Build results
 **/bin
@@ -26,8 +31,6 @@ backend/src/Squidex/Assets/*.*
 **/launchSettings.json
 
 # Build
-.drone.yml
-
 build.ps1
 build.sh
 

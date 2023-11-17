@@ -26,7 +26,7 @@ export interface EmailTextEditorProps {
 }
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
-    const { 
+    const {
         appId,
         onBlur,
         onChange,

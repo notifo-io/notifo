@@ -7,14 +7,14 @@
 
 import classNames from 'classnames';
 import * as CodeMirror from 'codemirror';
-import * as React from 'react';
-import { Types } from './../utils';
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 import 'codemirror/mode/javascript/javascript';
+import * as React from 'react';
+import { Types } from './../utils';
 import { useEventCallback } from './hooks';
 
 export interface CodeProps {
@@ -36,7 +36,7 @@ export const Code = (props: CodeProps) => {
         if (!textarea) {
             return;
         }
-    
+
         const editor = CodeMirror.fromTextArea(textarea, {
             foldGutter: true,
             gutters: [

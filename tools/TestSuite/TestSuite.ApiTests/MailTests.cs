@@ -67,13 +67,13 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 3: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     EmailAddress = "hello@notifo.io"
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -85,8 +85,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -104,8 +104,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -128,11 +128,11 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
                     return;
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cts.Token);
             }
         }
 
-        Assert.False(true, "Email not received.");
+        Assert.Fail("Email not received.");
     }
 
     [Fact]
@@ -169,13 +169,13 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 2: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     EmailAddress = "hello@notifo.io"
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -187,8 +187,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -206,8 +206,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -253,13 +253,13 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 2: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     EmailAddress = null,
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -271,8 +271,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -293,8 +293,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
                             Required = ChannelRequired.Required
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);

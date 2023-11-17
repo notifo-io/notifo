@@ -15,7 +15,7 @@ import { texts } from '@app/texts';
 export interface TopicRowProps {
     // The topic.
     topic: TopicDto;
-    
+
     // The language.
     language: string;
 
@@ -31,8 +31,8 @@ export interface TopicRowProps {
 
 export const TopicRow = React.memo((props: TopicRowProps) => {
     const {
-        language, 
-        showCounters, 
+        language,
+        showCounters,
         onDelete,
         onEdit,
         topic,
@@ -63,11 +63,11 @@ export const TopicRow = React.memo((props: TopicRowProps) => {
                 </td>
                 <td className='text-right'>
                     {topic.isExplicit &&
-                        <>        
+                        <>
                             <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
                                 <Icon type='create' />
                             </Button>
-        
+
                             <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
                                 {({ onClick }) => (
                                     <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>

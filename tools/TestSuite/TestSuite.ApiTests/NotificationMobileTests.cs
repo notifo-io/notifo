@@ -129,10 +129,10 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                 var tokenRequest = new TrackNotificationDto
                 {
                     Channel = Providers.MobilePush,
-                    Seen = new List<string>
-                    {
+                    Seen =
+                    [
                         notification.TrackingToken
-                    },
+                    ],
                     DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
@@ -143,10 +143,10 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                 var idRequest = new TrackNotificationDto
                 {
                     Channel = Providers.MobilePush,
-                    Seen = new List<string>
-                    {
+                    Seen =
+                    [
                         notification.Id.ToString()
-                    },
+                    ],
                     DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
@@ -193,10 +193,10 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
     {
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto()
-            }
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
@@ -217,8 +217,8 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
     {
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -237,8 +237,8 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);

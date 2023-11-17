@@ -39,7 +39,7 @@ public static class Program
             UseBaseUrl = false
         };
 
-        generatorSettings.CSharpGeneratorSettings.ExcludedTypeNames = new[] { "JsonInheritanceConverter" };
+        generatorSettings.CSharpGeneratorSettings.ExcludedTypeNames = ["JsonInheritanceConverter"];
         generatorSettings.CSharpGeneratorSettings.ArrayBaseType = "System.Collections.Generic.List";
         generatorSettings.CSharpGeneratorSettings.ArrayInstanceType = "System.Collections.Generic.List";
         generatorSettings.CSharpGeneratorSettings.ArrayType = "System.Collections.Generic.List";

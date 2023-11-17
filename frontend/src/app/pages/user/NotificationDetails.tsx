@@ -57,9 +57,9 @@ export const NotificationDetails = (props: NotificationDetailsProps) => {
                         </tr>,
                     )}
 
-                </tbody>                                        
+                </tbody>
             </Table>
-            
+
             <Table className='user-notification-status' size='sm'>
                 <thead>
                     <tr>

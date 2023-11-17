@@ -134,7 +134,7 @@ export const TopicsPage = () => {
                     {topics.items &&
                         <>
                             {topics.items.map(topic => (
-                                <TopicRow key={topic.path} topic={topic} language={appLanguages[0]} showCounters={showCounters} 
+                                <TopicRow key={topic.path} topic={topic} language={appLanguages[0]} showCounters={showCounters}
                                     onDelete={doDelete}
                                     onEdit={doEdit}
                                 />

@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Button } from 'reactstrap';
-import {  Confirm, Icon } from '@app/framework';
+import { Confirm, Icon } from '@app/framework';
 import { SystemUserDto } from '@app/service';
 import { texts } from '@app/texts';
 
@@ -34,7 +34,7 @@ export interface SystemUserRowProps {
 export const SystemUserRow = React.memo((props: SystemUserRowProps) => {
     const {
         onDelete,
-        onEdit, 
+        onEdit,
         onLock,
         onUnlock,
         user,

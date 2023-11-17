@@ -82,7 +82,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
 
                         <NotificationsForm.Settings field='topicSettings'
                             disabled={upserting} />
-                            
+
                         <NotificationsForm.Scheduling field='scheduling'
                             disabled={upserting} />
 

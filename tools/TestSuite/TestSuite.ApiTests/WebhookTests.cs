@@ -63,10 +63,10 @@ public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookC
         // STEP 3: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto()
-            }
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -78,8 +78,8 @@ public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookC
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -97,8 +97,8 @@ public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookC
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);

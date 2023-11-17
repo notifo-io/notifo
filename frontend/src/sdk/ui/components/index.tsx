@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { render } from 'preact';
 import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
 import { NotificationsUI } from './NotificationsUI';

@@ -34,8 +34,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
 
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     Id = userId1,
@@ -45,8 +45,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
                 {
                     Id = userId2,
                     FullName = "name2_0"
-                }
-            }
+                },
+            ]
         };
 
         var users = await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
@@ -78,8 +78,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
 
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     Id = userId1,
@@ -89,8 +89,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
                 {
                     Id = userId2,
                     FullName = userId2
-                }
-            }
+                },
+            ]
         };
 
         await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
@@ -119,8 +119,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
 
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     Id = userId1,
@@ -130,8 +130,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
                 {
                     Id = userId2,
                     FullName = "name2_0"
-                }
-            }
+                },
+            ]
         };
 
         await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
@@ -140,14 +140,14 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
         // STEP 1: Update user.
         var userRequest2 = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     Id = userId1,
                     FullName = "name1_1"
-                }
-            }
+                },
+            ]
         };
 
         await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest2);
@@ -179,8 +179,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
 
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     Id = userId1,
@@ -190,8 +190,8 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
                 {
                     Id = userId2,
                     FullName = "name2_0"
-                }
-            }
+                },
+            ]
         };
 
         await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);

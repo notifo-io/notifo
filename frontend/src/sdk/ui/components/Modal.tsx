@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { VNode } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { Icon } from './Icon';

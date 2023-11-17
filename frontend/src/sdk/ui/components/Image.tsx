@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 export interface ImageProps {

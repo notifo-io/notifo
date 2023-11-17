@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useCallback } from 'preact/hooks';
 import { NotificationsOptions } from '@sdk/shared';
 import { getUnseen, useStore } from '@sdk/ui/model';

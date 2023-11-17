@@ -66,7 +66,7 @@ export const TopicDialog = (props: TopicDialogProps) => {
     const doSave = useEventCallback((params: UpsertTopicDto) => {
         dispatch(upsertTopic({ appId, params, scope }));
     });
-    
+
     const defaultValues: any = React.useMemo(() => {
         const result: Partial<TopicDto> = Types.clone(topic || {});
 

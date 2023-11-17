@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useEffect } from 'preact/hooks';
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
 import { loadSubscriptions, useDispatch, useStore } from '@sdk/ui/model';

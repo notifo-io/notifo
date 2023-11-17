@@ -82,7 +82,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
-                {({ scheduleUpdate }) => 
+                {({ scheduleUpdate }) =>
                     <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                         <PopoverBody>
                             <h5>{texts.common.webPush}</h5>
@@ -106,7 +106,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
                                             <td>
                                                 <ApiValue size='sm' value={subscription.endpoint} />
                                             </td>
-                                            <td>            
+                                            <td>
                                                 <Button size='sm' color='danger' onClick={() => { doDelete(subscription.endpoint); scheduleUpdate(); }}>
                                                     <Icon type='delete' />
                                                 </Button>
@@ -119,7 +119,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
                     </ClickOutside>
                 }
             </Popover>
-                               
+
         </>
     );
 };
@@ -145,7 +145,7 @@ export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
-                {({ scheduleUpdate }) => 
+                {({ scheduleUpdate }) =>
                     <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                         <PopoverBody>
                             <h5>{texts.common.mobilePush}</h5>
@@ -181,7 +181,7 @@ export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto
                                                     <>{texts.common.notYet}</>
                                                 )}
                                             </td>
-                                            <td>            
+                                            <td>
                                                 <Button size='sm' color='danger' onClick={() => { doDelete(token.token); scheduleUpdate(); }}>
                                                     <Icon type='delete' />
                                                 </Button>

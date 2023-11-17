@@ -139,7 +139,7 @@ const PublishDialogInner = () => {
                                 <NavLink onClick={() => setViewModus(1)} active={viewModus === 1}>{texts.common.channels}</NavLink>
                             </NavItem>
                         </Nav>
-                        
+
                         <button type="button" className='fullscreen' onClick={doToggleFullscreen}>
                             <Icon type={viewFullscreen ? 'fullscreen_exit' : 'fullscreen'} />
                         </button>
@@ -198,14 +198,14 @@ const PublishDialogInner = () => {
                                         <>
                                             <NotificationsForm.Settings field='settings'
                                                 disabled={publishing} />
-                                                
+
                                             <NotificationsForm.Scheduling field='scheduling'
                                                 disabled={publishing} />
                                         </>
                                     )}
                                 </fieldset>
                             </Col>
-                            
+
                             {viewFullscreen &&
                                 <Col xs='auto' className='col-template'>
                                     <div className='publish-form-preview sticky-top'>

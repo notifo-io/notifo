@@ -54,9 +54,9 @@ export const AppDialog = (props: AppDialogProps) => {
     const doSave = useEventCallback((params: CreateAppParams) => {
         dispatch(createApp({ params }));
     });
-    
+
     const form = useForm<CreateAppParams>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
-    
+
     return (
         <Modal isOpen={true} toggle={onClose}>
             <FormProvider {...form}>
@@ -67,7 +67,7 @@ export const AppDialog = (props: AppDialogProps) => {
 
                     <ModalBody>
                         <FormAlert text={texts.apps.createInfo} />
-                        
+
                         <fieldset className='mt-3' disabled={creating}>
                             <Forms.Text name='name' vertical
                                 label={texts.common.name} />

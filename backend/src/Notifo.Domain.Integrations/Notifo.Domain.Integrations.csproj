@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.3" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.4" />
     <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
     <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
     <PackageReference Include="FluentValidation" Version="11.8.0" />

@@ -31,8 +31,8 @@ export const MessagingTemplateCard = (props: MessagingTemplateCardProps) => {
             <Card className='messaging-template'>
                 <CardBody>
                     {template.name ? (
-                        <h4 className='truncate'>{template.name}</h4> 
-                    ) : ( 
+                        <h4 className='truncate'>{template.name}</h4>
+                    ) : (
                         <h4 className='truncate text-muted'>{texts.common.noName}</h4>
                     )}
 

@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { getHostName, NotificationsOptions, NotifoNotificationDto, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';

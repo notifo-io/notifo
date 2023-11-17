@@ -100,7 +100,7 @@ public class CachingAuthenticator : IAuthenticator
     /// <param name="token">The auth token.</param>
     protected void SetToCache(AuthToken token)
     {
-        cacheExpires = DateTime.UtcNow.Add(token.Expires);
+        cacheExpires = DateTimeOffset.UtcNow.Add(token.Expires);
         cacheEntry = token;
     }
 }

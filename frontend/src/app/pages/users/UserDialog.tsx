@@ -95,7 +95,7 @@ export const UserDialog = (props: UserDialogProps) => {
                 <Form onSubmit={form.handleSubmit(doSave)}>
                     <ModalHeader toggle={onClose}>
                         &nbsp;
-                        
+
                         <Nav className='nav-tabs2'>
                             <NavItem>
                                 <NavLink onClick={() => setDialogTab(0)} active={dialogTab === 0}>{dialogUser ? texts.users.editHeader : texts.users.createHeader}</NavLink>
@@ -143,7 +143,7 @@ export const UserDialog = (props: UserDialogProps) => {
                                 <>
                                     <NotificationsForm.Settings field='settings'
                                         disabled={upserting} />
-                                        
+
                                     <NotificationsForm.Scheduling field='scheduling'
                                         disabled={upserting} />
                                 </>
