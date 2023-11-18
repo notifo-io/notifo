@@ -22,8 +22,6 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
     public NotificationTests(CreatedAppFixture fixture)
     {
-        VerifierSettings.DontScrubDateTimes();
-
         _ = fixture;
     }
 

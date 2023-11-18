@@ -23,8 +23,6 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
     public NotificationMobileTests(CreatedAppFixture fixture)
     {
-        VerifierSettings.DontScrubDateTimes();
-
         _ = fixture;
     }
 

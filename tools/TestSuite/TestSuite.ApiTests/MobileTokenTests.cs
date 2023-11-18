@@ -21,8 +21,6 @@ public class MobileTokenTests : IClassFixture<CreatedAppFixture>
 
     public MobileTokenTests(CreatedAppFixture fixture)
     {
-        VerifierSettings.DontScrubDateTimes();
-
         _ = fixture;
     }
 
