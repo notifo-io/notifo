@@ -1,8 +1,8 @@
 ﻿{
-  id: Guid_1,
-  name: Guid_2,
-  role: Owner,
-  languages: [
+  Id: Guid_1,
+  Name: Guid_2,
+  Role: Owner,
+  Languages: [
     en
   ]
 }

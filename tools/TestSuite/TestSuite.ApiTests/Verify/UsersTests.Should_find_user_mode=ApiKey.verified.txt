@@ -1,12 +1,12 @@
 ﻿{
-  items: [
+  Items: [
     {
-      id: Guid_1,
-      fullName: Guid_1,
-      preferredLanguage: en,
-      preferredTimezone: UTC,
-      requiresWhitelistedTopics: false
+      Id: Guid_1,
+      FullName: Guid_1,
+      PreferredLanguage: en,
+      PreferredTimezone: UTC,
+      RequiresWhitelistedTopics: false
     }
   ],
-  total: 1
+  Total: 1
 }
