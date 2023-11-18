@@ -20,6 +20,8 @@ export const Integrated = (props: IntegratedProps) => {
 
         notifo.push(['init', {
             userToken: token,
+            userId: null,
+            apiUrl: '/',
         }]);
 
         notifo.push(['subscribe']);

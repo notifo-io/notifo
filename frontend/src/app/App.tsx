@@ -27,7 +27,7 @@ export const App = () => {
                     </RouteWhenPrivate>
                 } />
 
-                <Route path='/authentication'
+                <Route path='/authentication/*'
                     element={<AuthenticationPage />} />
 
                 <Route path='/demo/:userId'
