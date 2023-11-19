@@ -66,7 +66,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: kohlerdominik/docker-run-action@v1.1.0
         with:
-          image: mcr.microsoft.com/dotnet/sdk:7.0
+          image: mcr.microsoft.com/dotnet/sdk:8.0
           environment: |
             MAILCATCHER__HOST__SMTP=mailcatcher
             MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}
