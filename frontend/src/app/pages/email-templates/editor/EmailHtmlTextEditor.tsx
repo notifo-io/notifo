@@ -8,6 +8,9 @@
 // tslint:disable: quotemark
 
 import * as CodeMirror from 'codemirror';
+import * as React from 'react';
+import { useEventCallback } from '@app/framework';
+import { EmailPreviewErrorDto, MjmlSchema } from '@app/service';
 import 'codemirror/addon/dialog/dialog';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
@@ -24,9 +27,6 @@ import 'codemirror/addon/search/search';
 import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
-import * as React from 'react';
-import { useEventCallback } from '@app/framework';
-import { EmailPreviewErrorDto, MjmlSchema } from '@app/service';
 import { completeAfter, completeIfAfterLt, completeIfInTag } from './helpers';
 
 export interface EmailHtmlTextEditorProps {
@@ -67,7 +67,7 @@ export const EmailHtmlTextEditor = (props: EmailHtmlTextEditorProps) => {
         if (!textarea) {
             return;
         }
-    
+
         const editor = CodeMirror.fromTextArea(textarea, {
             autoCloseTags: true,
             mode: 'xml',

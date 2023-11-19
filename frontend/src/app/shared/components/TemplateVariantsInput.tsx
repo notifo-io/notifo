@@ -13,7 +13,7 @@ import { texts } from '@app/texts';
 import { FormEditorProps, Forms } from './Forms';
 import { TemplateInput } from './TemplateInput';
 
-export interface TemplateVariantsInputProps extends FormEditorProps {    
+export interface TemplateVariantsInputProps extends FormEditorProps {
     // The actual templates.
     templates: ReadonlyArray<TemplateDto> | undefined;
 }
@@ -23,7 +23,7 @@ export const TemplateVariantsInput = (props: TemplateVariantsInputProps) => {
     const { fields, append, remove } = useFieldArray({ name });
 
     return (
-        <Forms.Row name={name} {...other} hideError>                
+        <Forms.Row name={name} {...other} hideError>
             <div>
                 {fields?.map((_, i) =>
                     <Row noGutters key={i}>
@@ -46,7 +46,7 @@ export const TemplateVariantsInput = (props: TemplateVariantsInputProps) => {
                         </Col>
                     </Row>,
                 )}
-            
+
                 <Button color='success' onClick={() => append({})}>
                     <Icon type='add' />
                 </Button>

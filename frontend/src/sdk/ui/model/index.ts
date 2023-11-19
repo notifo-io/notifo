@@ -363,9 +363,9 @@ export function loadSubscriptions(config: SDKConfig, topics: string[]) {
 
         try {
             store.dispatch({ type: 'LoadSubscriptionsStarted', topics });
-    
+
             const subscriptions = await apiGetSubscriptions(config, topics);
-    
+
             store.dispatch({ type: 'LoadSubscriptionsSuccess', topics, subscriptions });
         } catch (ex) {
             store.dispatch({ type: 'LoadSubscriptionsFailed', ex, topics });

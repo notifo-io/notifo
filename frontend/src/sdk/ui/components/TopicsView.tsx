@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { Fragment } from 'preact';
 import { useCallback, useEffect, useRef } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig, setSubscriptionChannel, setTopic, SubscriptionsDto } from '@sdk/shared';
@@ -77,14 +78,14 @@ export const TopicsView = (props: TopicsViewProps) => {
 
             {topics.length > 0 &&
                 <Fragment>
-                    {topics.map(topic => 
+                    {topics.map(topic =>
                         <TopicItem key={topic}
                             config={config}
                             disabled={disabled}
                             onChangeChannel={doChangeChannel}
                             onChangeTopic={doChangeTopic}
                             subscription={formValue[topic.path]}
-                            topic={topic} 
+                            topic={topic}
                         />,
                     )}
 

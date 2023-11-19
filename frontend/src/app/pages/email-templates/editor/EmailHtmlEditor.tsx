@@ -36,7 +36,7 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
         appId,
         onBlur,
         onChange,
-        schema, 
+        schema,
         value,
     } = props;
 

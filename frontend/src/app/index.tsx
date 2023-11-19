@@ -19,7 +19,7 @@ if (element) {
     const initHistory = createBrowserHistory({ window });
     const initStory = createAppStore(initHistory);
 
-    const Root = 
+    const Root =
         <Provider store={initStory}>
             <HistoryRouter history={initHistory as any}>
                 <App />

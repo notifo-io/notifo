@@ -31,8 +31,8 @@ export interface UserRowProps {
 }
 
 export const UserRow = React.memo((props: UserRowProps) => {
-    const { 
-        showCounters, 
+    const {
+        showCounters,
         onDelete,
         onEdit,
         onPublish,

@@ -21,8 +21,6 @@ public class MobileTokenTests : IClassFixture<CreatedAppFixture>
 
     public MobileTokenTests(CreatedAppFixture fixture)
     {
-        VerifierSettings.DontScrubDateTimes();
-
         _ = fixture;
     }
 
@@ -57,10 +55,10 @@ public class MobileTokenTests : IClassFixture<CreatedAppFixture>
     {
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto()
-            }
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);

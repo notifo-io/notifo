@@ -32,8 +32,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
 
         var templateRequest = new UpsertTemplatesDto
         {
-            Requests = new List<UpsertTemplateDto>
-            {
+            Requests =
+            [
                 new UpsertTemplateDto
                 {
                     Code = templateCode1,
@@ -55,8 +55,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
                             ["en"] = "subject2_0"
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         var templates = await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest);
@@ -84,8 +84,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
 
         var templateRequest = new UpsertTemplatesDto
         {
-            Requests = new List<UpsertTemplateDto>
-            {
+            Requests =
+            [
                 new UpsertTemplateDto
                 {
                     Code = templateCode1,
@@ -107,8 +107,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
                             ["en"] = "subject2_0"
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest);
@@ -117,8 +117,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
         // STEP 1: Update template.
         var templateRequest2 = new UpsertTemplatesDto
         {
-            Requests = new List<UpsertTemplateDto>
-            {
+            Requests =
+            [
                 new UpsertTemplateDto
                 {
                     Code = templateCode1,
@@ -129,8 +129,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
                             ["en"] = "subject1_1"
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest2);
@@ -158,8 +158,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
 
         var templateRequest = new UpsertTemplatesDto
         {
-            Requests = new List<UpsertTemplateDto>
-            {
+            Requests =
+            [
                 new UpsertTemplateDto
                 {
                     Code = templateCode1,
@@ -181,8 +181,8 @@ public class TemplatesTests : IClassFixture<CreatedAppFixture>
                             ["en"] = "subject2"
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest);

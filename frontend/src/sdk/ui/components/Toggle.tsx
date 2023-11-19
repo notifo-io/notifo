@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useEffect, useState } from 'preact/hooks';
 import { isBoolean, isUndefined } from '@sdk/shared';
 

@@ -1,13 +1,13 @@
 ﻿[
   {
-    isSeen: false,
-    isConfirmed: false,
-    id: Guid_1,
-    subject: Guid_2,
-    silent: false,
-    body: ,
-    linkUrl: ,
-    linkText: ,
-    confirmLink: 
+    IsSeen: false,
+    IsConfirmed: false,
+    Id: Guid_1,
+    Subject: Guid_2,
+    Silent: false,
+    Body: ,
+    LinkUrl: ,
+    LinkText: ,
+    ConfirmLink: 
   }
 ]

@@ -84,13 +84,13 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
                         <fieldset className='mt-3' disabled={upserting}>
                             <Forms.Text name='email'
                                 label={texts.common.emailAddress} />
-                
+
                             <Forms.Checkboxes name='roles' options={ROLES}
                                 label={texts.common.roles} />
-                
+
                             <Forms.Password name='password'
                                 label={texts.common.password} />
-                
+
                             <Forms.Password name='passwordConfirm'
                                 label={texts.common.passwordConfirm} />
                         </fieldset>

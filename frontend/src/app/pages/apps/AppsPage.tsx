@@ -52,9 +52,9 @@ export const AppsPage = () => {
                             <Card className='app-card'>
                                 <CardBody>
                                     {app.name ? (
-                                        <h4 className='truncate'>{app.name}</h4> 
+                                        <h4 className='truncate'>{app.name}</h4>
 
-                                    ) : ( 
+                                    ) : (
                                         <h4 className='truncate text-muted'>{texts.common.noName}</h4>
                                     )}
                                 </CardBody>

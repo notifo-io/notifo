@@ -111,16 +111,16 @@ export module NotificationsForm {
 
                             <Forms.Select name={`${field}.type`} options={SCHEDULING_TYPES}
                                 label={texts.common.mode} />
-        
+
                             <Forms.Select name={`${field}.nextWeekDay`} options={WEEK_DAYS}
                                 label={texts.common.weekDay} />
-        
+
                             <Forms.Date name={`${field}.date`}
                                 label={texts.common.date} />
-        
+
                             <Forms.Time name={`${field}.time`}
                                 label={texts.common.timeOfDay} />
-        
+
                             <Forms.Time name={`${field}.delayInSeconds`}
                                 label={texts.notificationSettings.delayInSeconds} />
                         </div>
@@ -167,13 +167,13 @@ export module NotificationsForm {
         const fieldSend = `${field}.${channel}.send`;
         const fieldCondition = `${field}.${channel}.condition`;
         const [isExpanded, setIsExpanded] = React.useState(false);
-        
+
         React.useEffect(() => {
             if (!getValues(fieldSend)) {
                 setValue(fieldSend, SEND_MODES[0].value);
             }
         }, [fieldSend, getValues, setValue]);
-        
+
         React.useEffect(() => {
             if (!getValues(fieldCondition)) {
                 setValue(fieldCondition, SEND_MODES[0].value);
@@ -183,7 +183,7 @@ export module NotificationsForm {
         const doToggle = useEventCallback(() => {
             setIsExpanded(x => !x);
         });
-    
+
         return (
             <Card>
                 <CardHeader className={classNames({ collapsed: !isExpanded })}>
@@ -218,7 +218,7 @@ export module NotificationsForm {
 
                         <Forms.Text name={`${field}.${channel}.groupKey`} vertical={vertical}
                             label={texts.notificationSettings.channelGroupKey} hints={texts.notificationSettings.channelGroupKeyHints} />
-                            
+
                         <Forms.Select name={`${field}.${channel}.required`} options={REQUIRED_MODES} vertical={vertical}
                             label={texts.notificationSettings.required} hints={texts.notificationSettings.requiredHints} />
 
@@ -238,7 +238,7 @@ export module NotificationsForm {
                         }
 
                         {channel === 'messaging' &&
-                            <>            
+                            <>
                                 <hr />
 
                                 <MessagingTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
@@ -247,7 +247,7 @@ export module NotificationsForm {
                         }
 
                         {channel === 'sms' &&
-                            <>           
+                            <>
                                 <hr />
 
                                 <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}

@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { Fragment } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig } from '@sdk/shared';

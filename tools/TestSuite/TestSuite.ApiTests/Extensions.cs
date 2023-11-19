@@ -51,7 +51,7 @@ public static class Extensions
                     break;
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cts.Token);
             }
         }
 
@@ -77,7 +77,7 @@ public static class Extensions
                     break;
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cts.Token);
             }
         }
 
@@ -103,7 +103,7 @@ public static class Extensions
                     break;
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cts.Token);
             }
         }
 
@@ -129,7 +129,7 @@ public static class Extensions
                     break;
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cts.Token);
             }
         }
 

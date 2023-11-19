@@ -52,7 +52,7 @@ export const DemoPage = () => {
             <div className='mt-4 mb-3 text-right'>
                 <img className='demo-logo' src='/logo.svg' alt='Logo' />
             </div>
-            
+
             <Card>
                 <CardBody>
                     <h3>{texts.demo.title}</h3>

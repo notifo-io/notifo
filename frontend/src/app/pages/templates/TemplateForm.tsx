@@ -123,14 +123,14 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
                                 <NotificationsForm.Settings field='settings'
                                     disabled={upserting} />
-                                    
+
                                 <NotificationsForm.Scheduling field='scheduling'
                                     disabled={upserting} />
                             </Col>
                             <Col xs='auto'>
                                 <div className='template-form-preview sticky-top'>
                                     <Label>{texts.common.preview}</Label>
-                                    
+
                                     <NotificationPreview formatting={form.watch('formatting')} language={language}></NotificationPreview>
                                 </div>
                             </Col>

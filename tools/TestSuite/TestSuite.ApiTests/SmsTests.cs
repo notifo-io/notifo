@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.SDK;
-using System.Linq;
 using TestSuite.Fixtures;
 using TestSuite.Utils;
 
@@ -81,13 +80,13 @@ public class SmsTests : IClassFixture<ClientFixture>
         // STEP 3: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     PhoneNumber = PhoneNumber
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -99,8 +98,8 @@ public class SmsTests : IClassFixture<ClientFixture>
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -118,8 +117,8 @@ public class SmsTests : IClassFixture<ClientFixture>
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -141,11 +140,11 @@ public class SmsTests : IClassFixture<ClientFixture>
                     return;
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(1000, cts.Token);
             }
         }
 
-        Assert.False(true, "SMS not sent.");
+        Assert.Fail("SMS not sent.");
     }
 
     [Fact]
@@ -187,13 +186,13 @@ public class SmsTests : IClassFixture<ClientFixture>
         // STEP 2: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     PhoneNumber = PhoneNumber
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -205,8 +204,8 @@ public class SmsTests : IClassFixture<ClientFixture>
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -224,8 +223,8 @@ public class SmsTests : IClassFixture<ClientFixture>
                             Send = ChannelSend.Send
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -245,11 +244,11 @@ public class SmsTests : IClassFixture<ClientFixture>
                     return;
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(1000, cts.Token);
             }
         }
 
-        Assert.False(true, "SMS not sent.");
+        Assert.Fail("SMS not sent.");
     }
 
     [Fact(Skip = "Not stable")]
@@ -299,13 +298,13 @@ public class SmsTests : IClassFixture<ClientFixture>
         // STEP 3: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     PhoneNumber = PhoneNumber
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -348,12 +347,12 @@ public class SmsTests : IClassFixture<ClientFixture>
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 BuildEvent(subjectId1),
                 BuildEvent(subjectId2),
                 BuildEvent(subjectId3)
-            }
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -410,13 +409,13 @@ public class SmsTests : IClassFixture<ClientFixture>
         // STEP 3: Create user
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto
                 {
                     PhoneNumber = PhoneNumber
-                }
-            }
+                },
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
@@ -456,12 +455,12 @@ public class SmsTests : IClassFixture<ClientFixture>
 
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 BuildEvent(subjectId1),
                 BuildEvent(subjectId2),
                 BuildEvent(subjectId3)
-            }
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
@@ -492,10 +491,10 @@ public class SmsTests : IClassFixture<ClientFixture>
                     return;
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(1000, cts.Token);
             }
         }
 
-        Assert.False(true, "SMS not sent.");
+        Assert.Fail("SMS not sent.");
     }
 }

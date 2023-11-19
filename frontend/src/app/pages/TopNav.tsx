@@ -37,7 +37,7 @@ export const TopNav = () => {
                 <NavItem>
                     <Marker projectId={(window as any)['options'].markerProject} />
                 </NavItem>
-            
+
                 {userProfile?.token &&
                     <NavItem>
                         <Integrated token={userProfile.token} />

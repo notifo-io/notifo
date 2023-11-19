@@ -13,7 +13,7 @@ import { MediaPicker } from './MediaPicker';
 export interface PickerOptions {
     // True when emojis can be added.
     pickEmoji?: boolean;
-    
+
     // True when media can be added.
     pickMedia?: boolean;
 
@@ -74,13 +74,13 @@ export const Picker = (props: PickerProps) => {
 
     const doSelectArgument = useEventCallback(() => {
         onPick('{{ myVariable }}');
-        
+
         setOpenPicker(0);
     });
 
     const doSelectEmoji = useEventCallback((emoji: any) => {
         onPick(emoji.native);
-        
+
         setOpenPicker(0);
     });
 
@@ -95,7 +95,7 @@ export const Picker = (props: PickerProps) => {
     const doPickEmoji = useEventCallback(() => {
         setOpenPicker(2);
     });
-    
+
     if (!pickArgument && !pickMedia) {
         return null;
     }
@@ -127,7 +127,7 @@ export const Picker = (props: PickerProps) => {
                     }
                 </DropdownMenu>
             </OverlayDropdown>
-        
+
             {openPicker === 1 &&
                 <MediaPicker
                     onClose={doClose}

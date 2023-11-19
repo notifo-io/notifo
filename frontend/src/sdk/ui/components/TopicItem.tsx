@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { isUndefined, SDKConfig, sendToBoolean, SubscriptionDto, TopicDto } from '@sdk/shared';
 import { Toggle } from './Toggle';
 

@@ -22,8 +22,6 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
     public NotificationTests(CreatedAppFixture fixture)
     {
-        VerifierSettings.DontScrubDateTimes();
-
         _ = fixture;
     }
 
@@ -37,8 +35,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         // STEP 1: Send Notification
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -49,8 +47,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                             ["en"] = subject
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
@@ -87,8 +85,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         // STEP 1: Send Notification
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -112,8 +110,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                         }
                     },
                     CorrelationId = correlationId
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
@@ -142,8 +140,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
         var templateRequest = new UpsertTemplatesDto
         {
-            Requests = new List<UpsertTemplateDto>
-            {
+            Requests =
+            [
                 new UpsertTemplateDto
                 {
                     Code = templateCode,
@@ -154,8 +152,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                             ["en"] = subject
                         }
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest);
@@ -164,14 +162,14 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         // STEP 2: Send Notification
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
                     TemplateCode = templateCode
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
@@ -348,10 +346,10 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
             case TrackingStrategy.TrackingToken:
                 var tokenRequest = new TrackNotificationDto
                 {
-                    Seen = new List<string>
-                    {
+                    Seen =
+                    [
                         notification.TrackingToken
-                    }
+                    ]
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(tokenRequest);
@@ -360,10 +358,10 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
             case TrackingStrategy.Id:
                 var idRequest = new TrackNotificationDto
                 {
-                    Seen = new List<string>
-                    {
+                    Seen =
+                    [
                         notification.Id.ToString()
-                    }
+                    ]
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
@@ -443,10 +441,10 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     {
         var userRequest = new UpsertUsersDto
         {
-            Requests = new List<UpsertUserDto>
-            {
+            Requests =
+            [
                 new UpsertUserDto()
-            }
+            ]
         };
 
         var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
@@ -459,8 +457,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     {
         var publishRequest = new PublishManyDto
         {
-            Requests = new List<PublishDto>
-            {
+            Requests =
+            [
                 new PublishDto
                 {
                     Topic = $"users/{user_0.Id}",
@@ -472,8 +470,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                         },
                         ConfirmMode = ConfirmMode.Explicit
                     }
-                }
-            }
+                },
+            ]
         };
 
         await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);

@@ -19,7 +19,7 @@ export const Marker = (props: MarkerProps) => {
     const { projectId } = props;
     const widgetRef = React.useRef<MarkerSdk>();
 
-    React.useEffect(() => {            
+    React.useEffect(() => {
         if (projectId) {
             const setup = async (project: string) => {
                 const widget = await markerSDK.loadWidget({ project });

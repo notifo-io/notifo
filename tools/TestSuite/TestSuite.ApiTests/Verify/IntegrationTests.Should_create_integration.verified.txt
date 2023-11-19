@@ -1,13 +1,13 @@
 ﻿{
-  id: Guid_1,
-  integration: {
-    type: SMTP,
-    properties: {
+  Id: Guid_1,
+  Integration: {
+    Type: SMTP,
+    Properties: {
       fromEmail: hello@notifo.io,
       fromName: Hello Notifo,
       host: localhost,
       port: 1025
     },
-    enabled: true
+    Enabled: true
   }
 }

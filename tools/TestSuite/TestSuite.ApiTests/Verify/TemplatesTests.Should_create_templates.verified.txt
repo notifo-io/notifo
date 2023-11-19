@@ -1,7 +1,7 @@
 ﻿{
-  code: Guid_1,
-  formatting: {
-    subject: {
+  Code: Guid_1,
+  Formatting: {
+    Subject: {
       en: subject1_0
     }
   }

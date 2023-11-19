@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useCallback } from 'preact/hooks';
 import { SubscriptionDto, TopicOptions } from '@sdk/shared';
 import { Icon } from './Icon';

@@ -6,6 +6,7 @@
  */
 
 /** @jsximportsource preact */
+
 import { useEffect, useState } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig } from '@sdk/shared';
 import { Connection } from '@sdk/ui/api';
@@ -78,8 +79,8 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
                 ) : (viewMode === 'Topics') ? (
                     <TopicsView config={config} options={options} />
                 ) : (viewMode === 'Notifications') ? (
-                    <NotificationsView 
-                        config={config} 
+                    <NotificationsView
+                        config={config}
                         connection={connection}
                         options={options}
                         parent={viewRoot?.parentNode as any}

@@ -14,8 +14,10 @@ import defaultConfig from './vite.config.mjs';
 const dirName = fileURLToPath(new URL('.', import.meta.url));
 
 const inputs = [{
+    // The actual management app.
     ['app']: path.resolve(dirName, 'index.html'),
-    // The notifo SKD is also used by our app. Therefore we build it together.
+
+    // The Notifo SKD is also used by our app. Therefore we build it together.
     ['notifo-sdk']: path.resolve(dirName, 'src/sdk/sdk.ts'),
 }, {
     // Build the worker separately so that it does not get any file
@@ -48,7 +50,7 @@ async function buildPackages() {
                             } else if (chunk.name === 'sdk.css') {
                                 return 'notifo-sdk.css';
                             } else {
-                                return `${chunk.name}.css`;
+                                return '[name].[hash].[ext]';
                             }
                         },
                     },
