@@ -41,11 +41,11 @@ public class IntegrationPropertyTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void Should_fail_if_value_is_required(string value)
+        public void Should_fail_if_value_is_required(string? value)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = value
+                ["key"] = value!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Text)
@@ -108,11 +108,11 @@ public class IntegrationPropertyTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void Should_not_fail_if_undefined_value_does_not_follow_pattern(string input)
+        public void Should_not_fail_if_undefined_value_does_not_follow_pattern(string? input)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = input
+                ["key"] = input!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Text)
@@ -143,11 +143,11 @@ public class IntegrationPropertyTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void Should_not_fail_if_undefined_value_is_not_an_allowed_value(string input)
+        public void Should_not_fail_if_undefined_value_is_not_an_allowed_value(string? input)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = input
+                ["key"] = input!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Text)
@@ -192,11 +192,11 @@ public class IntegrationPropertyTests
         [InlineData("True", true)]
         [InlineData("false", false)]
         [InlineData("False", false)]
-        public void Should_get_boolean_from_properties(string value, bool expected)
+        public void Should_get_boolean_from_properties(string? value, bool expected)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = value
+                ["key"] = value!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Boolean);
@@ -216,11 +216,11 @@ public class IntegrationPropertyTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void Should_fail_if_value_is_required(string value)
+        public void Should_fail_if_value_is_required(string? value)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = value
+                ["key"] = value!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Boolean)
@@ -241,11 +241,11 @@ public class IntegrationPropertyTests
         [InlineData("0", 0)]
         [InlineData("1", 1)]
         [InlineData("2", 2)]
-        public void Should_get_number_from_properties(string value, int expected)
+        public void Should_get_number_from_properties(string? value, int expected)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = value
+                ["key"] = value!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Number);
@@ -265,11 +265,11 @@ public class IntegrationPropertyTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void Should_fail_if_value_is_required(string value)
+        public void Should_fail_if_value_is_required(string? value)
         {
             var source = new Dictionary<string, string>
             {
-                ["key"] = value
+                ["key"] = value!
             };
 
             var property = new IntegrationProperty("key", PropertyType.Number)

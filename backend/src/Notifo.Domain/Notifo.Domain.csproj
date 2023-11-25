@@ -19,11 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.8.0" />
+    <PackageReference Include="FluentValidation" Version="11.8.1" />
     <PackageReference Include="Fluid.Core" Version="2.5.0" />
     <PackageReference Include="Jint" Version="3.0.0-beta-2037" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.24" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.110">
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.25" />
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.112">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

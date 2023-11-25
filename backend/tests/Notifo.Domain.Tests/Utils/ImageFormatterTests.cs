@@ -33,7 +33,7 @@ public class ImageFormatterTests
     [InlineData("https:/invalid")]
     [InlineData("httpx://invalid")]
     [InlineData("HTTPX://invalid")]
-    public void Should_not_add_invalid_url_to_proxy(string url)
+    public void Should_not_add_invalid_url_to_proxy(string? url)
     {
         var result = sut.AddProxy(url);
 
@@ -68,7 +68,7 @@ public class ImageFormatterTests
     [InlineData("https:/invalid")]
     [InlineData("httpx://invalid")]
     [InlineData("HTTPX://invalid")]
-    public void Should_not_add_preset_to_invalid_url(string url)
+    public void Should_not_add_preset_to_invalid_url(string? url)
     {
         var result = sut.AddPreset(url, "Email");
 

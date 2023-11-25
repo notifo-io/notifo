@@ -91,9 +91,9 @@ public class TrackingTokenTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Should_not_throw_if_null_or_empty(string value)
+    public void Should_not_throw_if_null_or_empty(string? value)
     {
-        var result = TrackingToken.Parse(value);
+        var result = TrackingToken.Parse(value!);
 
         Assert.False(result.IsValid);
     }
