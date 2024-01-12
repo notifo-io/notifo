@@ -36,6 +36,7 @@ public static class Program
             GenerateOptionalParameters = true,
             GenerateClientInterfaces = true,
             GenerateBaseUrlProperty = true,
+            InjectHttpClient = false,
             OperationNameGenerator = new TagNameGenerator(),
             UseBaseUrl = false
         };

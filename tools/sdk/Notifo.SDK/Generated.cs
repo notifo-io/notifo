@@ -112,13 +112,11 @@ namespace Notifo.SDK
     public partial class UserClient : IUserClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public UserClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -145,7 +143,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ProfileDto> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -232,7 +232,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -329,7 +331,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<AdminProfileDto> GetAdminUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -413,7 +417,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserTopicDto>> GetTopicsAsync(string language = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -506,7 +512,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetMySubscriptionsAsync(string topics = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -614,7 +622,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -712,7 +722,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("topic");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -809,7 +821,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("prefix");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1134,13 +1148,11 @@ namespace Notifo.SDK
     public partial class UsersClient : IUsersClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public UsersClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -1175,7 +1187,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1292,7 +1306,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1406,7 +1422,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1512,7 +1530,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1619,7 +1639,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1738,7 +1760,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1851,7 +1875,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("prefix");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1961,7 +1987,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2074,7 +2102,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("prefix");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2184,7 +2214,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("token");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2294,7 +2326,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("endpoint");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2538,13 +2572,11 @@ namespace Notifo.SDK
     public partial class TopicsClient : ITopicsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public TopicsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -2579,7 +2611,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2696,7 +2730,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2803,7 +2839,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("path");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3038,13 +3076,11 @@ namespace Notifo.SDK
     public partial class TemplatesClient : ITemplatesClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public TemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -3078,7 +3114,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3185,7 +3223,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3292,7 +3332,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("code");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3561,13 +3603,11 @@ namespace Notifo.SDK
     public partial class SystemUsersClient : ISystemUsersClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public SystemUsersClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -3597,7 +3637,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSystemUserDto> GetUsersAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3698,7 +3740,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3799,7 +3843,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3897,7 +3943,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4009,7 +4057,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4111,7 +4161,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4221,7 +4273,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4473,13 +4527,11 @@ namespace Notifo.SDK
     public partial class PingClient : IPingClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public PingClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -4510,7 +4562,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetOldPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4590,7 +4644,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4669,7 +4725,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<InfoDto> GetInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4940,13 +4998,11 @@ namespace Notifo.SDK
     public partial class NotificationsClient : INotificationsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public NotificationsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -4983,7 +5039,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5114,7 +5172,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5239,7 +5299,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5349,7 +5411,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(string channel = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5442,7 +5506,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, DeviceNotificationsQueryScope? scope = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5547,7 +5613,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5777,13 +5845,11 @@ namespace Notifo.SDK
     public partial class MobilePushClient : IMobilePushClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public MobilePushClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -5810,7 +5876,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetMyTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5897,7 +5965,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5992,7 +6062,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("token");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6311,13 +6383,11 @@ namespace Notifo.SDK
     public partial class MediaClient : IMediaClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public MediaClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -6351,7 +6421,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6460,7 +6532,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6590,7 +6664,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("fileName");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6682,7 +6758,7 @@ namespace Notifo.SDK
                         if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, client_, response_);
                             disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
@@ -6738,7 +6814,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("fileName");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6854,7 +6932,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("fileName");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6946,7 +7026,7 @@ namespace Notifo.SDK
                         if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, client_, response_);
                             disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
@@ -7014,7 +7094,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("fileName");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7106,7 +7188,7 @@ namespace Notifo.SDK
                         if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, client_, response_);
                             disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
@@ -7167,7 +7249,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7260,7 +7344,7 @@ namespace Notifo.SDK
                         if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, client_, response_);
                             disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
@@ -7436,13 +7520,11 @@ namespace Notifo.SDK
     public partial class LogsClient : ILogsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public LogsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -7479,7 +7561,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7741,13 +7825,11 @@ namespace Notifo.SDK
     public partial class EventsClient : IEventsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public EventsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -7782,7 +7864,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7899,7 +7983,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8002,7 +8088,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8228,13 +8316,11 @@ namespace Notifo.SDK
     public partial class DiagnosticsClient : IDiagnosticsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public DiagnosticsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -8261,7 +8347,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8348,7 +8436,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetGCDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8564,13 +8654,11 @@ namespace Notifo.SDK
     public partial class ConfigsClient : IConfigsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public ConfigsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -8597,7 +8685,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetTimezonesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8680,7 +8770,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetLanguagesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8987,13 +9079,11 @@ namespace Notifo.SDK
     public partial class EmailTemplatesClient : IEmailTemplatesClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public EmailTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -9019,7 +9109,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<MjmlSchema> GetSchemaAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9110,7 +9202,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9153,7 +9247,7 @@ namespace Notifo.SDK
                         if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, client_, response_);
                             disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
@@ -9209,7 +9303,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9321,7 +9417,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9434,7 +9532,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9547,7 +9647,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9651,7 +9753,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9768,7 +9872,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9882,7 +9988,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("code");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9993,7 +10101,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10112,7 +10222,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("language");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10413,13 +10525,11 @@ namespace Notifo.SDK
     public partial class MessagingTemplatesClient : IMessagingTemplatesClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public MessagingTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -10453,7 +10563,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10566,7 +10678,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10679,7 +10793,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10783,7 +10899,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10900,7 +11018,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11014,7 +11134,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("code");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11125,7 +11247,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11244,7 +11368,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("language");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11545,13 +11671,11 @@ namespace Notifo.SDK
     public partial class SmsTemplatesClient : ISmsTemplatesClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public SmsTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -11585,7 +11709,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11698,7 +11824,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11811,7 +11939,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11915,7 +12045,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12032,7 +12164,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12146,7 +12280,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("code");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12257,7 +12393,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12376,7 +12514,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("language");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12689,13 +12829,11 @@ namespace Notifo.SDK
     public partial class AppsClient : IAppsClient
     {
         private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
-        private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
         public AppsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
             _httpClientProvider = httpClientProvider;
-            _httpClient = httpClient;
         }
 
         private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
@@ -12722,7 +12860,9 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppDto>> GetAppsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12809,7 +12949,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -12910,7 +13052,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13008,7 +13152,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13120,7 +13266,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13233,7 +13381,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("contributorId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13340,7 +13490,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("appId");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13439,7 +13591,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13556,7 +13710,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -13664,7 +13820,9 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
 
             var client_ = _httpClientProvider.Get();
+    #pragma warning disable CS0219 // Variable is assigned but its value is never used
             var disposeClient_ =  false;
+    #pragma warning restore CS0219 // Variable is assigned but its value is never used
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())

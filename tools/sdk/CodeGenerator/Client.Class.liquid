@@ -165,7 +165,9 @@
 
 {%     endif -%}
         var client_ = _httpClientProvider.Get();
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
         var disposeClient_ =  false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
         try
         {
 {%     if UseHttpRequestMessageCreationMethod -%}
