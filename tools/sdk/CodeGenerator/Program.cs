@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using NJsonSchema;
+using NJsonSchema.CodeGeneration;
 using NJsonSchema.CodeGeneration.CSharp;
 using NJsonSchema.CodeGeneration.TypeScript;
 using NSwag;
@@ -73,11 +74,13 @@ public static class Program
         File.WriteAllText(@"..\..\..\..\..\..\frontend\src\app\service\service.ts", code);
     }
 
-    public sealed class PropertyNameGenerator : CSharpPropertyNameGenerator
+    public sealed class PropertyNameGenerator : IPropertyNameGenerator
     {
-        public override string Generate(JsonSchemaProperty property)
+        private readonly CSharpPropertyNameGenerator inner = new CSharpPropertyNameGenerator();
+
+        public string Generate(JsonSchemaProperty property)
         {
-            var result = base.Generate(property);
+            var result = inner.Generate(property);
 
             result = result.Replace("!", string.Empty, StringComparison.Ordinal);
 

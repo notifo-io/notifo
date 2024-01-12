@@ -103,7 +103,7 @@ public static class InMemoryConfiguration
                 DisplayName = "React Frontend Application",
                 ClientId = Constants.FrontendClient,
                 ClientSecret = null,
-                Type = ClientTypes.Public,
+                ClientType = ClientTypes.Public,
                 PostLogoutRedirectUris =
                 {
                     new Uri(urlGenerator.BuildUrl("authentication/logout-callback", false))

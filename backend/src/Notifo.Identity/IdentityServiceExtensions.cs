@@ -119,7 +119,7 @@ public static class IdentityServiceExtensions
         services.AddOpenIddict()
             .AddCore(builder =>
             {
-                builder.UseMongoDb<string>();
+                builder.UseMongoDb();
 
                 builder.SetDefaultScopeEntity<ImmutableScope>();
 

@@ -17,7 +17,7 @@ public sealed class CommonProcessor : IDocumentProcessor
         context.Document.Info.Title = "Notifo API";
         context.Document.BasePath = "/api";
         context.Document.Info.Version = "1.0.0";
-        context.Document.Info.ExtensionData = new Dictionary<string, object>
+        context.Document.Info.ExtensionData = new Dictionary<string, object?>
         {
             ["x-logo"] = new
             {
