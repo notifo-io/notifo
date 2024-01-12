@@ -27,8 +27,11 @@ public class MjmlSchemaTests
     [Fact]
     public async Task Should_build_schema_as_json()
     {
-        var json = JsonSerializer.Serialize(MjmlSchema.Build(mjmlRenderer));
+        var json = JsonSerializer.Serialize(MjmlSchema.Build(mjmlRenderer), new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
 
-        await Verify(new { json });
+        await Verify(json);
     }
 }
