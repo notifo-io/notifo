@@ -11,7 +11,7 @@ using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class ReflectionServices : DefaultReflectionService
+public sealed class ReflectionServices : SystemTextJsonReflectionService
 {
     protected override bool IsArrayType(ContextualType contextualType)
     {

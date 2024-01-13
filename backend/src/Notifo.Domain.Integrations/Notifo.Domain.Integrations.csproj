@@ -9,31 +9,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.7" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.34" />
     <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
     <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
-    <PackageReference Include="FluentValidation" Version="11.8.1" />
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="Fluid.Core" Version="2.5.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.25" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.27" />
     <PackageReference Include="Mailjet.Api" Version="3.0.0" />
     <PackageReference Include="MailKit" Version="4.3.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.112">
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.135">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
-    <PackageReference Include="NodaTime" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
+    <PackageReference Include="NodaTime" Version="3.1.10" />
     <PackageReference Include="OpenNotifications" Version="0.3.0" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
-    <PackageReference Include="Twilio" Version="6.15.1" />
+    <PackageReference Include="Twilio" Version="6.15.2" />
   </ItemGroup>
 
   <ItemGroup>

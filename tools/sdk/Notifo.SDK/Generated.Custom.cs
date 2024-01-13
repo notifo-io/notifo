@@ -78,7 +78,7 @@ public partial class NotifoException<TResult>
 
 public partial class AppsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -86,7 +86,7 @@ public partial class AppsClient
 
 public partial class ConfigsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -94,7 +94,7 @@ public partial class ConfigsClient
 
 public partial class EmailTemplatesClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -102,7 +102,7 @@ public partial class EmailTemplatesClient
 
 public partial class EventsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -110,7 +110,7 @@ public partial class EventsClient
 
 public partial class LogsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -118,7 +118,7 @@ public partial class LogsClient
 
 public partial class MobilePushClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -126,7 +126,7 @@ public partial class MobilePushClient
 
 public partial class MediaClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -134,7 +134,7 @@ public partial class MediaClient
 
 public partial class NotificationsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -142,7 +142,7 @@ public partial class NotificationsClient
 
 public partial class PingClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -150,7 +150,7 @@ public partial class PingClient
 
 public partial class SmsTemplatesClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -158,7 +158,7 @@ public partial class SmsTemplatesClient
 
 public partial class SystemUsersClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -166,7 +166,7 @@ public partial class SystemUsersClient
 
 public partial class TemplatesClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -174,7 +174,7 @@ public partial class TemplatesClient
 
 public partial class TopicsClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -182,7 +182,7 @@ public partial class TopicsClient
 
 public partial class UserClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }
@@ -190,7 +190,7 @@ public partial class UserClient
 
 public partial class UsersClient
 {
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+    static partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
         settings.Configure();
     }

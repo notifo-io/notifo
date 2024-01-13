@@ -33,18 +33,20 @@ public static class OpenApiServiceExtensions
 
         services.AddOpenApiDocument(settings =>
         {
-            settings.AllowReferencesWithProperties = true;
-            settings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
-            settings.DefaultDictionaryValueReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
-            settings.SchemaProcessors.Add(new RequiredSchemaProcessor());
+            var schemaSettings = settings.SchemaSettings;
 
-            settings.TypeMappers = new List<ITypeMapper>
+            schemaSettings.AllowReferencesWithProperties = true;
+            schemaSettings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+            schemaSettings.DefaultDictionaryValueReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+            schemaSettings.SchemaProcessors.Add(new RequiredSchemaProcessor());
+
+            schemaSettings.TypeMappers = new List<ITypeMapper>
             {
                 CreateStringMap<Instant>(JsonFormatStrings.DateTime),
                 CreateStringMap<TopicId>()
             };
 
-            settings.ReflectionService = new ReflectionServices();
+            schemaSettings.ReflectionService = new ReflectionServices();
         });
     }
 
