@@ -22,6 +22,8 @@ services:
       - internal
     depends_on:
       - mongo
+      - mailcatcher
+      - webhookcatcher
 
   notifo2:
     image: notifo-local
@@ -44,6 +46,8 @@ services:
       - internal
     depends_on:
       - mongo
+      - mailcatcher
+      - webhookcatcher
 
   resizer:
     image: squidex/resizer:dev-40
