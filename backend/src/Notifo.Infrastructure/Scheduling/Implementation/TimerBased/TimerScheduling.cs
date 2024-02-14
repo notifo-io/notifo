@@ -109,9 +109,16 @@ public sealed class TimerScheduling<T> : IScheduling<T>
         }
     }
 
-    public void Complete(string key)
+    public Task<bool> CompleteAsync(string key,
+        CancellationToken ct = default)
     {
-        schedulerStore.CompleteByKeyAsync(key).Forget();
+        return schedulerStore.CompleteByKeyAsync(key, ct);
+    }
+
+    public Task<bool> CompleteAsync(string key, string groupKey,
+        CancellationToken ct = default)
+    {
+        return schedulerStore.CompleteByKeyAsync(key, groupKey, ct);
     }
 
     public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError,

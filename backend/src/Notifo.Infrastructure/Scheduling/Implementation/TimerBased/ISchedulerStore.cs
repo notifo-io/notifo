@@ -14,7 +14,10 @@ public interface ISchedulerStore<T>
     Task CompleteAsync(string id,
         CancellationToken ct = default);
 
-    Task CompleteByKeyAsync(string key,
+    Task<bool> CompleteByKeyAsync(string key,
+        CancellationToken ct = default);
+
+    Task<bool> CompleteByKeyAsync(string key, string groupKey,
         CancellationToken ct = default);
 
     Task<SchedulerBatch<T>?> DequeueAsync(Instant time,

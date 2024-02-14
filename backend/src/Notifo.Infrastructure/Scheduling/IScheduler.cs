@@ -11,7 +11,11 @@ namespace Notifo.Infrastructure.Scheduling;
 
 public interface IScheduler<in T>
 {
-    void Complete(string key);
+    Task<bool> CompleteAsync(string key,
+        CancellationToken ct = default);
+
+    Task<bool> CompleteAsync(string key, string groupKey,
+        CancellationToken ct = default);
 
     Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
         CancellationToken ct = default);

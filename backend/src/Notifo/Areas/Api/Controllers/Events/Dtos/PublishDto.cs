@@ -24,6 +24,11 @@ public sealed class PublishDto
     public string Topic { get; set; }
 
     /// <summary>
+    /// A custom ID.
+    /// </summary>
+    public string? Id { get; set; }
+
+    /// <summary>
     /// A custom id to identity the creator.
     /// </summary>
     public string? CreatorId { get; set; }

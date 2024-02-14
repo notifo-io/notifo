@@ -11,7 +11,6 @@ using Notifo.Domain.Channels.Email.Formatting;
 
 namespace Notifo.Domain.Channels.Email;
 
-[UsesVerify]
 public class MjmlSchemaTests
 {
     private readonly IMjmlRenderer mjmlRenderer = new MjmlRenderer();

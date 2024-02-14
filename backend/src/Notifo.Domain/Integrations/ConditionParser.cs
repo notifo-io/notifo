@@ -14,7 +14,7 @@ namespace Notifo.Domain.Integrations;
 
 internal static class ConditionParser
 {
-    private static readonly ParserOptions DefaultParserOptions = new ParserOptions { Tolerant = true };
+    private static readonly JavaScriptParser Parser = new JavaScriptParser(new ParserOptions { Tolerant = true });
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
     private static readonly IMemoryCache Cache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
@@ -26,9 +26,7 @@ internal static class ConditionParser
         {
             entry.AbsoluteExpirationRelativeToNow = CacheDuration;
 
-            var parser = new JavaScriptParser(script, DefaultParserOptions);
-
-            return parser.ParseScript();
+            return Parser.ParseScript(script);
         })!;
     }
 }

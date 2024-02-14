@@ -9,7 +9,6 @@ using System.Globalization;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
-[UsesVerify]
 public class UserNotificationExtensionsTests
 {
     private readonly Guid id = Guid.Parse("d9e3afe8-06a2-493e-b7a7-03a4aba61544");

@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
+using NodaTime.Text;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
 using Squidex.Messaging;
@@ -45,7 +47,11 @@ public static class JsonServiceExtensions
         options.Converters.Add(new JsonReadonlyListConverterFactory());
         options.Converters.Add(new JsonStringEnumConverter());
         options.Converters.Add(new JsonTimeSpanConverter());
-        options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+        options.ConfigureForNodaTime(new NodaJsonSettings(DateTimeZoneProviders.Tzdb)
+        {
+            LocalTimeConverter = new NodaPatternConverter<LocalTime>(NodaPatterns.VariablePrecisionIso)
+        });
 
         configure(options);
 
