@@ -13,7 +13,7 @@ public sealed class SchedulerBatch<T>
 {
     public string Id { get; set; }
 
-    public string Key { get; set; }
+    public string GroupKey { get; set; }
 
     public bool Progressing { get; set; }
 

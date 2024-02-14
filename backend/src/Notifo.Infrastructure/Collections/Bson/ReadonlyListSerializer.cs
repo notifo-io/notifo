@@ -6,25 +6,20 @@
 // ==========================================================================
 
 using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace Notifo.Infrastructure.Collections.Bson;
 
-public sealed class ReadonlyListSerializer<T> : ClassSerializerBase<ReadonlyList<T>>
+public static class ReadonlyListSerializer
 {
-    private readonly Type innerType = typeof(List<T>);
+    private static volatile int isRegistered;
 
-    protected override ReadonlyList<T> DeserializeValue(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public static void Register()
     {
-        var inner = BsonSerializer.Deserialize<List<T>>(context.Reader);
-
-        return new ReadonlyList<T>(inner);
-    }
-
-    protected override void SerializeValue(BsonSerializationContext context, BsonSerializationArgs args, ReadonlyList<T> value)
-    {
-        var inner = new List<T>(value);
-
-        BsonSerializer.Serialize(context.Writer, innerType, inner);
+        if (Interlocked.Increment(ref isRegistered) == 1)
+        {
+            BsonSerializer.RegisterGenericSerializerDefinition(
+                typeof(ReadonlyList<>),
+                typeof(ReadonlyListSerializer<>));
+        }
     }
 }

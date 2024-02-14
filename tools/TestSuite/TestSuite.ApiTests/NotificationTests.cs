@@ -13,7 +13,6 @@ using TestSuite.Fixtures;
 
 namespace TestSuite.ApiTests;
 
-[UsesVerify]
 public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 {
     private readonly string subject = Guid.NewGuid().ToString();

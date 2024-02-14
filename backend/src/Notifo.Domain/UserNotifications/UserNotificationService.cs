@@ -283,6 +283,13 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         }
     }
 
+    public async Task<bool> CancelAsync(CancelRequest request)
+    {
+        Guard.NotNull(request);
+
+        return await userEventQueue.CompleteAsync(request.EventId, ScheduleKey(request), default);
+    }
+
     public async Task TrackDeliveredAsync(params TrackingToken[] tokens)
     {
         Guard.NotNull(tokens);
@@ -391,6 +398,11 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         };
 
         return context;
+    }
+
+    private static string ScheduleKey(CancelRequest request)
+    {
+        return $"{request.AppId}_{request.UserId}_{request.Test}_{request.GroupKey.OrDefault(request.EventId)}";
     }
 
     private static string ScheduleKey(UserEventMessage userEvent)

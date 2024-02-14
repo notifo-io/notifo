@@ -23,7 +23,36 @@ public sealed class NotifoIdentityOptions
 
     public string GoogleSecret { get; set; }
 
+    public string OidcName { get; set; }
+
+    public string OidcClient { get; set; }
+
+    public string OidcSecret { get; set; }
+
+    public string OidcAuthority { get; set; }
+
+    public string OidcMetadataAddress { get; set; }
+
+    public string OidcRoleClaimType { get; set; }
+
+    public string OidcResponseType { get; set; }
+
+    public string OidcOnSignoutRedirectUrl { get; set; }
+
+    public string[] OidcScopes { get; set; }
+
+    public bool OidcGetClaimsFromUserInfoEndpoint { get; set; }
+
+    public bool OidcOverridePermissionsWithCustomClaimsOnLogin { get; set; }
+
+    public bool RequiresHttps { get; set; }
+
     public NotifoIdentityUser[] Users { get; set; }
+
+    public bool IsOidcConfigured()
+    {
+        return !string.IsNullOrWhiteSpace(OidcAuthority) && !string.IsNullOrWhiteSpace(OidcClient);
+    }
 
     public bool IsAdminClientConfigured()
     {

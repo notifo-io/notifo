@@ -790,6 +790,10 @@
       ]
     },
     mjml: {
+      Attributes: {
+        dir: null,
+        lang: null
+      },
       Children: [
         mj-body,
         mj-head,
@@ -1585,6 +1589,10 @@
       ]
     },
     mjml: {
+      Attributes: {
+        dir: null,
+        lang: null
+      },
       Children: [
         mj-body,
         mj-head,

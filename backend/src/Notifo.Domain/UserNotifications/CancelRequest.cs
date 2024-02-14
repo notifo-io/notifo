@@ -5,19 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserEvents;
-
 namespace Notifo.Domain.UserNotifications;
 
-public interface IUserNotificationService
+public sealed class CancelRequest
 {
-    Task DistributeAsync(UserEventMessage userEvent);
+    public string AppId { get; set; }
 
-    Task TrackDeliveredAsync(params TrackingToken[] tokens);
+    public string UserId { get; set; }
 
-    Task TrackSeenAsync(params TrackingToken[] tokens);
+    public string EventId { get; set; }
 
-    Task TrackConfirmedAsync(params TrackingToken[] token);
+    public string? GroupKey { get; set; }
 
-    Task<bool> CancelAsync(CancelRequest request);
+    public bool Test { get; set; }
 }

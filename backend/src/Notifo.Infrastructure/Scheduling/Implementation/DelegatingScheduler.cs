@@ -18,9 +18,16 @@ public sealed class DelegatingScheduler<T> : IScheduler<T>
         this.scheduling = scheduling;
     }
 
-    public void Complete(string key)
+    public Task<bool> CompleteAsync(string key,
+        CancellationToken ct = default)
     {
-        scheduling.Complete(key);
+        return scheduling.CompleteAsync(key, ct);
+    }
+
+    public Task<bool> CompleteAsync(string key, string groupKey,
+        CancellationToken ct = default)
+    {
+        return scheduling.CompleteAsync(key, groupKey, ct);
     }
 
     public Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,

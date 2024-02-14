@@ -11,7 +11,6 @@ using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
 
 namespace Notifo.Infrastructure.MongoDb;
@@ -55,13 +54,7 @@ public static class MongoClientFactory
         InstantSerializer.Register();
         LocalDateSerializer.Register();
         LocalTimeSerializer.Register();
-
-        BsonSerializer.RegisterGenericSerializerDefinition(
-            typeof(ReadonlyList<>),
-            typeof(ReadonlyListSerializer<>));
-
-        BsonSerializer.RegisterGenericSerializerDefinition(
-            typeof(ReadonlyDictionary<,>),
-            typeof(ReadonlyDictionarySerializer<,>));
+        ReadonlyDictionarySerializer.Register();
+        ReadonlyListSerializer.Register();
     }
 }

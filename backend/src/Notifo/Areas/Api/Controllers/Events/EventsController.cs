@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Events.Dtos;
 using Notifo.Domain.Events;
 using Notifo.Domain.Identity;
+using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
@@ -20,13 +21,16 @@ public sealed class EventsController : BaseController
 {
     private readonly IEventStore eventStore;
     private readonly IEventPublisher eventPublisher;
+    private readonly IUserNotificationService userNotificationService;
 
     public EventsController(
         IEventStore eventStore,
-        IEventPublisher eventPublisher)
+        IEventPublisher eventPublisher,
+        IUserNotificationService userNotificationService)
     {
         this.eventStore = eventStore;
         this.eventPublisher = eventPublisher;
+        this.userNotificationService = userNotificationService;
     }
 
     /// <summary>
@@ -76,6 +80,28 @@ public sealed class EventsController : BaseController
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Cancels a scheduled event.
+    /// </summary>
+    /// <param name="appId">The app where the events belongs to.</param>
+    /// <param name="request">The cancel request.</param>
+    /// <response code="204">Events cancelled, if found.</response>.
+    /// <response code="404">App not found.</response>.
+    [HttpDelete("api/apps/{appId:notEmpty}/events/")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(CancelResponseDto))]
+    public async Task<IActionResult> CancelEvent(string appId, [FromBody] CancelEventDto request)
+    {
+        var hasDeleted = await userNotificationService.CancelAsync(request.ToRequest(appId));
+
+        var response = new CancelResponseDto
+        {
+            HasCancelled = hasDeleted
+        };
+
+        return Ok(response);
     }
 
     /// <summary>

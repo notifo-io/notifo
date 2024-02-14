@@ -472,7 +472,7 @@ const InputLocalizedText = (props: LocalizedFormProps) => {
 
     return (
         <div className='localized-input'>
-            <Forms.Error name={name} />
+            <Forms.Error name={`${name}.root`} />
 
             <div className='localized-languages'>
                 <LanguageSelector
@@ -492,7 +492,7 @@ const InputLocalizedTextArea = (props: LocalizedFormProps) => {
 
     return (
         <div className='localized-input'>
-            <Forms.Error name={name} />
+            <Forms.Error name={`${name}.root`} />
 
             <div className='localized-languages'>
                 <LanguageSelector
