@@ -558,7 +558,10 @@
     "children": null
   },
   "mjml": {
-    "attrs": {},
+    "attrs": {
+      "dir": null,
+      "lang": null
+    },
     "children": [
       "mj-body",
       "mj-head",
