@@ -65,6 +65,7 @@ public static class IdentityServiceExtensions
             })
             .AddGoogle(identityOptions)
             .AddGithub(identityOptions)
+            .AddOidc(identityOptions)
             .AddApiKey();
     }
 

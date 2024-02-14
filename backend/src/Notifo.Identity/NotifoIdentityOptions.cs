@@ -39,6 +39,8 @@ public sealed class NotifoIdentityOptions
 
     public string OidcOnSignoutRedirectUrl { get; set; }
 
+    public string OidcPrompt { get; set; }
+
     public string[] OidcScopes { get; set; }
 
     public bool OidcGetClaimsFromUserInfoEndpoint { get; set; }

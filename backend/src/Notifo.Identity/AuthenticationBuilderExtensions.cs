@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Identity;
+using Notifo.Infrastructure;
 
 namespace Microsoft.AspNetCore.Authentication;
 
@@ -50,11 +51,12 @@ public static class AuthenticationBuilderExtensions
 
             authBuilder.AddOpenIdConnect("ExternalOidc", displayName, options =>
             {
+                options.Events = new OidcHandler(identityOptions);
                 options.Authority = identityOptions.OidcAuthority;
                 options.ClientId = identityOptions.OidcClient;
                 options.ClientSecret = identityOptions.OidcSecret;
+                options.Prompt = identityOptions.OidcPrompt;
                 options.RequireHttpsMetadata = identityOptions.RequiresHttps;
-                options.Events = new OidcHandler(identityOptions);
 
                 if (!string.IsNullOrEmpty(identityOptions.OidcMetadataAddress))
                 {
@@ -70,10 +72,7 @@ public static class AuthenticationBuilderExtensions
 
                 if (identityOptions.OidcScopes != null)
                 {
-                    foreach (var scope in identityOptions.OidcScopes)
-                    {
-                        options.Scope.Add(scope);
-                    }
+                    options.Scope.AddRange(identityOptions.OidcScopes);
                 }
             });
         }
