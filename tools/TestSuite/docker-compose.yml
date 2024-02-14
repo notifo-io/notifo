@@ -65,7 +65,7 @@ services:
       - internal
 
   mailcatcher:
-    image: jeanberu/mailcatcher
+    image: jeanberu/mailcatcher:0.8.0
     ports:
       - "1025:1025"
       - "1080:1080"
