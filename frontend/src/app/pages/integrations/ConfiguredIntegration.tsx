@@ -62,23 +62,23 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                             ))}
 
                             {configured.status !== 'Verified' &&
-                                <StatusLabel status={configured.status} />
+                                <StatusLabel className='mr-1' status={configured.status} />
                             }
 
                             {configured.test === true &&
-                                <Badge pill>{texts.integrations.modeTest}</Badge>
+                                <Badge className='mr-1' pill>{texts.integrations.modeTest}</Badge>
                             }
 
                             {configured.test === false &&
-                                <Badge pill>{texts.integrations.modeProduction}</Badge>
+                                <Badge className='mr-1' pill>{texts.integrations.modeProduction}</Badge>
                             }
 
-                            {configured.enabled &&
-                                <Badge color='danger' pill>{texts.common.disabled}</Badge>
+                            {!configured.enabled &&
+                                <Badge className='mr-1' color='danger' pill>{texts.common.disabled}</Badge>
                             }
 
                             {!!configured.condition &&
-                                <Badge pill>{texts.integrations.condition}</Badge>
+                                <Badge className='mr-1' pill>{texts.integrations.condition}</Badge>
                             }
 
                             {!!configured.priority &&
@@ -90,7 +90,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                             {properties.filter(x => !!x.value).map(property => (
                                 <div key={property.label} className='mt-2'>
                                     <small>
-                                        <strong>{property.label}</strong><br />{property.value}
+                                        <strong>{property.label}</strong><br /><div className='truncate'>{property.value}</div>
                                     </small>
                                 </div>
                             ))}

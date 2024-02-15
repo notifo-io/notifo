@@ -130,7 +130,7 @@ public static class NotificationFormatting
         {
             var result = new LocalizedText(source);
 
-            foreach (var (key, value) in source)
+            foreach (var (key, value) in other)
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {

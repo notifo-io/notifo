@@ -9,11 +9,11 @@ import { Badge } from 'reactstrap';
 import { IntegrationStatus } from '@app/service';
 import { texts } from '@app/texts';
 
-export const StatusLabel = (props: { status: IntegrationStatus }) => {
+export const StatusLabel = (props: { status: IntegrationStatus; className?: string }) => {
     const [color, text] = getStatusText(props.status);
 
     return (
-        <Badge pill color={color}>{text}</Badge>
+        <Badge pill className={props.className} color={color}>{text}</Badge>
     );
 };
 
