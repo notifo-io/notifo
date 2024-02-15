@@ -214,7 +214,10 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     public Task TrackAsync(TrackingKey identifier, DeliveryResult result,
         CancellationToken ct = default)
     {
-        Guard.NotNullOrEmpty(identifier.Channel);
+        if (string.IsNullOrWhiteSpace(identifier.Channel))
+        {
+            return Task.CompletedTask;
+        }
 
         var counterMap = CounterMap.ForChannel(identifier.Channel!, result.Status);
         var counterKey = identifier;
