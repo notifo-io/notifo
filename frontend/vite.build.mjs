@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { rimraf } from 'rimraf';
 import { build } from 'vite';
+import { ViteFaviconsPlugin } from 'vite-plugin-favicon';
 import defaultConfig from './vite.config.mjs';
 
 const dirName = fileURLToPath(new URL('.', import.meta.url));
@@ -21,6 +22,20 @@ const inputs = {
     // Build the worker separately so that it does not get any file.
     ['notifo-sdk-worker']: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
 };
+
+defaultConfig.plugins.push(
+    ViteFaviconsPlugin({
+        logo: './src/images/logo-square.svg',
+        favicons: {
+            appName: 'Notifo',
+            appDescription: 'Notification Center',
+            developerName: 'Squidex UG (haftungsbeschränkt)',
+            developerURL: 'https://notifo.io',
+            start_url: '/',
+            theme_color: '#8c84fa',
+        },
+    }),
+);
 
 async function buildPackages() {
     await rimraf('./build');
