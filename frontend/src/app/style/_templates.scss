@@ -5,6 +5,11 @@
     &-overview {
         max-width: 600px;
     }
+
+    &-selected {
+        opacity: .75;
+        pointer-events: none;
+    }
 }
 
 .preview-container {

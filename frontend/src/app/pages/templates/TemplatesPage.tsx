@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useBoolean } from '@app/framework';
@@ -32,7 +33,9 @@ export const TemplatesPage = () => {
 
     return (
         <div className='templates'>
-            <TemplatesList onOpen={setIsOpen.on} />
+            <div className={classNames({ 'templates-selected': isOpen && !!template })}>
+                <TemplatesList onOpen={setIsOpen.on} />
+            </div>
 
             {isOpen &&
                 <TemplateForm language={language}

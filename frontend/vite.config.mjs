@@ -15,6 +15,14 @@ import mkcert from 'vite-plugin-mkcert';
 
 const dirName = fileURLToPath(new URL('.', import.meta.url));
 
+const fullReloadAlways = {
+    name: 'full-reload-always',
+    handleHotUpdate({ server }) {
+        server.ws.send({ type: 'full-reload' });
+        return [];
+    },
+};
+  
 // https://vitejs.dev/config/
 export default defineConfig({
     resolve: {
@@ -50,6 +58,7 @@ export default defineConfig({
             include: 'sdk/**/*.tsx',
         }),
         mkcert(),
+        fullReloadAlways,
     ],
 
     test: {
