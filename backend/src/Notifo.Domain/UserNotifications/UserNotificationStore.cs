@@ -216,7 +216,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         if (string.IsNullOrWhiteSpace(identifier.Channel))
         {
-            return Task.CompletedTask;
+            return StoreInternalAsync(identifier.ToToken(), result);
         }
 
         var counterMap = CounterMap.ForChannel(identifier.Channel!, result.Status);
