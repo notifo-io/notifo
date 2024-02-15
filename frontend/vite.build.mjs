@@ -37,18 +37,12 @@ async function buildPackages() {
                     },
                     output: {
                         entryFileNames: chunk => {
-                            if (chunk.name === 'index') {
-                                return 'app.js';
-                            } else {
-                                return `${chunk.name}.js`;
-                            }
+                            return `${chunk.name}.js`;
                         },
                         
                         assetFileNames: chunk => {
-                            if (chunk.name === 'index.css') {
-                                return 'app.css';
-                            } else if (chunk.name === 'sdk.css') {
-                                return 'notifo-sdk.css';
+                            if (chunk.name === 'app.css' || 'notifo-sdk.css') {
+                                return '[name].[ext]';
                             } else {
                                 return '[name].[hash].[ext]';
                             }
