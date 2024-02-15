@@ -13,28 +13,28 @@ import defaultConfig from './vite.config.mjs';
 
 const dirName = fileURLToPath(new URL('.', import.meta.url));
 
-const inputs = [{
+const inputs = {
     // The actual management app.
     ['app']: path.resolve(dirName, 'index.html'),
-
-    // The Notifo SKD is also used by our app. Therefore we build it together.
+    // Build the worker separately to prevent exports.
     ['notifo-sdk']: path.resolve(dirName, 'src/sdk/sdk.ts'),
-}, {
-    // Build the worker separately so that it does not get any file
+    // Build the worker separately so that it does not get any file.
     ['notifo-sdk-worker']: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
-}];
+};
 
 async function buildPackages() {
     await rimraf('./build');
 
-    for (const input of inputs) {
+    for (const [chunk, source] of Object.entries(inputs)) {
         // https://vitejs.dev/config/
         await build({
             publicDir: false,
             build: {
                 outDir: 'build',
                 rollupOptions: {
-                    input,
+                    input: {
+                        [chunk]: source,
+                    },
                     output: {
                         entryFileNames: chunk => {
                             if (chunk.name === 'index') {

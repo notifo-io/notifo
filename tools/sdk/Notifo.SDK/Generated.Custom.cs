@@ -44,6 +44,7 @@ public partial class ErrorDto
 
                 foreach (var detail in validDetails)
                 {
+                    sb.Append(' ');
                     sb.Append(detail);
 
                     if (!detail.EndsWith('.'))

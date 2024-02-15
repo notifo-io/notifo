@@ -16,6 +16,16 @@ export const Integrated = (props: IntegratedProps) => {
     const { token } = props;
 
     React.useEffect(() => {
+        if (import.meta.env.PROD) {
+            const script = document.createElement('script');
+            script.src = '/notifo-sdk.js';
+            script.async = true;
+    
+            document.body.appendChild(script);
+        }
+    }, []);
+
+    React.useEffect(() => {
         const notifo = (window as any)['notifo'] || ((window as any)['notifo'] = []);
 
         notifo.push(['init', {
