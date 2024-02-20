@@ -23,14 +23,14 @@
     <PackageReference Include="Fluid.Core" Version="2.5.0" />
     <PackageReference Include="Jint" Version="3.0.0" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.30" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.141">
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.142">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-    <PackageReference Include="Mjml.Net" Version="3.9.0" />
+    <PackageReference Include="Mjml.Net" Version="3.10.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="NodaTime" Version="3.1.11" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />

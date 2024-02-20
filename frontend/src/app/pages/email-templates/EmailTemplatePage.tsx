@@ -66,7 +66,7 @@ export const EmailTemplatePage = () => {
                     <Col xs='auto'>
                         <Row noGutters className='align-items-center'>
                             <Col xs='auto'>
-                                <NavLink className='btn btn-back btn-flat' to='./'>
+                                <NavLink className='btn btn-back btn-flat' to='./../'>
                                     <Icon type='keyboard_arrow_left' />
                                 </NavLink>
                             </Col>
