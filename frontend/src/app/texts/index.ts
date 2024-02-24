@@ -19,4 +19,4 @@ if (userLanguage) {
     userLanguage = userLanguage.substring(0, 2);
 }
 
-export const texts = userLanguage;
+export const texts = TR;
