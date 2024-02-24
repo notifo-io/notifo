@@ -19,4 +19,4 @@ if (userLanguage) {
     userLanguage = userLanguage.substring(0, 2);
 }
 
-export const texts = TR;
+export const texts = userLanguage.startsWith('tr') ? TR : EN;
