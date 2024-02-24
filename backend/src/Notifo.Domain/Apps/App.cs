@@ -20,7 +20,7 @@ public sealed record App(string Id, Instant Created)
 
     public string Name { get; init; }
 
-    public string Language => Languages[1];
+    public string Language => Languages[0];
 
     public string? ConfirmUrl { get; init; }
 

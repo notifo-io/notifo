@@ -187,7 +187,7 @@ public class Startup
 
         app.UseRequestLocalization(options =>
         {
-            options.DefaultRequestCulture = new RequestCulture(cultures[2]);
+            options.DefaultRequestCulture = new RequestCulture(cultures[0]);
             options.SupportedCultures = cultures;
             options.SupportedUICultures = cultures;
         });
