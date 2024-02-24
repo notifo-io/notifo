@@ -6,6 +6,7 @@
  */
 
 import { EN } from './en';
+import { TR } from './tr';
 
 const navigatorAny = navigator as any;
 
@@ -18,4 +19,4 @@ if (userLanguage) {
     userLanguage = userLanguage.substring(0, 2);
 }
 
-export const texts = EN;
+export const texts = userLanguage;

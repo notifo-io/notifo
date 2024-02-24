@@ -181,12 +181,13 @@ public class Startup
         var cultures = new[]
         {
             new CultureInfo("en"),
-            new CultureInfo("de")
+            new CultureInfo("de"),
+            new CultureInfo("tr"),
         };
 
         app.UseRequestLocalization(options =>
         {
-            options.DefaultRequestCulture = new RequestCulture(cultures[0]);
+            options.DefaultRequestCulture = new RequestCulture(cultures[2]);
             options.SupportedCultures = cultures;
             options.SupportedUICultures = cultures;
         });

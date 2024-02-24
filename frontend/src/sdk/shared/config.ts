@@ -5,134 +5,165 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { de, enUS } from 'date-fns/locale';
+import { de, enUS, tr } from 'date-fns/locale';
 import { isDev, isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     en: enUS,
     de,
+    tr,
 };
 
-const DefaultTexts: Texts<{ de: string; en: string }> = {
+const DefaultTexts: Texts<{ de: string; en: string; tr: string }> = {
     allow: {
         de: 'Erlauben',
         en: 'Allow',
+        tr: 'İzin ver',
     },
     archive: {
         de: 'Archiv',
         en: 'Archive',
+        tr: 'Arşiv',
     },
     archiveLink: {
         de: 'Gelöschte Benachrichtungen',
         en: 'Deleted notifications',
+        tr: 'Silinmiş bildirimler',
     },
     cancel: {
         de: 'Abbrechen',
         en: 'Cancel',
+        tr: 'Vazgeç',
     },
     deny: {
         de: 'Nein, Danke',
         en: 'Deny',
+        tr: 'Engelle',
     },
     email: {
         de: 'E-Mail',
         en: 'E-Mail',
+        tr: 'E-Posta',
     },
     emailAddress: {
         de: 'E-Mail Adresse',
         en: 'E-Mail Address',
+        tr: 'E-posta adresi',
     },
     fullName: {
         de: 'Name',
         en: 'Name',
+        tr: 'İsim',
     },
     language: {
         de: 'Sprache',
         en: 'Language',
+        tr: 'Dil',
     },
     loadingFailed: {
         de: 'Laden ist fehlgeschlagen',
         en: 'Loading has failed',
+        tr: 'Giriş başarısız',
     },
     mobilepush: {
         de: 'Mobile Push',
         en: 'Mobile Push',
+        tr: 'Mobil Bildirim',
     },
     messaging: {
         de: 'Messaging',
         en: 'Messaging',
+        tr: 'Mesajlaşma',
     },
     notifications: {
         de: 'Nachrichten',
         en: 'Notifications',
+        tr: 'Bildirimler',
     },
     notifyBeEmail: {
         de: 'Benachrichtige mich per Email',
         en: 'Notify me via Email',
+        tr: 'Beni E-posta ile bilgilendir',
     },
     notifyBeWebPush: {
         de: 'Benachrichtige mich per Push Notification',
         en: 'Notify me via Push Notification',
+        tr: 'Beni anlık bildirim ile bilgilendir',
     },
     notificationsEmpty: {
         de: 'Keine Benachrichtigungen vorhanden',
         en: 'You have no notifications yet.',
+        tr: 'Henüz hiç bildirim almadınız',
     },
     okay: {
         de: 'Okay',
         en: 'Okay',
+        tr: 'Tamam',
     },
     profile: {
         de: 'Profil',
         en: 'Profile',
+        tr: 'Profil',
     },
     save: {
         de: 'Speichern',
         en: 'Save',
+        tr: 'Kaydet',
     },
     savingFailed: {
         de: 'Speichern ist fehlgeschlagen',
         en: 'Saving has failed',
+        tr: 'Kaydedilemedi',
     },
     settings: {
         de: 'Einstellungen',
         en: 'Settings',
+        tr: 'Ayarlar',
     },
     sms: {
         de: 'SMS',
         en: 'SMS',
+        tr: 'SMS',
     },
     subscribe: {
         de: 'Abbonnieren',
         en: 'Subscribe',
+        tr: 'Abone Ol',
     },
     timezone: {
         de: 'Zeitzone',
         en: 'Timezone',
+        tr: 'Zaman dilimi',
     },
     topics: {
         de: 'Themen',
         en: 'Topics',
+        tr: 'Başlıklar',
     },
     unsubscribe: {
         de: 'Deabbonieren',
         en: 'Unsubscribe',
+        tr: 'Abonelikten ayrıl',
     },
     webpush: {
         de: 'Web Push',
         en: 'Web Push',
+        tr: 'Web Anlık Bildirimi',
     },
     webpushConfirmText: {
         de: 'Notifications können jederzeit in den Browser Einstellungen deaktiviert werden.',
         en: 'Notifications can be turned off anytime from browser settings.',
+        tr: 'Bildirimler tarayıcı ayarlarından istediğiniz zaman kapatılabilir.',
     },
     webpushConfirmTitle: {
         de: 'Wir wollen dir Push Benachrichtigungen schenken',
         en: 'We want to send you push notifications.',
+        tr: 'Size anlık bildirimleri gönderebilmek istiyoruz.',
     },
     webpushTopics: {
         de: 'Abonniere die folgenden Themen um auf dem neuesten Stand zu sein. Du kannst dich jederzeit von diesen Themen abmelden oder auch später anmelden.',
         en: 'Subscribe to the following topics to be always up to date. You can unsubscribe any time you want or subscribe to these topics later.',
+        tr: 'Her zaman güncel kalmak için aşağıdaki başlıklara abone olunuz. İstediğiniz zaman abonelikten ayrılabilir veya daha sonra abone olabilirsiniz.',
     },
 };
 

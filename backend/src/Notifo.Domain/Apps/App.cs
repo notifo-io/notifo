@@ -16,11 +16,11 @@ namespace Notifo.Domain.Apps;
 
 public sealed record App(string Id, Instant Created)
 {
-    private static readonly ReadonlyList<string> DefaultLanguages = ReadonlyList.Create("en");
+    private static readonly ReadonlyList<string> DefaultLanguages = ReadonlyList.Create("en", "tr");
 
     public string Name { get; init; }
 
-    public string Language => Languages[0];
+    public string Language => Languages[1];
 
     public string? ConfirmUrl { get; init; }
 
