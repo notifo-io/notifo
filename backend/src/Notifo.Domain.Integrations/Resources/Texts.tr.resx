@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AmazonSES_Description" xml:space="preserve">
+    <value>E-posta göndermek için önceden yapılandırılmış Amazon Simple Email Service (SES).Preconfigured Amazon Simple Email Service (SES) to send emails.</value>
+  </data>
+  <data name="AmazonSES_Name" xml:space="preserve">
+    <value>Amazon SES (Entegre)</value>
+  </data>
+  <data name="AmazonSES_ReservedEmailAddress" xml:space="preserve">
+    <value>{0} e-posta adresi zaten başka bir uygulama tarafından kullanılıyor.</value>
+  </data>
+  <data name="Email_AdditionalFromEmailsDescription" xml:space="preserve">
+    <value>Ek e-posta adreslerinin virgül veya satırla ayrılmış listesi.</value>
+  </data>
+  <data name="Email_AdditionalFromEmailsLabel" xml:space="preserve">
+    <value>E-posta Adresleri</value>
+  </data>
+  <data name="Email_FromEmailDescription" xml:space="preserve">
+    <value>Gönderenin e-posta adresi.</value>
+  </data>
+  <data name="Email_FromEmailLabel" xml:space="preserve">
+    <value>Kimden e-posta</value>
+  </data>
+  <data name="Email_FromNameDescription" xml:space="preserve">
+    <value>Gönderenin adı.</value>
+  </data>
+  <data name="Email_FromNameLabel" xml:space="preserve">
+    <value>Kimden Adı</value>
+  </data>
+  <data name="Firebase_CredentialsHints" xml:space="preserve">
+    <value>The credentials as JSON document.</value>
+  </data>
+  <data name="Firebase_CredentialsLabel" xml:space="preserve">
+    <value>Credentials</value>
+  </data>
+  <data name="Firebase_Description" xml:space="preserve">
+    <value>MessageBird kullanarak iOS ve Android cihazlara anlık bildirimler gönderin.</value>
+  </data>
+  <data name="Firebase_InvalidCredentials" xml:space="preserve">
+    <value>Kimlik bilgileri ayrıştırılamadı.</value>
+  </data>
+  <data name="Firebase_Name" xml:space="preserve">
+    <value>Firebase</value>
+  </data>
+  <data name="Firebase_ProjectIdLabel" xml:space="preserve">
+    <value>Project ID</value>
+  </data>
+  <data name="Firebase_SilentAndroidDescription" xml:space="preserve">
+    <value>Android cihazlara sessiz mesaj gönder.</value>
+  </data>
+  <data name="Firebase_SilentAndroidLabel" xml:space="preserve">
+    <value>Sessiz (Android)</value>
+  </data>
+  <data name="Firebase_SilentIOSDescription" xml:space="preserve">
+    <value>iOS cihazlara sessiz mesaj gönder.</value>
+  </data>
+  <data name="Firebase_SilentIOSLabel" xml:space="preserve">
+    <value>Sessiz (iOS)</value>
+  </data>
+  <data name="Mailchimp_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Mailchimp_Description" xml:space="preserve">
+    <value>E-postaları Mailchimp üzerinden gönder.</value>
+  </data>
+  <data name="Mailchimp_Error" xml:space="preserve">
+    <value>'{0}' hedefine e-posta gönderimi başarısız oldu : {1}.</value>
+  </data>
+  <data name="Mailchimp_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' hedefine e-posta gönderimi başarısız oldu : Hiç bir sonuç dönmedi.</value>
+  </data>
+  <data name="Mailchimp_Name" xml:space="preserve">
+    <value>Mailchimp</value>
+  </data>
+  <data name="Mailjet_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Mailjet_ApiSecretLabel" xml:space="preserve">
+    <value>API Secret</value>
+  </data>
+  <data name="Mailjet_Description" xml:space="preserve">
+    <value>E-postaları Mailjet üzerinden gönder.</value>
+  </data>
+  <data name="Mailjet_Error" xml:space="preserve">
+    <value>'{0}' hedefine e-posta gönderimi başarısız oldu : {1}/{2}.</value>
+  </data>
+  <data name="Mailjet_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' hedefine e-posta gönderimi başarısız oldu : Hiç bir sonuç dönmedi.</value>
+  </data>
+  <data name="Mailjet_Name" xml:space="preserve">
+    <value>Mailjet</value>
+  </data>
+  <data name="MessageBirdIntegrated_Description" xml:space="preserve">
+    <value>SMS mesajları için önceden yapılandırılmış Messagebird entegrasyonu.</value>
+  </data>
+  <data name="MessageBirdIntegrated_Name" xml:space="preserve">
+    <value>MessageBird (Entegre)</value>
+  </data>
+  <data name="MessageBirdWhatsApp_Name" xml:space="preserve">
+    <value>Messagebird WhatsApp</value>
+  </data>
+  <data name="MessageBird_AccessKeyLabel" xml:space="preserve">
+    <value>Access Key</value>
+  </data>
+  <data name="MessageBird_Description" xml:space="preserve">
+    <value>Özel Access Key kullanan messagebird entegrasyonu.</value>
+  </data>
+  <data name="MessageBird_Error" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu: {1}</value>
+  </data>
+  <data name="MessageBird_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu.</value>
+  </data>
+  <data name="MessageBird_Name" xml:space="preserve">
+    <value>Messagebird SMS</value>
+  </data>
+  <data name="MessageBird_OriginatorNameDescription" xml:space="preserve">
+    <value>Telefon Numarasına Alternatif Olarak Şirket Adı</value>
+  </data>
+  <data name="MessageBird_OriginatorNameLabel" xml:space="preserve">
+    <value>Yaratıcı</value>
+  </data>
+  <data name="MessageBird_PhoneNumberLabel" xml:space="preserve">
+    <value>Telefon Numarası</value>
+  </data>
+  <data name="MessageBird_PhoneNumbersDescription" xml:space="preserve">
+    <value>Ülkeye özgü telefon numaraları. Her satır bir telefon numarasıdır.</value>
+  </data>
+  <data name="MessageBird_PhoneNumbersLabel" xml:space="preserve">
+    <value>Telefon Numaraları</value>
+  </data>
+  <data name="MessageBird_SendSmsLabel" xml:space="preserve">
+    <value>SMS Gönder</value>
+  </data>
+  <data name="MessageBird_SendWhatsAppLabel" xml:space="preserve">
+    <value>WhatsApp Gönder</value>
+  </data>
+  <data name="MessageBird_WhatsAppChannelIdDescription" xml:space="preserve">
+    <value>The ID of the WhatsApp Channel.</value>
+  </data>
+  <data name="MessageBird_WhatsAppChannelIdLabel" xml:space="preserve">
+    <value>WhatsApp Channel ID</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNameDescription" xml:space="preserve">
+    <value>Şablonun adı. Gerçek bildirim metni (genellikle konu) olacak bir parametreye sahip olmalıdır.</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNameLabel" xml:space="preserve">
+    <value>Şablon Adı</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNamespaceDescription" xml:space="preserve">
+    <value>Şablon Alanadı. Facebook Business hesabınızın WhatsApp şablonları Yöneticisinde bulunabilir.</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNamespaceLabel" xml:space="preserve">
+    <value>Şablon Alanadı</value>
+  </data>
+  <data name="SMTP_Description" xml:space="preserve">
+    <value>E-postaları özel bir e-posta sunucu kullanarak gönder.</value>
+  </data>
+  <data name="SMTP_Exception" xml:space="preserve">
+    <value>SMTP kullanarak e-posta gönderimi başarısız oldu: {0}</value>
+  </data>
+  <data name="SMTP_HostLabel" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="SMTP_Name" xml:space="preserve">
+    <value>SMTP Sunucusu</value>
+  </data>
+  <data name="SMTP_PasswordHints" xml:space="preserve">
+    <value>SMTP sunucusu için şifre.</value>
+  </data>
+  <data name="SMTP_PasswordLabel" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="SMTP_PortLabel" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="SMTP_UsernameHints" xml:space="preserve">
+    <value>SMTP sunucusu için geçerli kullanıcı adı.</value>
+  </data>
+  <data name="SMTP_UsernameLabel" xml:space="preserve">
+    <value>Kullanıcı Adı</value>
+  </data>
+  <data name="Telegram_AccessKeyLabel" xml:space="preserve">
+    <value>Access Key</value>
+  </data>
+  <data name="Telegram_ChatIdDescription" xml:space="preserve">
+    <value>Botla sohbette kullanıcının kimliğini belirleyen kimlik. Otomatik olarak ayarlanacaktır.</value>
+  </data>
+  <data name="Telegram_ChatIdLabel" xml:space="preserve">
+    <value>Telegram Chat ID</value>
+  </data>
+  <data name="Telegram_Description" xml:space="preserve">
+    <value>Mesajları Telegram kullanarak gönder.</value>
+  </data>
+  <data name="Telegram_Name" xml:space="preserve">
+    <value>Telegram</value>
+  </data>
+  <data name="Telegram_UserLinked" xml:space="preserve">
+    <value>Kullanıcınızı bulduk. Artık bildirim alacaksınız.</value>
+  </data>
+  <data name="Telegram_UserNotFound" xml:space="preserve">
+    <value>Kullanıcınızı bulamıyoruz. Lütfen bir kullanıcı adı oluşturun ve kullanıcı adını {0} hesabınızda yapılandırın. Bunu yaptığınızda bana bir /update komutu gönderin.</value>
+  </data>
+  <data name="Telegram_UsernameDescription" xml:space="preserve">
+    <value>Telegram içindeki kullanıcı adı.</value>
+  </data>
+  <data name="Telegram_UsernameLabel" xml:space="preserve">
+    <value>Telegram Kullanıcı Adı</value>
+  </data>
+  <data name="Telegram_WelcomeMessage" xml:space="preserve">
+    <value>{0} botuna hoş geldiniz. Bildirimlerinizi size göndereceğim.</value>
+  </data>
+  <data name="Telekom_ApiKeyLabel" xml:space="preserve">
+    <value>Api Key</value>
+  </data>
+  <data name="Telekom_Description" xml:space="preserve">
+    <value>TelekoSMS mesajları göndermek için Telekom entegrasyonu.m integration for sending SMS messages.</value>
+  </data>
+  <data name="Telekom_Error" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu: {1}</value>
+  </data>
+  <data name="Telekom_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu.</value>
+  </data>
+  <data name="Telekom_Name" xml:space="preserve">
+    <value>Telekom</value>
+  </data>
+  <data name="Telekom_PhoneNumberLabel" xml:space="preserve">
+    <value>Telefon Numarası</value>
+  </data>
+  <data name="Telekom_PhoneNumbersLabel" xml:space="preserve">
+    <value>Telefon Numaraları</value>
+  </data>
+  <data name="ThreemaSimple_ApiIdentityLabel" xml:space="preserve">
+    <value>API Identity</value>
+  </data>
+  <data name="ThreemaSimple_ApiSecretLabel" xml:space="preserve">
+    <value>API authentication secret</value>
+  </data>
+  <data name="ThreemaSimple_Description" xml:space="preserve">
+    <value>Threema'yı kullanarak sunucu tarafı şifreli mesajlar gönderin.</value>
+  </data>
+  <data name="ThreemaSimple_Name" xml:space="preserve">
+    <value>Threema</value>
+  </data>
+  <data name="Twilio_AccountSidLabel" xml:space="preserve">
+    <value>Account SID</value>
+  </data>
+  <data name="Twilio_AuthTokenLabel" xml:space="preserve">
+    <value>Auth Token</value>
+  </data>
+  <data name="Twilio_Description" xml:space="preserve">
+    <value>SMS mesajları göndermek için Twilio entegrasyonu.</value>
+  </data>
+  <data name="Twilio_Error" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu: {1}</value>
+  </data>
+  <data name="Twilio_ErrorInvalidConfig" xml:space="preserve">
+    <value>Geçersiz yapılandırma. Kimlik doğrulanamıyor veya telefon numarası bulunamıyor.</value>
+  </data>
+  <data name="Twilio_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' hedefine SMS gönderimi başarısız oldu.</value>
+  </data>
+  <data name="Twilio_Name" xml:space="preserve">
+    <value>Twilio</value>
+  </data>
+  <data name="Twilio_PhoneNumberLabel" xml:space="preserve">
+    <value>Telefon Numarası</value>
+  </data>
+  <data name="Webhook_Description" xml:space="preserve">
+    <value>Bir bildirim Kullanıcı tarafından onaylandığında sunucunuza bir HTTP isteği yapın.</value>
+  </data>
+  <data name="Webhook_MethodHints" xml:space="preserve">
+    <value>HTTP metodu</value>
+  </data>
+  <data name="Webhook_MethodLabel" xml:space="preserve">
+    <value>Metod</value>
+  </data>
+  <data name="Webhook_NameHints" xml:space="preserve">
+    <value>Bir şablon tanımlarken opsiyonel isim.</value>
+  </data>
+  <data name="Webhook_NameLabel" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+  <data name="Webhook_SendAlwaysHints" xml:space="preserve">
+    <value>Tüm bildirimler için bu webhook noktasını kullan.</value>
+  </data>
+  <data name="Webhook_SendAlwaysLabel" xml:space="preserve">
+    <value>Her Zaman Gönder</value>
+  </data>
+  <data name="Webhook_SendConfirmHints" xml:space="preserve">
+    <value>Onaylanmış bildirimleri bu webhook noktasına gönder.</value>
+  </data>
+  <data name="Webhook_SendConfirmLabel" xml:space="preserve">
+    <value>Gönderim Onayı</value>
+  </data>
+  <data name="Webhook_SendNotificationsHints" xml:space="preserve">
+    <value>Tüm bildirimleri bu webhook noktasına gönder.</value>
+  </data>
+  <data name="Webhook_SendNotificationsLabel" xml:space="preserve">
+    <value>Her Zaman Gönder</value>
+  </data>
+  <data name="Webhook_URLHints" xml:space="preserve">
+    <value>Sunucu uç noktanızın URL'si.</value>
+  </data>
+  <data name="Webhook_URLLabel" xml:space="preserve">
+    <value>URL</value>
+  </data>
+</root>

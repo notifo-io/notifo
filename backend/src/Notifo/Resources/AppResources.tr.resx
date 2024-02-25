@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AcceptPrivacyPolicyError" xml:space="preserve">
+    <value>Hesap oluşturmak için gizlilik politikasını kabul etmelisiniz.</value>
+  </data>
+  <data name="AcceptTermsOfServiceError" xml:space="preserve">
+    <value>Hesap oluşturmak için hizmet şartlarını kabul etmeniz gerekir.</value>
+  </data>
+  <data name="AccessDeniedText" xml:space="preserve">
+    <value>Giriş reddedildi. Hesabınızın kilidini açmak için lütfen uygulama yöneticisiyle iletişime geçin.</value>
+  </data>
+  <data name="AccessDeniedTitle" xml:space="preserve">
+    <value>Erişim engellendi</value>
+  </data>
+  <data name="AgreeToPrivacyPolicy" xml:space="preserve">
+    <value>&lt;a href="{0}" target="_blank"&gt;Hizmet Şartları&lt;/a&gt;'nı kabul ediyorum.</value>
+  </data>
+  <data name="AgreeToTermsOfService" xml:space="preserve">
+    <value>&lt;a href="{0}" target="_blank"&gt;Gizlilik politikasını&lt;/a&gt; kabul ediyorum.</value>
+  </data>
+  <data name="ChangePasswordButton" xml:space="preserve">
+    <value>Şifreyi değiştir</value>
+  </data>
+  <data name="ChangePasswordLink" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="ChangePasswordTitle" xml:space="preserve">
+    <value>Şifreyi değiştir</value>
+  </data>
+  <data name="CommonCritical" xml:space="preserve">
+    <value>Kritik</value>
+  </data>
+  <data name="CommonRemove" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="CommonSave" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="CommonWarning" xml:space="preserve">
+    <value>Uyarı</value>
+  </data>
+  <data name="ConfirmEmailText" xml:space="preserve">
+    <value>E-posta adresinizi doğruladığınız için teşekkürler.</value>
+  </data>
+  <data name="ConfirmEmailTitle" xml:space="preserve">
+    <value>E-posta doğrulandı</value>
+  </data>
+  <data name="ConfirmHeadline" xml:space="preserve">
+    <value>Bildirim onaylandı</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>şifreyi doğrula</value>
+  </data>
+  <data name="ConfirmPasswordLabel" xml:space="preserve">
+    <value>Şifreyi doğrula</value>
+  </data>
+  <data name="ConfirmText" xml:space="preserve">
+    <value>Onayın alındığını doğruladığınız için teşekkür ederiz. Bu yalnızca acil veya önemli bildirimler için gereklidir. Artık bu pencereyi kapatabilirsiniz.</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>Bildirim onaylandı</value>
+  </data>
+  <data name="ConsentApplicationAccess" xml:space="preserve">
+    <value>Uygulamalar</value>
+  </data>
+  <data name="ConsentNo" xml:space="preserve">
+    <value>Vazgeç</value>
+  </data>
+  <data name="ConsentPersonalInformation" xml:space="preserve">
+    <value>Kişisel bilgi</value>
+  </data>
+  <data name="ConsentText" xml:space="preserve">
+    <value>aşağıdaki izinleri istiyor</value>
+  </data>
+  <data name="ConsentTitle" xml:space="preserve">
+    <value>İzin</value>
+  </data>
+  <data name="ConsentUncheck" xml:space="preserve">
+    <value>Vermek istemediğiniz izinlerin işaretini kaldırın.</value>
+  </data>
+  <data name="ConsentYes" xml:space="preserve">
+    <value>İzin ver</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>E-posta</value>
+  </data>
+  <data name="EmailPreferencesAll" xml:space="preserve">
+    <value>Bütün E-postalar</value>
+  </data>
+  <data name="EmailPreferencesAllText" xml:space="preserve">
+    <value>Bana doğrudan anlık bildirimler gibi başka e-postalar gönder.</value>
+  </data>
+  <data name="EmailPreferencesHeadline" xml:space="preserve">
+    <value>E-posta Tercihleri</value>
+  </data>
+  <data name="EmailPreferencesSavedText" xml:space="preserve">
+    <value>E-posta tercihleriniz başarıyla kaydedildi. E-posta aboneliğinizi iptal ettiyseniz gelecekte başka e-posta almayacaksınız.</value>
+  </data>
+  <data name="EmailPreferencesSavedTitle" xml:space="preserve">
+    <value>Oturum başarıyla kapatıldı</value>
+  </data>
+  <data name="EmailPreferencesText" xml:space="preserve">
+    <value>E-posta tercihlerinizi güncelleyin ve belirli konularda e-postayla bildirim almak isteyip istemediğinize veya artık e-posta almak isteyip istemediğinize karar verin.</value>
+  </data>
+  <data name="EmailPreferencesTitle" xml:space="preserve">
+    <value>E-posta Tercihleri</value>
+  </data>
+  <data name="EmailPreferencesdSavedText" xml:space="preserve">
+    <value>E-posta E-posta Adresinin Değiştirilmesine Yardımcı Olacaktır. Bir Temanın Düşüşü, daha önce başka bir şeyle karşılaşmadan önce, çok hızlı bir şekilde gerçekleşti. E-postalar hızla siliniyor, daha sonra e-postalar daha fazla gönderiliyor.</value>
+  </data>
+  <data name="ErrorInfo" xml:space="preserve">
+    <value>Bu bir hatadır.</value>
+  </data>
+  <data name="ErrorText" xml:space="preserve">
+    <value>Üzgünüz, bir hata oluştu. Ekip zaten bunun üzerinde çalışıyor.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Hata oluştu</value>
+  </data>
+  <data name="ExternalCallbackText" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt; ile başarıyla kimlik doğrulaması yaptınız. Lütfen aşağıya bu site için bir e-posta adresi girin ve oturum açmayı tamamlamak için Kayıt ol düğmesine tıklayın.</value>
+  </data>
+  <data name="ExternalLoginEmailUsed" xml:space="preserve">
+    <value>Bu e-posta adresine sahip bir kullanıcı zaten mevcut. Başka bir harici giriş eklemek için profil sayfanıza gidin.</value>
+  </data>
+  <data name="ExternalLoginError" xml:space="preserve">
+    <value>Giriş sırasında hata oluştu: {0}</value>
+  </data>
+  <data name="ExternalLoginText" xml:space="preserve">
+    <value>{0} ile giriş yap</value>
+  </data>
+  <data name="ExternalLoginsLink" xml:space="preserve">
+    <value>Girişler</value>
+  </data>
+  <data name="ExternalLoginsList" xml:space="preserve">
+    <value>Harici girişler</value>
+  </data>
+  <data name="ExternalLoginsNew" xml:space="preserve">
+    <value>Giriş yapmak için başka bir servis ekleyiniz.</value>
+  </data>
+  <data name="ExternalLoginsRemove" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="ExternalLoginsTitle" xml:space="preserve">
+    <value>Harici girişlerinizi yönetin</value>
+  </data>
+  <data name="ExternalSeperator" xml:space="preserve">
+    <value>- Or -</value>
+  </data>
+  <data name="ForgotPasswordButton" xml:space="preserve">
+    <value>E-posta Gönder</value>
+  </data>
+  <data name="ForgotPasswordConfirmationText" xml:space="preserve">
+    <value>Size şifrenizi nasıl sıfırlayacağınızla ilgili talimatları içeren bir e-posta gönderdik. Lütfen e-posta istemcinize gidin ve size gönderdiğimiz e-postadaki bağlantıyı izleyin.</value>
+  </data>
+  <data name="ForgotPasswordConfirmationTitle" xml:space="preserve">
+    <value>Kurtarma e-postası gönderildi</value>
+  </data>
+  <data name="ForgotPasswordQuestion" xml:space="preserve">
+    <value>Şifrenizi unuttunuz mu?</value>
+  </data>
+  <data name="ForgotPasswordText" xml:space="preserve">
+    <value>E-posta adresinizi giriniz. Şifrenizi nasıl sıfırlayacağınızla ilgili talimatları size göndereceğiz.</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Şifrenizi sıfırlayınız</value>
+  </data>
+  <data name="Gallery1" xml:space="preserve">
+    <value>Bildirimlerinizi tanımlayın.</value>
+  </data>
+  <data name="Gallery2" xml:space="preserve">
+    <value>Tercih ettiğiniz entegrasyonları kullanın.</value>
+  </data>
+  <data name="Gallery3" xml:space="preserve">
+    <value>MJML kullanarak e-posta tasarlayın.</value>
+  </data>
+  <data name="Gallery4" xml:space="preserve">
+    <value>Görüntüleri medya galerisine yükleyin.</value>
+  </data>
+  <data name="Gallery5" xml:space="preserve">
+    <value>Kullanıcıları ve ayarlarını yönetin.</value>
+  </data>
+  <data name="Gallery6" xml:space="preserve">
+    <value>Javascript SDK'sını sitenize ekleyin.</value>
+  </data>
+  <data name="Gallery7" xml:space="preserve">
+    <value>REST API'sinden yararlanın.</value>
+  </data>
+  <data name="GeneralError" xml:space="preserve">
+    <value>Birşeyler başarısız oldu.</value>
+  </data>
+  <data name="GithubEmailPrivateError" xml:space="preserve">
+    <value>Github e-posta adresiniz gizlenmiş.</value>
+  </data>
+  <data name="IndexTitle" xml:space="preserve">
+    <value>Hoşgeldiniz</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Geçersiz giriş denemesi.</value>
+  </data>
+  <data name="InvalidLoginAttempt1" xml:space="preserve">
+    <value>Kullanıcı adı veya şifre hatalı.</value>
+  </data>
+  <data name="InvalidRequestFormat" xml:space="preserve">
+    <value>Geçersiz formatta istek.</value>
+  </data>
+  <data name="InvalidSelectionErrorMessage" xml:space="preserve">
+    <value>Geçersiz seçim.</value>
+  </data>
+  <data name="Legal" xml:space="preserve">
+    <value>Yasal</value>
+  </data>
+  <data name="LockedOutText" xml:space="preserve">
+    <value>Hesabınız kilitlendi. Lütfen desteğe başvurunuz.</value>
+  </data>
+  <data name="LockedOutTitle" xml:space="preserve">
+    <value>Hesap kilitlendi.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="LoginButton" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="LoginNoAccount" xml:space="preserve">
+    <value>Henüz bir hesap oluşturmadınız mı?&lt;br /&gt;Sadece sosyal hesabınızla giriş yaparak yeni bir hesap oluşturun.</value>
+  </data>
+  <data name="LoginTitle" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="LoginWith" xml:space="preserve">
+    <value>{0} ile giriş yap</value>
+  </data>
+  <data name="LoginWithFacebook" xml:space="preserve">
+    <value>Facebook ile giriş yap</value>
+  </data>
+  <data name="LoginWithGitHub" xml:space="preserve">
+    <value>Github ile giriş yap</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Çıkış yap</value>
+  </data>
+  <data name="MustChooseOneErrorMessage" xml:space="preserve">
+    <value>Bir seçim yapmalısınız.</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>yeni şifre</value>
+  </data>
+  <data name="NewPasswordLabel" xml:space="preserve">
+    <value>Yeni şifre</value>
+  </data>
+  <data name="NoAccount" xml:space="preserve">
+    <value>Yöneticiniz ile görüşüp sizin için bir hesap açmasını talep ediniz.</value>
+  </data>
+  <data name="NoAccountQuestion" xml:space="preserve">
+    <value>Kayıt ol</value>
+  </data>
+  <data name="OfflineAccessDescription" xml:space="preserve">
+    <value>Hesabın 30 gün sonra bile oturumunun açık kalmasına izin verin.</value>
+  </data>
+  <data name="OfflineAccessDisplayName" xml:space="preserve">
+    <value>Çevrimdışı erişim.</value>
+  </data>
+  <data name="OldPassword" xml:space="preserve">
+    <value>eski şifre</value>
+  </data>
+  <data name="OldPasswordLabel" xml:space="preserve">
+    <value>Eski şifre</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="PasswordConfirm" xml:space="preserve">
+    <value>şifreyi doğrula</value>
+  </data>
+  <data name="PasswordConfirmLabel" xml:space="preserve">
+    <value>Şifreyi doğrula</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="PasswordsNotSame" xml:space="preserve">
+    <value>Şifreler aynı değil</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Notifo Yetkileri</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Gizlilik kuralı</value>
+  </data>
+  <data name="ProfileLink" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="ProfileTitle" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="PwnedEmailError" xml:space="preserve">
+    <value>Bu e-posta daha önce bir veri ihlali olarak ortaya çıkmıştır ve asla kullanılmamalıdır. Daha önce herhangi bir yerde kullandıysanız değiştirin!</value>
+  </data>
+  <data name="PwnedPasswordError" xml:space="preserve">
+    <value>Bu şifre daha önce bir veri ihlalinde ortaya çıkmıştır ve asla kullanılmamalıdır. Daha önce herhangi bir yerde kullandıysanız değiştirin!</value>
+  </data>
+  <data name="RegisterButton" xml:space="preserve">
+    <value>Kayıt ol</value>
+  </data>
+  <data name="RegisterTitle" xml:space="preserve">
+    <value>Kayıt ol</value>
+  </data>
+  <data name="RememberConsent" xml:space="preserve">
+    <value>Hatırla</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Beni Hatırla</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Gerekli</value>
+  </data>
+  <data name="ResetPasswordButton" xml:space="preserve">
+    <value>Şifreyi değiştir</value>
+  </data>
+  <data name="ResetPasswordConfirmText" xml:space="preserve">
+    <value>Şifreniz değiştirildi.</value>
+  </data>
+  <data name="ResetPasswordConfirmTitle" xml:space="preserve">
+    <value>Şifre değiştirildi</value>
+  </data>
+  <data name="ResetPasswordTitle" xml:space="preserve">
+    <value>Şifreyi sıfırla</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="SendVerificationEmail" xml:space="preserve">
+    <value>Doğrulama e-postası gönder</value>
+  </data>
+  <data name="SetPasswordButton" xml:space="preserve">
+    <value>Şifre Belirle</value>
+  </data>
+  <data name="SetPasswordText" xml:space="preserve">
+    <value>Bu site için yerel bir kullanıcı adınız/şifreniz yok. Harici bir giriş yapmadan giriş yapabilmek için yerel bir hesap ekleyin.</value>
+  </data>
+  <data name="SetPasswordTitle" xml:space="preserve">
+    <value>Şifre Belirle</value>
+  </data>
+  <data name="SetupCreateUserButton" xml:space="preserve">
+    <value>Kullanıcı Oluştur</value>
+  </data>
+  <data name="SetupCreateUserConfirmPassword" xml:space="preserve">
+    <value>Şifreyi Doğrula</value>
+  </data>
+  <data name="SetupCreateUserFailure" xml:space="preserve">
+    <value>Ne şifre kimlik doğrulaması ne de Google gibi harici bir kimlik doğrulama sağlayıcısı yapılandırılmamıştır. Lütfen ayarlarınızı ve günlüklerinizi kontrol edin.</value>
+  </data>
+  <data name="SetupCreateUserHeadline" xml:space="preserve">
+    <value>Yönetici Kullanıcısı</value>
+  </data>
+  <data name="SetupCreateUserHeadlineCreate" xml:space="preserve">
+    <value>Yönetici Kullanıcısı Oluştur</value>
+  </data>
+  <data name="SetupCreateUserLoginHint" xml:space="preserve">
+    <value>Google gibi en az bir harici kimlik doğrulama sağlayıcısını yapılandırdınız. Yönetici olmak için giriş sayfasına gidin ve giriş yapın.</value>
+  </data>
+  <data name="SetupCreateUserLoginLink" xml:space="preserve">
+    <value>Giriş Sayfasına Git.</value>
+  </data>
+  <data name="SetupCreateUserSeparator" xml:space="preserve">
+    <value>OR</value>
+  </data>
+  <data name="SetupError" xml:space="preserve">
+    <value>Beklenmeyen bir istisna oluştu.</value>
+  </data>
+  <data name="SetupHeadline" xml:space="preserve">
+    <value>Kurulum</value>
+  </data>
+  <data name="SetupHint" xml:space="preserve">
+    <value>Henüz kullanıcı bulunmadığı için bu ekranı görüyorsunuz. Kullanıcı oluşturulduktan sonra bu ekranı tekrar kullanamazsınız.</value>
+  </data>
+  <data name="SetupMadeBy" xml:space="preserve">
+    <value>Gururla yapan</value>
+  </data>
+  <data name="SetupMadeByCopyright" xml:space="preserve">
+    <value>Sebastian Stehle and Contributors, 2020-2022</value>
+  </data>
+  <data name="SetupRuleFolderWarning" xml:space="preserve">
+    <value>Tüm varlıkların dosya sisteminde depolandığı &lt;strong&gt;klasör varlık deposunu&lt;/strong&gt; kullanıyorsunuz. Lütfen varlık klasörünü yedekleme stratejinize eklemeyi ve Docker kullanıyorsanız onu bir birimle eşlemeyi unutmayın.</value>
+  </data>
+  <data name="SetupRuleFtpWarning" xml:space="preserve">
+    <value>&lt;strong&gt;FTP varlık deposunu&lt;/strong&gt; kullanıyorsunuz. Kötü performans nedeniyle bu depolama türünün kullanılması önerilmez.</value>
+  </data>
+  <data name="SetupRuleHttpsFailure" xml:space="preserve">
+    <value>Siteye https üzerinden erişmiyorsunuz. Bu uyarı doğru değilse, örneğiniz nginx gibi bir ters proxy'nin arkasında olduğundan Notifo https modunu algılayamaz. http başlıklarının &lt;code&gt;X-Forwarded-*&lt;/code&gt; başlıkları aracılığıyla düzgün şekilde iletildiğinden emin olun.</value>
+  </data>
+  <data name="SetupRuleHttpsSuccess" xml:space="preserve">
+    <value>Tebrikler, Notifo kurulumunuza güvenli bir bağlantı (https) üzerinden erişiyorsunuz.</value>
+  </data>
+  <data name="SetupRuleUrlFailure" xml:space="preserve">
+    <value>Notifo'ya yalnızca tek bir standart URL üzerinden erişmeli ve bu URL'yi &lt;code&gt;URLS__BASEURL&lt;/code&gt; ortam değişkeniyle yapılandırmalısınız. Geçerli temel URL &lt;code&gt;{0}&lt;/code&gt;, temel URL &lt;code&gt;{1}&lt;/code&gt; ile eşleşmiyor.</value>
+  </data>
+  <data name="SetupRuleUrlSuccess" xml:space="preserve">
+    <value>Tebrikler, &lt;code&gt;URLS__BASEURL&lt;/code&gt; ortam değişkeni doğru şekilde yapılandırıldı.</value>
+  </data>
+  <data name="SetupRulesHeadline" xml:space="preserve">
+    <value>Sistem Kontrol Listesi</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve">
+    <value>Kurulum</value>
+  </data>
+  <data name="SignedOutText" xml:space="preserve">
+    <value>Çıkış yapmış oldunuz</value>
+  </data>
+  <data name="SignedOutTitle" xml:space="preserve">
+    <value>Çıkış yapıldı</value>
+  </data>
+  <data name="Signup" xml:space="preserve">
+    <value>Kayıt Ol</value>
+  </data>
+  <data name="SignupWith" xml:space="preserve">
+    <value>{0} ile kayıt ol</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>kullanıcı adı</value>
+  </data>
+  <data name="UserNameLabel" xml:space="preserve">
+    <value>Kullanıcı adı</value>
+  </data>
+  <data name="UsersProfileAddLoginDone" xml:space="preserve">
+    <value>Giriş başarıyla eklendi.</value>
+  </data>
+  <data name="UsersProfileChangePassword" xml:space="preserve">
+    <value>Şifre Değiştir</value>
+  </data>
+  <data name="UsersProfileChangePasswordDone" xml:space="preserve">
+    <value>Şifre başarıyla değiştirildi..</value>
+  </data>
+  <data name="UsersProfileHeadline" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="UsersProfileLoginsTitle" xml:space="preserve">
+    <value>Harici Girişler</value>
+  </data>
+  <data name="UsersProfilePasswordTitle" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="UsersProfilePii" xml:space="preserve">
+    <value>Kişisel Bilgilerim</value>
+  </data>
+  <data name="UsersProfileRemoveLoginDone" xml:space="preserve">
+    <value>Giriş başarıyla kaldırıldı.</value>
+  </data>
+  <data name="UsersProfileSetPassword" xml:space="preserve">
+    <value>Şifre Belirle</value>
+  </data>
+  <data name="UsersProfileSetPasswordDone" xml:space="preserve">
+    <value>Şifre başarıyla belirlendi.</value>
+  </data>
+  <data name="UsersProfileTitle" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="UsersProfileUpdateProfileDone" xml:space="preserve">
+    <value>Profil başarıyla güncellendi.</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>Doğrulama hatası.</value>
+  </data>
+  <data name="VerificationEmailSent" xml:space="preserve">
+    <value>E-posta gönderildi.</value>
+  </data>
+</root>
