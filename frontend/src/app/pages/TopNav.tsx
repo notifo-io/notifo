@@ -62,7 +62,7 @@ export const TopNav = () => {
                         </DropdownItem>
 
                         {userInfo.roles.find(x => x?.toUpperCase() === 'ADMIN') &&
-                            <NavLink onClick={setIsOpen.off} to='/system-users' className='dropdown-item'>
+                            <NavLink onClick={setIsOpen.off} to='/app/system-users' className='dropdown-item'>
                                 {texts.systemUsers.header}
                             </NavLink>
                         }

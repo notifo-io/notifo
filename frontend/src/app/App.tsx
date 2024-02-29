@@ -35,6 +35,9 @@ export const App = () => {
 
                 <Route index
                     element={<Navigate to='/app' />} />
+
+                <Route path='*'
+                    element={<Navigate to='/app' />} />
             </Routes>
 
             <ReactTooltip place='top' />
