@@ -181,7 +181,8 @@ public class Startup
         var cultures = new[]
         {
             new CultureInfo("en"),
-            new CultureInfo("de")
+            new CultureInfo("de"),
+            new CultureInfo("tr"),
         };
 
         app.UseRequestLocalization(options =>
