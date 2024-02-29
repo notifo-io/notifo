@@ -30,8 +30,7 @@ public class UpdateSystemUserDto
     /// <summary>
     /// Additional role for the user.
     /// </summary>
-    [Required]
-    public HashSet<string> Roles { get; set; }
+    public HashSet<string>? Roles { get; set; }
 
     public UserValues ToValues()
     {

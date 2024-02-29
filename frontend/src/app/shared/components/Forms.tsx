@@ -386,6 +386,7 @@ const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Readonl
 };
 
 const EMPTY_ARRAY: any[] = [];
+
 const SET_OPTIONS = { shouldTouch: true, shouldDirty: true, shouldValidate: true };
 const SET_UNDEFINED = '__UNDEFINED';
 
@@ -398,7 +399,7 @@ const InputCheckboxOption = ({ name, option }: { name: string; option: Forms.Opt
         if (fieldChecked) {
             field.onChange(fieldArray.filter(x => x !== option.value), SET_OPTIONS);
         } else {
-            field.onChange(name, [...fieldArray, option.value], SET_OPTIONS);
+            field.onChange([...fieldArray, option.value], SET_OPTIONS);
         }
     });
 
