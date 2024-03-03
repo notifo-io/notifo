@@ -42,7 +42,7 @@ jobs:
         working-directory: tools/TestSuite
 
       - name: Test - RUN
-        uses: kohlerdominik/docker-run-action@v1.1.0
+        uses: kohlerdominik/docker-run-action@v2.0.0
         with:
           image: mcr.microsoft.com/dotnet/sdk:8.0
           environment: |
@@ -57,7 +57,7 @@ jobs:
           run: dotnet test /src/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
 
       - name: Test - RUN on GooglePubSub
-        uses: kohlerdominik/docker-run-action@v1.1.0
+        uses: kohlerdominik/docker-run-action@v2.0.0
         with:
           image: mcr.microsoft.com/dotnet/sdk:8.0
           environment: |
