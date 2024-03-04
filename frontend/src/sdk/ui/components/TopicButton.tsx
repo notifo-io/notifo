@@ -9,7 +9,7 @@
 
 import { useCallback } from 'preact/hooks';
 import { SubscriptionDto, TopicOptions } from '@sdk/shared';
-import { Icon } from './Icon';
+import { Icon, IconType } from './Icon';
 
 export interface TopicButtonProps {
     // The options.
@@ -35,15 +35,25 @@ export const TopicButton = (props: TopicButtonProps) => {
         event.preventDefault();
     }, [onClick]);
 
-    let type = options.style;
-
-    if (subscription === null) {
-        type += '_off';
+    let icon: IconType = 'heart';
+    switch (options.style) {
+        case 'alarm':
+            icon = !subscription ? 'alarm_off' : 'alarm';
+            break;
+        case 'bell':
+            icon = !subscription ? 'bell' : 'bell_filled';
+            break;
+        case 'heart':
+            icon = !subscription ? 'heart' : 'heart_filled';
+            break;
+        case 'star':
+            icon = !subscription ? 'star' : 'star_filled';
+            break;
     }
 
     return (
         <button class='notifo-button notifo-topics-button' onClick={doClick}>
-            <Icon type={type as any} size={24} />
+            <Icon type={icon} size={24} />
         </button>
     );
 };

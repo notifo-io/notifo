@@ -421,11 +421,11 @@ export interface SubscribeOptions {
     onSubscribeDialog?: (config: SDKConfig, allow: () => void, deny: () => void) => void;
 }
 
-type OptionMainStyle = 'alarm_off' | 'bell' | 'chat' | 'chat_filled' | 'message' | 'notifo';
+type OptionMainStyle = 'bell' | 'bell_filled' | 'chat' | 'chat_filled' | 'message' | 'notifo';
 type OptionPosition = 'bottom-left' | 'bottom-right';
 type OptionTopicStyle = 'alarm' | 'bell' | 'heart' | 'star';
 
-const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['alarm_off', 'bell', 'chat', 'chat_filled', 'message', 'notifo'];
+const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['bell', 'bell_filled', 'chat', 'chat_filled', 'message', 'notifo'];
 const SUPPORTED_POSITIONS: ReadonlyArray<OptionPosition> = ['bottom-left', 'bottom-right'];
 const SUPPORTED_TOPIC_STYLES: ReadonlyArray<OptionTopicStyle> = ['alarm', 'bell', 'heart', 'star'];
 
