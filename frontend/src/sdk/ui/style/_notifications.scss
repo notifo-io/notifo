@@ -52,7 +52,7 @@
             @include absolute(5px, null, null, -14px);
             @include size(10px, 10px);
             animation: fade-out 2s;
-            background: $color-label;
+            background: $color-seen;
             border: 0;
             border-radius: 20px;
             display: inline-block;
@@ -108,7 +108,7 @@
         }
 
         &-confirm {
-            border: 1px solid darken($color-border, 10%);
+            border: 1px solid $color-border;
             border-radius: 4px;
             font-size: $font-size-sm;
             font-weight: normal;

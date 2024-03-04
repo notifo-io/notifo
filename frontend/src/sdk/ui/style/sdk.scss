@@ -2,6 +2,25 @@
 @import 'vars';
 
 .notifo {
+    --color-background: #{$color-background-value};
+    --color-border: #{$color-border-value};
+    --color-button: #{$color-button-value};
+    --color-control: #{$color-control-value};
+    --color-empty: #{$color-empty-value};
+    --color-error: #{$color-error-value};
+    --color-input: #{$color-input-value};
+    --color-seen-text: #{$color-seen-text-value};
+    --color-seen: #{$color-seen-value};
+    --color-link: #{$color-link-value};
+    --color-scrollbar: #{$color-scrollbar-value};
+    --color-shadow: #{$color-shadow-value};
+    --color-success: #{$color-success-value};
+    --color-text: #{$color-text-value};
+    --font-size-lg: #{$font-size-lg-value};
+    --font-size-md: #{$font-size-md-value};
+    --font-size-sm: #{$font-size-sm-value};
+    --font-size-ssm: #{$font-size-ssm-value};
+    --font-family: #{$font-family-value};
     @import 'reset';
     @import 'components';
     @import 'notifications';
@@ -26,10 +45,10 @@
 
             .notifo-seen-label {
                 animation: fade-in .5s;
-                background: $color-label;
-                border: 0;
+                background: $color-seen;
                 border-radius: 10px;
-                color: $color-label-text;
+                border: 0;
+                color: $color-seen-text;
                 display: inline-block;
                 font-size: 10px;
                 font-weight: bolder;

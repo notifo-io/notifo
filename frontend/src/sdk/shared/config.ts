@@ -294,7 +294,7 @@ export function buildNotificationsOptions(opts: NotificationsOptions) {
     }
 
     if (!options.position) {
-        options.position = SUPPORTED_POSITIONS[0];
+        options.position = 'bottom-right';
     }
 
     if (!isEnumOption(options.style, SUPPORTED_MAIN_STYLES)) {
@@ -303,7 +303,7 @@ export function buildNotificationsOptions(opts: NotificationsOptions) {
     }
 
     if (!options.style) {
-        options.style = SUPPORTED_MAIN_STYLES[0];
+        options.style = 'message';
     }
 
     return options;
@@ -318,7 +318,7 @@ export function buildTopicOptions(opts: TopicOptions) {
     }
 
     if (!options.position) {
-        options.position = SUPPORTED_POSITIONS[0];
+        options.position = 'bottom-left';
     }
 
     if (!isEnumOption(options.style, SUPPORTED_TOPIC_STYLES)) {
@@ -327,7 +327,7 @@ export function buildTopicOptions(opts: TopicOptions) {
     }
 
     if (!options.style) {
-        options.style = SUPPORTED_TOPIC_STYLES[0];
+        options.style = 'star';
     }
 
     return options;
@@ -421,13 +421,13 @@ export interface SubscribeOptions {
     onSubscribeDialog?: (config: SDKConfig, allow: () => void, deny: () => void) => void;
 }
 
-type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
+type OptionMainStyle = 'alarm_off' | 'bell' | 'chat' | 'chat_filled' | 'message' | 'notifo';
 type OptionPosition = 'bottom-left' | 'bottom-right';
-type OptionTopicStyle = 'star' | 'heart' | 'alarm' | 'bell';
+type OptionTopicStyle = 'alarm' | 'bell' | 'heart' | 'star';
 
-const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['message', 'chat', 'chat_filled', 'notifo'];
+const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['alarm_off', 'bell', 'chat', 'chat_filled', 'message', 'notifo'];
 const SUPPORTED_POSITIONS: ReadonlyArray<OptionPosition> = ['bottom-left', 'bottom-right'];
-const SUPPORTED_TOPIC_STYLES: ReadonlyArray<OptionTopicStyle> = ['star', 'heart', 'bell', 'alarm'];
+const SUPPORTED_TOPIC_STYLES: ReadonlyArray<OptionTopicStyle> = ['alarm', 'bell', 'heart', 'star'];
 
 export type ConnectionMode = 'SignalR' | 'SignalRSockets' | 'Polling';
 

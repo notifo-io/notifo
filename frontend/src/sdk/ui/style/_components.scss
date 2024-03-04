@@ -11,7 +11,7 @@
         color: $color-link;
 
         &:hover {
-            color: darken($color-link, 5%);
+            opacity: .95;
             text-decoration: underline;
             text-transform: none;
         }
@@ -41,7 +41,7 @@
             }
 
             &:hover {
-                border-bottom-color: darken($color-link, 10%);
+                border-bottom-color: color-mix(in srgb, $color-link 70%, black);
             }
         }
     }
@@ -94,7 +94,7 @@
             }
 
             &:focus {
-                background: darken($color-border, 5%);
+                background: $color-border;
             }
 
             &.primary {
@@ -103,11 +103,11 @@
                 color: $color-background;
 
                 &:hover {
-                    background: darken($color-link, 5%);
+                    background: $color-link;
                 }
 
                 &:focus {
-                    background: darken($color-link, 10%);
+                    background: $color-link;
                 }
             }
         }
