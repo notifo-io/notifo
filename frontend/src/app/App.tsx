@@ -40,7 +40,7 @@ export const App = () => {
                     element={<Navigate to='/app' />} />
             </Routes>
 
-            <ReactTooltip place='top' />
+            <ReactTooltip place='top' id='default-tooltip' />
 
             <ToastContainer position='bottom-right' />
         </ErrorBoundary>
