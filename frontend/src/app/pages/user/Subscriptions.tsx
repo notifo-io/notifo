@@ -83,7 +83,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                             {subscriptions.isLoading ? (
                                 <Loader visible={subscriptions.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

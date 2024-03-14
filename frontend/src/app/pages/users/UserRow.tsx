@@ -76,17 +76,17 @@ export const UserRow = React.memo((props: UserRowProps) => {
                     <FormatDate date={user.lastUpdate} />
                 </td>
                 <td className='text-right'>
-                    <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
+                    <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.publish}>
                         <Icon type='send' />
                     </Button>
 
-                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
+                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.edit}>
                         <Icon type='create' />
                     </Button>
 
                     <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
                         {({ onClick }) => (
-                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.delete}>
                                 <Icon type='delete' />
                             </Button>
                         )}
