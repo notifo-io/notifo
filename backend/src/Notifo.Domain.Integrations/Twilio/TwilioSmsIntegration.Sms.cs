@@ -29,10 +29,13 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
             var to = message.To;
 
             var result = await MessageResource.CreateAsync(
-                ConvertPhoneNumber(to), null,
-                ConvertPhoneNumber(phoneNumber), null,
+                ConvertPhoneNumber(to),
+                null,
+                ConvertPhoneNumber(phoneNumber.ToString(CultureInfo.InvariantCulture)),
+                null,
                 message.Text,
-                statusCallback: new Uri(BuildCallbackUrl(context, message)), client: client);
+                statusCallback: new Uri(BuildCallbackUrl(context, message)),
+                client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {

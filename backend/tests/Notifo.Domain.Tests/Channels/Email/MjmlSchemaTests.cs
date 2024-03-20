@@ -13,6 +13,11 @@ namespace Notifo.Domain.Channels.Email;
 
 public class MjmlSchemaTests
 {
+    private static readonly JsonSerializerOptions Indented = new JsonSerializerOptions
+    {
+        WriteIndented = true
+    };
+
     private readonly IMjmlRenderer mjmlRenderer = new MjmlRenderer();
 
     [Fact]
@@ -26,10 +31,7 @@ public class MjmlSchemaTests
     [Fact]
     public async Task Should_build_schema_as_json()
     {
-        var json = JsonSerializer.Serialize(MjmlSchema.Build(mjmlRenderer), new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        var json = JsonSerializer.Serialize(MjmlSchema.Build(mjmlRenderer), Indented);
 
         await Verify(json);
     }

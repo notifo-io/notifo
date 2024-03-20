@@ -114,8 +114,8 @@ public abstract class MediaBaseController : BaseController
 #pragma warning disable MA0040 // Flow the cancellation token
         using var activity = Telemetry.Activities.StartActivity("Resize");
 
-        await using var assetOriginal = new TempAssetFile(source.FileName, source.MimeType, 0);
-        await using var assetResized = new TempAssetFile(source.FileName, destinationContentType, 0);
+        await using var assetOriginal = new TempAssetFile(source.FileName, source.MimeType);
+        await using var assetResized = new TempAssetFile(source.FileName, destinationContentType);
 
         using (Telemetry.Activities.StartActivity("Read"))
         {
