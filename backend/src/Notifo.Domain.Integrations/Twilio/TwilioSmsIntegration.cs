@@ -74,7 +74,7 @@ public sealed partial class TwilioSmsIntegration : IIntegration
         {
             var client = clientPool.GetServer(accountSid, accountToken);
 
-            await PhoneNumberResource.FetchAsync(ConvertPhoneNumber(phoneNumber), client: client);
+            await PhoneNumberResource.FetchAsync(new FetchPhoneNumberOptions($"+{phoneNumber}"), client: client);
         }
         catch
         {
@@ -82,10 +82,5 @@ public sealed partial class TwilioSmsIntegration : IIntegration
         }
 
         return IntegrationStatus.Verified;
-    }
-
-    private static PhoneNumber ConvertPhoneNumber(long number)
-    {
-        return new PhoneNumber($"+{number}");
     }
 }

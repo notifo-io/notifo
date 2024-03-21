@@ -11,11 +11,7 @@ public static class CachingServiceExtensions
 {
     public static void AddMyCaching(this IServiceCollection services)
     {
-        services.AddReplicatedCache(options =>
-        {
-            options.Enable = true;
-        });
-
+        services.AddReplicatedCache();
         services.AddAsyncLocalCache();
     }
 }

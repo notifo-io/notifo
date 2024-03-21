@@ -15,7 +15,7 @@ public static class NodaPatterns
     public static readonly LocalTimePattern HourIsoPatternImpl =
         LocalTimePattern.CreateWithInvariantCulture("HH");
 
-    public static readonly LocalTimePattern HourMinuteIsoPatternImpl = 
+    public static readonly LocalTimePattern HourMinuteIsoPatternImpl =
         LocalTimePattern.CreateWithInvariantCulture("HH':'mm");
 
     public static readonly IPattern<LocalTime> VariablePrecisionIso = new CompositePatternBuilder<LocalTime>
