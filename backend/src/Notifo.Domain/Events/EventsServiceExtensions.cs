@@ -22,7 +22,8 @@ public static class EventsServiceExtensions
 
         services.ConfigureAndValidate<EventsOptions>(config, "events");
 
-        services.AddMessaging(new ChannelName(options.ChannelName), true);
+        services.AddMessaging()
+            .AddChannel(new ChannelName(options.ChannelName), true);
 
         services.Configure<MessagingOptions>(messaging =>
         {

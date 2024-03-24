@@ -16,29 +16,31 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class UserNotificationsServiceExtensions
 {
-    public static void AddMyUserNotifications(this IServiceCollection services, IConfiguration config)
+    public static MessagingBuilder AddMyUserNotifications(this MessagingBuilder builder, IConfiguration config)
     {
         var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
 
-        services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
+        builder.Services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
 
-        services.AddMessaging(new ChannelName(options.ChannelName), true);
+        builder.AddChannel(new ChannelName(options.ChannelName), true);
 
-        services.Configure<MessagingOptions>(messaging =>
+        builder.Configure(messaging =>
         {
             messaging.Routing.Add(x => x is ConfirmMessage, options.ChannelName);
         });
 
-        services.AddSingletonAs<UserNotificationStore>()
+        builder.Services.AddSingletonAs<UserNotificationStore>()
             .As<IUserNotificationStore>();
 
-        services.AddSingletonAs<UserNotificationFactory>()
+        builder.Services.AddSingletonAs<UserNotificationFactory>()
             .As<IUserNotificationFactory>();
 
-        services.AddSingletonAs<UserNotificationService>()
+        builder.Services.AddSingletonAs<UserNotificationService>()
             .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler>();
 
-        services.AddScheduler<UserEventMessage>("UserNotifications");
+        builder.Services.AddScheduler<UserEventMessage>("UserNotifications");
+
+        return builder;
     }
 
     public static void AddMyMongoUserNotifications(this IServiceCollection services)

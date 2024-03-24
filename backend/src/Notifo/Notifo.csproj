@@ -23,14 +23,14 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Namotion.Reflection" Version="3.1.1" />
-    <PackageReference Include="NSwag.AspNetCore" Version="14.0.3" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.0.4" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.7.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.7.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.7.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.7.1" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="Squidex.Messaging.All" Version="6.5.1" />
+    <PackageReference Include="Squidex.Messaging.All" Version="6.6.2" />
     <PackageReference Include="Squidex.OpenTelemetry.Exporter.Stackdriver" Version="0.0.0-alpha.0.97" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="System.Text.Json" Version="8.0.3" />

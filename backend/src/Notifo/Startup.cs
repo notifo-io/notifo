@@ -127,7 +127,7 @@ public class Startup
         services.AddMyJson(ConfigureJson);
         services.AddMyLog();
         services.AddMyMedia();
-        services.AddMessagingTransport(config);
+        services.AddMyMessaging(config);
         services.AddMyMessagingChannel();
         services.AddMyMobilePushChannel();
         services.AddMyNodaTime();
@@ -138,8 +138,6 @@ public class Startup
         services.AddMyTelemetry(config);
         services.AddMyTemplates();
         services.AddMyTopics();
-        services.AddMyUserEvents(config);
-        services.AddMyUserNotifications(config);
         services.AddMyUsers();
         services.AddMyUtils();
         services.AddMyWebChannel();
