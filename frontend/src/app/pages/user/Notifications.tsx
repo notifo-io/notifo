@@ -71,7 +71,7 @@ export const Notifications = (props: NotificationsProps) => {
                             {notifications.isLoading ? (
                                 <Loader visible={notifications.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}
@@ -110,7 +110,7 @@ export const Notifications = (props: NotificationsProps) => {
                                     <th>
                                         <span className='truncate'>{texts.common.subject}</span>
                                     </th>
-                                    <th colSpan={7} data-tip={`${texts.common.skipped} / ${texts.common.failed} / ${texts.common.sent} / ${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
+                                    <th colSpan={7} data-tooltip-id="default-tooltip" data-tooltip-content={`${texts.common.skipped} / ${texts.common.failed} / ${texts.common.sent} / ${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
                                         <span className='truncate'>{texts.common.status}</span>
                                     </th>
                                     <th className='text-right'>

@@ -43,25 +43,25 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                 <td>
                     <span className='truncate'>{notification.subject}</span>
                 </td>
-                <td data-tip={texts.common.skipped}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.skipped}>
                     {numSkipped || '-'}
                 </td>
-                <td data-tip={texts.common.failed}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.failed}>
                     {numFailed || '-'}
                 </td>
-                <td data-tip={texts.common.sent}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.sent}>
                     {numSent || '-'}
                 </td>
-                <td data-tip={texts.common.handled}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.handled}>
                     {numHandled || '-'}
                 </td>
-                <td data-tip={texts.common.delivered}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.delivered}>
                     {numFirstDelivered || '-'}
                 </td>
-                <td data-tip={texts.common.seen}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.seen}>
                     {numFirstSeen || '-'}
                 </td>
-                <td data-tip={texts.common.confirmed}>
+                <td data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.confirmed}>
                     {numFirstConfirmed || '-'}
                 </td>
                 <td className='text-right'>

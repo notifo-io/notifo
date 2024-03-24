@@ -63,7 +63,7 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
                 {onDelete &&
                     <Confirm onConfirm={doDelete} text={texts.media.confirmDelete}>
                         {({ onClick }) => (
-                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.delete}>
                                 <Icon type='delete' />
                             </Button>
                         )}

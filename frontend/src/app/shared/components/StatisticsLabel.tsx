@@ -36,7 +36,7 @@ export const StatisticsLabel = React.memo((props: StatisticsLabelProps) => {
     } = props;
 
     return (
-        <span className='statistics-label' data-tip={texts.common.statisticsLabelFn(name)}>
+        <span className='statistics-label' data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.statisticsLabelFn(name)}>
             <Icon className='statistics-label-icon' type={icon} />
 
             <span className='statistics-total'>

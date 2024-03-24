@@ -69,7 +69,7 @@ export const IntegrationsPage = () => {
                     {loading ? (
                         <Loader visible={loading} />
                     ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                        <Button color='blank' size='sm' onClick={doRefresh} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.refresh}>
                             <Icon className='text-lg' type='refresh' />
                         </Button>
                     )}

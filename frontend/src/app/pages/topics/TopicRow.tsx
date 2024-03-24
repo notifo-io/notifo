@@ -64,13 +64,13 @@ export const TopicRow = React.memo((props: TopicRowProps) => {
                 <td className='text-right'>
                     {topic.isExplicit &&
                         <>
-                            <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
+                            <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.edit}>
                                 <Icon type='create' />
                             </Button>
 
                             <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
                                 {({ onClick }) => (
-                                    <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                                    <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.delete}>
                                         <Icon type='delete' />
                                     </Button>
                                 )}

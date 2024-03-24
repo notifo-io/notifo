@@ -230,7 +230,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                                         <Col sm={8}>
                                             <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
                                                 {({ onClick }) => (
-                                                    <Button color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                                                    <Button color='danger' onClick={onClick} data-tooltip-id="default-tooltip" data-tooltip-content={texts.common.delete}>
                                                         <Icon type='delete' /> {texts.common.delete}
                                                     </Button>
                                                 )}
