@@ -62,6 +62,14 @@ public static class ServiceExtensions
         });
     }
 
+    public static void AddMyMessaging(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddMessaging()
+            .AddTransport(config)
+            .AddMyUserEvents(config)
+            .AddMyUserNotifications(config);
+    }
+
     public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)
     {
         config.ConfigureByOption("clustering:type", new Alternatives
@@ -79,22 +87,23 @@ public static class ServiceExtensions
                         });
                 }
 
-                services.AddRedisTransport(config, options =>
-                {
-                    options.ConnectionFactory = connection.ConnectAsync;
-                });
-
-                services.AddReplicatedCacheMessaging(true, options =>
-                {
-                    options.TransportSelector = (transports, name) => transports.First(x => x is RedisTransport);
-                });
+                services.AddMessaging()
+                    .AddRedisTransport(config, options =>
+                    {
+                        options.ConnectionFactory = connection.ConnectAsync;
+                    })
+                    .AddReplicatedCache(true, options =>
+                    {
+                        options.TransportSelector = (transports, name) => transports.First(x => x is RedisTransport);
+                    });
             },
             ["None"] = () =>
             {
-                services.AddReplicatedCacheMessaging(false, options =>
-                {
-                    options.TransportSelector = (transports, name) => transports.First(x => x is NullTransport);
-                });
+                services.AddMessaging()
+                    .AddReplicatedCache(false, options =>
+                    {
+                        options.TransportSelector = (transports, name) => transports.First(x => x is NullTransport);
+                    });
             }
         });
     }

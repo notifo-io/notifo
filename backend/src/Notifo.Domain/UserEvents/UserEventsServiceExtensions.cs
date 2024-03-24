@@ -14,21 +14,23 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class UserEventsServiceExtensions
 {
-    public static void AddMyUserEvents(this IServiceCollection services, IConfiguration config)
+    public static MessagingBuilder AddMyUserEvents(this MessagingBuilder builder, IConfiguration config)
     {
         var options = config.GetSection("pipeline:userEvents").Get<UserEventPipelineOptions>() ?? new UserEventPipelineOptions();
 
-        services.AddMessaging(new ChannelName(options.ChannelName), true);
+        builder.AddChannel(new ChannelName(options.ChannelName), true);
 
-        services.Configure<MessagingOptions>(messaging =>
+        builder.Configure(messaging =>
         {
             messaging.Routing.Add(x => x is UserEventMessage, options.ChannelName);
         });
 
-        services.AddSingletonAs<UserEventConsumer>()
+        builder.Services.AddSingletonAs<UserEventConsumer>()
             .AsSelf().As<IMessageHandler>();
 
-        services.AddSingletonAs<UserEventPublisher>()
+        builder.Services.AddSingletonAs<UserEventPublisher>()
             .As<IUserEventPublisher>();
+
+        return builder;
     }
 }
