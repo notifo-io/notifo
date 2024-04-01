@@ -60,11 +60,11 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         dispatch(upsertSubscription({ appId, userId, params: params as any }));
     });
 
-    const defaultValues = React.useMemo(() => {
-        return Types.clone(subscription || { topicPrefix: '' }) as any;
-    }, [subscription]);
+    const form = useForm<SubscriptionDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
-    const form = useForm<SubscriptionDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
+    React.useEffect(() => {
+        form.reset(Types.clone(subscription || { topicPrefix: '' }));
+    }, [form, subscription]);
 
     return (
         <Modal isOpen={true} size='lg' toggle={onClose}>

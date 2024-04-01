@@ -52,27 +52,27 @@ export const SmsTemplatePage = () => {
         const update = { ...values, languages: {} as Record<string, any> };
 
         if (values?.languages) {
-            for (const key of Object.keys(values.languages)) {
-                update.languages[key] = { text: values.languages[key] };
+            for (const [key, value] of Object.entries(values.languages)) {
+                update.languages[key] = { text: value };
             }
         }
 
         dispatch(updateSmsTemplate({ appId, id: templateId, update }));
     });
 
-    const defaultValues = React.useMemo(() => {
+    const form = useForm<FormValues>({ mode: 'onChange' });
+
+    React.useEffect(() => {
         const result: any = { ...Types.clone(template), languages: {} };
 
         if (template?.languages) {
-            for (const key of Object.keys(template.languages)) {
-                result.languages[key] = template.languages[key].text;
+            for (const [key, value] of Object.entries(template.languages)) {
+                result.languages[key] = value.text;
             }
         }
 
-        return result;
-    }, [template]);
-
-    const form = useForm<FormValues>({ defaultValues, mode: 'onChange' });
+        form.reset(result);
+    }, [form, template]);
 
     return (
         <div className='sms-form'>

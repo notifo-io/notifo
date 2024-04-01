@@ -48,4 +48,22 @@ public abstract class LiquidNotificationBase
         this.imagePresetLarge = imagePresetLarge;
         this.formatting = formatting;
     }
+
+    protected static void DescribeBase(LiquidProperties properties)
+    {
+        properties.AddString("subject",
+            "The notification subject.");
+
+        properties.AddString("body",
+            "The notification body. Can be null.");
+
+        properties.AddString("linkUrl",
+            "The link URL. Can be null.");
+
+        properties.AddString("imageSmall",
+            "The URL to the small image. Optimized for the current use case (e.g. emails). Can be null.");
+
+        properties.AddString("imageLarge",
+            "The URL to the large image. Optimized for the current use case (e.g. emails). Can be null.");
+    }
 }

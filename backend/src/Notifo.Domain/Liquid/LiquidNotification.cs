@@ -24,11 +24,6 @@ public sealed class LiquidNotification : LiquidNotificationBase
     private string? trackSeenUrl;
     private LiquidChildNotification[]? children;
 
-    public string? ConfirmText
-    {
-        get => notification.Formatting.ConfirmText.OrNull();
-    }
-
     public string? TrackSeenUrl
     {
         get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(channel, configurationId);
@@ -37,6 +32,11 @@ public sealed class LiquidNotification : LiquidNotificationBase
     public string? TrackDeliveredUrl
     {
         get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(channel, configurationId);
+    }
+
+    public string? ConfirmText
+    {
+        get => notification.Formatting.ConfirmText.OrNull();
     }
 
     public string? ConfirmUrl
@@ -71,5 +71,25 @@ public sealed class LiquidNotification : LiquidNotificationBase
         this.imagePresetLarge = imagePresetLarge;
         this.imageFormatter = imageFormatter;
         this.configurationId = configurationId;
+    }
+
+    public static void Describe(LiquidProperties properties)
+    {
+        DescribeBase(properties);
+
+        properties.AddString("trackSeenUrl",
+            "The tracking URL to mark the notification as seen.");
+
+        properties.AddString("trackDeliveredUrl",
+            "The tracking URL to mark the notification as delivered.");
+
+        properties.AddString("confirmUrl",
+            "The tracking URL to mark the notification as confirmed.");
+
+        properties.AddString("confirmText",
+            "The text for confirmation buttons.");
+
+        properties.AddArray("children",
+            "The child notifications if the notifications have been grouped together.");
     }
 }

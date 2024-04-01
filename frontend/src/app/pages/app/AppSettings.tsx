@@ -52,7 +52,7 @@ export const AppSettings = (props: AppSettingsProps) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
     });
 
-    const form = useForm<UpsertAppDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: appDetails, mode: 'onChange' });
+    const form = useForm<UpsertAppDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
     React.useEffect(() => {
         form.reset(appDetails);

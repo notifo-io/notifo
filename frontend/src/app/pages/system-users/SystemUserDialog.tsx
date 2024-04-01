@@ -64,13 +64,11 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
         dispatch(upsertSystemUser({ userId: user?.id, params }));
     });
 
-    const defaultValues: any = React.useMemo(() => {
-        const result: Partial<UpdateSystemUserDto> = Types.clone(user || { roles: [] });
+    const form = useForm<UpdateSystemUserDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
-        return result;
-    }, [user]);
-
-    const form = useForm<UpdateSystemUserDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
+    React.useEffect(() => {        
+        form.reset(Types.clone(user || { roles: [] }));
+    }, [form, user]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>

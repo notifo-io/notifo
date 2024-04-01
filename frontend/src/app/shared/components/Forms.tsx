@@ -7,14 +7,14 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import { ControllerFieldState, FormState, useController } from 'react-hook-form';
+import { ControllerFieldState, FormState, get, useController, useFormState } from 'react-hook-form';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { InputType } from 'reactstrap/es/Input';
 import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
 import { Types } from '@app/framework/utils';
 import { Picker, PickerOptions } from './Picker';
 
-export type FormEditorOption<T> = { value?: T; label: string };
+export type FormEditorOption<T> = { value?: T | undefined; label: string };
 
 export interface FormEditorProps {
     // The label.
@@ -63,7 +63,7 @@ export interface OptionsFormProps<T> extends FormEditorProps {
     options: FormEditorOption<T>[];
 }
 
-export interface FormRowProps extends FormEditorProps, React.PropsWithChildren {}
+export interface FormRowProps extends FormEditorProps, React.PropsWithChildren<any> {}
 
 export interface LocalizedFormProps extends FormEditorProps {
     // The available languages.
@@ -77,13 +77,12 @@ export interface LocalizedFormProps extends FormEditorProps {
 }
 
 export module Forms {
-    export type Option<T = any> = { value?: T | string; label: string };
-
     export const Error = ({ name }: { name: string }) => {
-        const { fieldState, formState } = useController({ name });
+        const { errors, submitCount, touchedFields } = useFormState({ name });
+        const error = get(errors, name);
 
         return (
-            <FormControlError error={fieldState.error?.message} submitCount={formState.submitCount} touched={fieldState.isTouched} />
+            <FormControlError error={error?.message} submitCount={submitCount} touched={get(touchedFields, name)} />
         );
     };
 
@@ -229,7 +228,7 @@ export module Forms {
         );
     };
 
-    export const Select = ({ options, placeholder, ...other }: FormEditorProps & { options: ReadonlyArray<Option<string | number>> }) => {
+    export const Select = ({ options, placeholder, ...other }: FormEditorProps & { options: ReadonlyArray<FormEditorOption<string | number | undefined>> }) => {
         return (
             <Forms.Row {...other}>
                 <InputSelect name={other.name} placeholder={placeholder} options={options} />
@@ -237,7 +236,7 @@ export module Forms {
         );
     };
 
-    export const Checkboxes = ({ options, ...other }: FormEditorProps & { options: ReadonlyArray<Option<string>> }) => {
+    export const Checkboxes = ({ options, ...other }: FormEditorProps & { options: ReadonlyArray<FormEditorOption<string>> }) => {
         if (!options || options.length === 0) {
             return null;
         }
@@ -347,7 +346,7 @@ const InputToggle = ({ name, ...other }: BooleanFormProps) => {
     );
 };
 
-const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArray<Forms.Option<string | number>> }) => {
+const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArray<FormEditorOption<string | number | undefined>> }) => {
     const { field, fieldState, formState } = useController({ name });
 
     const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -375,7 +374,7 @@ const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArr
     );
 };
 
-const InputCheckboxes = ({ name, options }: FormEditorProps & { options: ReadonlyArray<Forms.Option<string>> }) => {
+const InputCheckboxes = ({ name, options }: FormEditorProps & { options: ReadonlyArray<FormEditorOption<string>> }) => {
     return (
         <div style={{ paddingTop: '.625rem' }}>
             {options.map(option =>
@@ -390,7 +389,7 @@ const EMPTY_ARRAY: any[] = [];
 const SET_OPTIONS = { shouldTouch: true, shouldDirty: true, shouldValidate: true };
 const SET_UNDEFINED = '__UNDEFINED';
 
-const InputCheckboxOption = ({ name, option }: { name: string; option: Forms.Option<string> }) => {
+const InputCheckboxOption = ({ name, option }: { name: string; option: FormEditorOption<string> }) => {
     const { field } = useController({ name });
     const fieldArray = field.value as string[] || EMPTY_ARRAY;
     const fieldChecked = fieldArray && fieldArray.indexOf(option.value!) >= 0;

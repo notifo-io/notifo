@@ -63,9 +63,9 @@ public sealed class LiquidContext : TemplateContext
         }
 
         context.SetValue("app", new LiquidApp(app));
+        context.SetValue("user", new LiquidUser(user));
         context.SetValue("notification", notifications[0]);
         context.SetValue("notifications", notifications);
-        context.SetValue("user", new LiquidUser(user));
 
         return context;
     }

@@ -67,7 +67,9 @@ export const TopicDialog = (props: TopicDialogProps) => {
         dispatch(upsertTopic({ appId, params, scope }));
     });
 
-    const defaultValues: any = React.useMemo(() => {
+    const form = useForm<UpsertTopicDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
+
+    React.useEffect(() => {
         const result: Partial<TopicDto> = Types.clone(topic || {});
 
         result.channels ||= {};
@@ -75,11 +77,9 @@ export const TopicDialog = (props: TopicDialogProps) => {
         for (const channel of CHANNELS) {
             result.channels[channel] ||= 'Allowed';
         }
-
-        return result;
-    }, [topic]);
-
-    const form = useForm<UpsertTopicDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
+        
+        form.reset(result);
+    }, [form, topic]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
