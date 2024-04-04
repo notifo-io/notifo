@@ -33,7 +33,7 @@ import { AppSettingsPage } from './AppSettingsPage';
 
 const NavDesign = () => {
     const [isOpen, setIsOpen] = useBoolean();
-    const parent = useResolvedPath('*').pathname;
+    const parent = useResolvedPath('').pathname;
     const path = useLocation().pathname;
 
     const isActive = React.useMemo(() => {

@@ -939,6 +939,8 @@ div {
 
         &.active {
             .nav-link {
+                color: $color-primary;
+                
                 &::before {
                     @include build-active;
                 }
