@@ -20,7 +20,11 @@ export function usePreview(appId: string, template: string, type: EmailPreviewTy
     const status = React.useRef<MarkupRequest>({});
 
     React.useEffect(() => {
-        async function render() {
+        async function render(template: string) {
+            if (!template) {
+                return;
+            }
+
             const requestId = new Date().getTime();
 
             status.current.requestId = requestId;
@@ -45,12 +49,12 @@ export function usePreview(appId: string, template: string, type: EmailPreviewTy
         }
 
         if (!status.current.requestId) {
-            render();
+            render(template);
             return undefined;
         }
 
-        const timeout = setTimeout(async () => {
-            await render();
+        const timeout = setTimeout(() => {
+            render(template);
         }, 2000);
 
         return () => {

@@ -3,7 +3,7 @@
 
 /* stylelint-disable selector-class-pattern */
 
-$color: #263238;
+$color-code: #263238;
 $color-border2: darken($color-border, 5%);
 $color-active: #ff5370;
 $color-background: #efefef;
@@ -19,7 +19,7 @@ $size-email-header: 5rem;
     }
 
     &-hints {
-        background: darken($color, 2%);
+        background: darken($color-code, 2%);
         border: 0;
     }
 
@@ -37,7 +37,7 @@ $size-email-header: 5rem;
     }
 
     &-lint-tooltip {
-        background: darken($color, 2%);
+        background: darken($color-code, 2%);
         border: 0;
         color: $color-white;
         font-size: 1rem;
@@ -102,6 +102,19 @@ $size-email-header: 5rem;
     .overlay-target {
         @include absolute(.5rem, .75rem);
     }
+}
+
+.email-properties {
+    @include fixed($size-header, 0, 0, null);
+    @include box-shadow-outer(-2px, 0, 4px, .05);
+    background-color: $color-white;
+    border: 0;
+    border-radius: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 1.5rem;
+    width: 400px;
+    z-index: 1000;
 }
 
 .email {
@@ -190,7 +203,7 @@ $size-email-header: 5rem;
 
 .gutter {
     &.gutter-horizontal {
-        background: $color;
+        background: $color-border2;
         background-image: none;
         border: 0;
         cursor: ew-resize;

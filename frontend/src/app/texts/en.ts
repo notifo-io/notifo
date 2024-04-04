@@ -152,6 +152,7 @@ export const EN = {
         profile: 'Profile',
         profileSettings: 'Your Settings',
         propability: 'Propability',
+        properties: 'Properties',
         property: 'Property',
         publish: 'Publish',
         refresh: 'Refresh',

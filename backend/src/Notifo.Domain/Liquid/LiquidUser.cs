@@ -23,12 +23,12 @@ public sealed class LiquidUser(User user)
     public static void Describe(LiquidProperties properties)
     {
         properties.AddString("fullName",
-            "The full name of the user.");
+            "The full name of the user. Can be null or undefined.");
 
         properties.AddString("emailAddress",
-            "The email address of the user.");
+            "The email address of the user. Can be null or undefined.");
 
         properties.AddString("phoneNumber",
-            "The phone number of the user.");
+            "The phone number of the user. Can be null or undefined.");
     }
 }

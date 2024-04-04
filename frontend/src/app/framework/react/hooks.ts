@@ -6,6 +6,7 @@
  */
 
 /* eslint-disable no-console */
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
 
@@ -134,7 +135,7 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
     return [value, valueSetter];
 }
 
-export function usePrevious <T>(value: T) {
+export function usePrevious<T>(value: T) {
     const ref = React.useRef<T>();
 
     React.useEffect(() => {
@@ -142,4 +143,41 @@ export function usePrevious <T>(value: T) {
     });
 
     return ref.current;
+}
+
+type QueryState<T> = {
+    value: T;
+    error?: any;
+    isLoading?: boolean;
+    isLoaded?: boolean;
+};
+
+type QueryParams<T> = {
+    queryKey: string[];
+    queryFn: () => Promise<T>;
+    defaultValue: T;
+};
+
+export function useSimpleQuery<T>(params: QueryParams<T>): QueryState<T> {
+    const [state, setState] = React.useState<QueryState<T>>({ value: params.defaultValue });
+
+    React.useEffect(() => {
+        async function loadData() {
+            setState(s => ({ ...s, isLoading: true }));
+            try {
+                const value = await params.queryFn();
+    
+                setState(s => ({ ...s, error: undefined, value }));
+            } catch (err) {
+                setState(s => ({ ...s, error: err }));
+            } finally {
+                setState(s => ({ ...s, isLoading: false, isLoaded: true }));
+
+            }
+        }
+
+        loadData();
+    }, params.queryKey);
+
+    return state;
 }

@@ -8,10 +8,6 @@ body {
     background: $color-background;
 }
 
-* {
-    @include scrollbars(8px, $color-border-dark, transparent);
-}
-
 main {
     @include fixed($size-header, 0, 0, 0);
     overflow-y: auto;
@@ -35,6 +31,26 @@ main {
 
 .col-refresh {
     width: 4rem;
+}
+
+.gap-2 {
+    gap: .25rem;
+}
+
+.gap-4 {
+    gap: .5rem;
+}
+
+.gap-6 {
+    gap: .75rem;
+}
+
+.gap-8 {
+    gap: 1rem;
+}
+
+code {
+    color: $color-primary;
 }
 
 label {
@@ -1134,8 +1150,12 @@ em-emoji-picker {
     font-size: $font-size-sm;
 }
 
+.text-icon {
+    font-size: 1.25rem;
+}
+
 .text-lg {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .truncate {
