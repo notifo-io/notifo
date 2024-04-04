@@ -154,30 +154,59 @@ type QueryState<T> = {
 
 type QueryParams<T> = {
     queryKey: string[];
-    queryFn: () => Promise<T>;
+    queryFn: (abort: AbortController) => Promise<T>;
     defaultValue: T;
 };
 
 export function useSimpleQuery<T>(params: QueryParams<T>): QueryState<T> {
     const [state, setState] = React.useState<QueryState<T>>({ value: params.defaultValue });
+    const request = React.useRef(0);
 
     React.useEffect(() => {
-        async function loadData() {
+        async function loadData(id: number, abort: AbortController) {
+            request.current = id;
+
             setState(s => ({ ...s, isLoading: true }));
             try {
-                const value = await params.queryFn();
+                const value = await params.queryFn(abort);
     
-                setState(s => ({ ...s, error: undefined, value }));
+                if (request.current === id) {
+                    setState(s => ({ ...s, error: undefined, value }));
+                }
             } catch (err) {
-                setState(s => ({ ...s, error: err }));
+                if (request.current === id) {
+                    setState(s => ({ ...s, error: err }));
+                }
             } finally {
-                setState(s => ({ ...s, isLoading: false, isLoaded: true }));
-
+                if (request.current === id) {
+                    setState(s => ({ ...s, isLoading: false, isLoaded: true }));
+                }
             }
         }
 
-        loadData();
+        const abort = new AbortController();
+        loadData(new Date().getTime(), abort);
+
+        return () => {
+            abort.abort();
+        };
     }, params.queryKey);
+
+    return state;
+}
+
+export function useDebounce<T>(value: T, debounce: number): T {
+    const [state, setState] = React.useState(value);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setState(value);
+        }, debounce);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [debounce, value]);
 
     return state;
 }
