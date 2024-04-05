@@ -40,6 +40,7 @@ export const Code = (props: CodeProps) => {
         const editor = CodeMirror.fromTextArea(textarea, {
             foldGutter: true,
             gutters: [
+                'CodeMirror-lint-markers',
                 'CodeMirror-linenumbers',
                 'CodeMirror-foldgutter',
             ],
@@ -48,6 +49,7 @@ export const Code = (props: CodeProps) => {
             lineNumbers: true,
             lineSeparator: undefined,
             lineWrapping: false,
+            theme: 'material',
             readOnly: true,
             tabindex: 0,
             tabSize: 2,

@@ -127,7 +127,7 @@ const PublishDialogInner = () => {
 
     React.useEffect(() => {        
         form.reset(Types.clone(dialogValues || {}) as any);
-    }, [dialogValues]);
+    }, [dialogValues, form]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>

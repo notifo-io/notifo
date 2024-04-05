@@ -5,40 +5,30 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import Split from 'react-split';
-import { Alert, Input } from 'reactstrap';
-import { useEventCallback } from '@app/framework';
+import { Alert } from 'reactstrap';
+import { CodeEditor, CodeEditorProps } from '@app/framework';
 import { usePreview } from './helpers';
+import 'codemirror/mode/django/django';
 
-export interface EmailTextEditorProps {
-    // The value.
-    value?: string | null;
-
+export interface EmailTextEditorProps extends CodeEditorProps {
     // The app name.
     appId: string;
-
-    // When the text has changed.
-    onChange: (value: string) => void;
-
-    // Called when the focus has been lost.
-    onBlur: () => void;
 }
+
+const OPTIONS = {
+    mode: 'django',
+};
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
     const {
         appId,
-        onBlur,
-        onChange,
         value,
+        ...other
     } = props;
 
     const emailMarkup = value || '';
     const emailPreview = usePreview(appId, emailMarkup, 'Text');
-
-    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(event.target.value);
-    });
 
     const error = emailPreview.rendering.errors?.find(x => !x.lineNumber || x.lineNumber < 0);
 
@@ -46,7 +36,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
         <div className='email-editor white'>
             <Split direction='horizontal'>
                 <div className='left'>
-                    <Input type='textarea' value={value || ''} onChange={doChange} onBlur={onBlur} spellCheck={false} />
+                    <CodeEditor value={value} {...other}
+                        initialOptions={OPTIONS} />
                 </div>
 
                 <div className='right'>

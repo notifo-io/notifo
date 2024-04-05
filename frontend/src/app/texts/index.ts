@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { Types } from '@app/framework';
 import { EN } from './en';
 import { TR } from './tr';
 
@@ -19,4 +20,12 @@ if (userLanguage) {
     userLanguage = userLanguage.substring(0, 2);
 }
 
-export const texts = userLanguage.startsWith('tr') ? TR : EN;
+let result = EN;
+
+if (userLanguage.startsWith('tr')) {
+    result = {} as any;
+    Types.mergeInto(result, EN);
+    Types.mergeInto(result, TR);
+}
+
+export const texts = result;

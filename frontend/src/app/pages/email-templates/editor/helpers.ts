@@ -8,57 +8,41 @@
 /* eslint-disable quote-props */
 
 import * as CodeMirror from 'codemirror';
-import * as React from 'react';
+import { useDebounce, useSimpleQuery } from '@app/framework';
 import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
-type MarkupRequest = { requestId?: any };
 type MarkupResponse = { rendering: EmailPreviewDto; template?: string };
 
-export function usePreview(appId: string, template: string, type: EmailPreviewType): MarkupResponse {
-    const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({ rendering: {} });
+const DEFAULT_RESPONSE: MarkupResponse = { rendering: {} };
 
-    const status = React.useRef<MarkupRequest>({});
+export function usePreview(appId: string, sourceTemplate: string, type: EmailPreviewType): MarkupResponse {
+    const template = useDebounce(sourceTemplate, 500);
 
-    React.useEffect(() => {
-        async function render() {
-            const requestId = new Date().getTime();
-
-            status.current.requestId = requestId;
+    const query = useSimpleQuery<MarkupResponse>({
+        queryKey: [template, type],
+        queryFn: async () => {
+            if (!template) {
+                return { rendering: {} };
+            }
 
             try {
                 const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type });
 
-                if (status.current.requestId === requestId) {
-                    setEmailPreview({ rendering, template });
-                }
+                return { rendering, template };
             } catch (ex: any) {
-                if (status.current.requestId === requestId) {
-                    const rendering: EmailPreviewDto = {
-                        errors: [{
-                            message: ex.message,
-                        } as any],
-                    };
-
-                    setEmailPreview({ rendering, template });
-                }
+                const rendering: EmailPreviewDto = {
+                    errors: [{
+                        message: ex.message,
+                    } as any],
+                };
+                
+                return { rendering, template };
             }
-        }
-
-        if (!status.current.requestId) {
-            render();
-            return undefined;
-        }
-
-        const timeout = setTimeout(async () => {
-            await render();
-        }, 2000);
-
-        return () => {
-            clearTimeout(timeout);
-        };
-    }, [appId, template, type]);
-
-    return emailPreview;
+        },
+        defaultValue: DEFAULT_RESPONSE,
+    });
+    
+    return query.value;
 }
 
 export function completeAfter(editor: CodeMirror.Editor, predicate?: (cursor: CodeMirror.Position) => boolean) {

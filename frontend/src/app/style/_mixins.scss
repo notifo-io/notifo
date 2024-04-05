@@ -42,29 +42,6 @@
     }
 }
 
-@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white, 50%)) {
-    &::-webkit-scrollbar {
-        height: $size;
-        width:  $size;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: $foreground-color;
-    }
-
-    &::-webkit-scrollbar-corner,
-    &::-webkit-scrollbar-track {
-        background: $background-color;
-    }
-
-    & {
-        scrollbar-color: $foreground-color $background-color;
-        scrollbar-face-color: $foreground-color;
-        scrollbar-track-color: $background-color;
-        scrollbar-width: thin;
-    }
-}
-
 @mixin hidden {
     opacity: 0;
     overflow-x: hidden;

@@ -146,8 +146,11 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                             <Forms.Text name='subject' label={texts.common.subject} vertical />
                         </div>
 
-                        <BodyHtml appId={appId} visible={showHtml.value} schema={schema} />
-                        <BodyText appId={appId} visible={!showHtml.value} />
+                        {showHtml.value ? (
+                            <BodyHtml appId={appId} visible={true} schema={schema} />
+                        ) : (
+                            <BodyText appId={appId} visible={true} />
+                        )}
                     </div>
                 </Form>
 

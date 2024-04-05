@@ -25,11 +25,11 @@ export type IconType =
     'file_copy' |
     'fullscreen' |
     'fullscreen_exit' |
+    'help-circle' |
     'history' |
     'hourglass_empty' |
     'info_outline' |
     'insert_emoticon' |
-    'integration' |
     'keyboard_arrow_down' |
     'keyboard_arrow_left' |
     'keyboard_arrow_right' |

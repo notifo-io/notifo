@@ -4024,6 +4024,57 @@ export class EmailTemplatesClient {
     }
 
     /**
+     * Get the template properties.
+     * @param appId The id of the app where the templates belong to.
+     * @return Channel templates returned.
+     */
+    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/properties";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetProperties(_response);
+        });
+    }
+
+    protected processGetProperties(response: Response): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfTemplatePropertyDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfTemplatePropertyDto>(null as any);
+    }
+
+    /**
      * Get the channel template by id.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
@@ -4538,6 +4589,57 @@ export class MessagingTemplatesClient {
     }
 
     /**
+     * Get the template properties.
+     * @param appId The id of the app where the templates belong to.
+     * @return Channel templates returned.
+     */
+    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/properties";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetProperties(_response);
+        });
+    }
+
+    protected processGetProperties(response: Response): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfTemplatePropertyDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfTemplatePropertyDto>(null as any);
+    }
+
+    /**
      * Get the channel template by id.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
@@ -5049,6 +5151,57 @@ export class SmsTemplatesClient {
             });
         }
         return Promise.resolve<ChannelTemplateDetailsDtoOfSmsTemplateDto>(null as any);
+    }
+
+    /**
+     * Get the template properties.
+     * @param appId The id of the app where the templates belong to.
+     * @return Channel templates returned.
+     */
+    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/properties";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetProperties(_response);
+        });
+    }
+
+    protected processGetProperties(response: Response): Promise<ListResponseDtoOfTemplatePropertyDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfTemplatePropertyDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfTemplatePropertyDto>(null as any);
     }
 
     /**
@@ -6411,7 +6564,7 @@ export interface UpdateSystemUserDto {
     /** The password of the user. */
     password?: string | undefined;
     /** Additional role for the user. */
-    roles: string[];
+    roles?: string[] | undefined;
 }
 
 export interface InfoDto {
@@ -6775,6 +6928,24 @@ export interface ChannelTemplateDto {
     /** The last time the template has been updated. */
     lastUpdate: string;
 }
+
+export interface ListResponseDtoOfTemplatePropertyDto {
+    /** The items. */
+    items: TemplatePropertyDto[];
+    /** The total number of items. */
+    total: number;
+}
+
+export interface TemplatePropertyDto {
+    /** The property path. */
+    path: string;
+    /** The data ty. */
+    type: LiquidPropertyType;
+    /** The optional description. */
+    description?: string | undefined;
+}
+
+export type LiquidPropertyType = "Array" | "String" | "Number" | "Boolean" | "Object";
 
 export interface ChannelTemplateDetailsDtoOfEmailTemplateDto {
     /** The id of the template. */

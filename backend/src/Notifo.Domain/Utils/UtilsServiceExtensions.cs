@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Liquid;
 using Notifo.Domain.Utils;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -15,5 +16,8 @@ public static class UtilsServiceExtensions
     {
         services.AddSingletonAs<ImageFormatter>()
             .As<IImageFormatter>();
+
+        services.AddSingletonAs<LiquidPropertiesProvider>()
+            .AsSelf();
     }
 }

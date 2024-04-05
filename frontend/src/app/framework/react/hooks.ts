@@ -6,6 +6,7 @@
  */
 
 /* eslint-disable no-console */
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
 
@@ -134,7 +135,7 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
     return [value, valueSetter];
 }
 
-export function usePrevious <T>(value: T) {
+export function usePrevious<T>(value: T) {
     const ref = React.useRef<T>();
 
     React.useEffect(() => {
@@ -142,4 +143,70 @@ export function usePrevious <T>(value: T) {
     });
 
     return ref.current;
+}
+
+type QueryState<T> = {
+    value: T;
+    error?: any;
+    isLoading?: boolean;
+    isLoaded?: boolean;
+};
+
+type QueryParams<T> = {
+    queryKey: string[];
+    queryFn: (abort: AbortController) => Promise<T>;
+    defaultValue: T;
+};
+
+export function useSimpleQuery<T>(params: QueryParams<T>): QueryState<T> {
+    const [state, setState] = React.useState<QueryState<T>>({ value: params.defaultValue });
+    const request = React.useRef(0);
+
+    React.useEffect(() => {
+        async function loadData(id: number, abort: AbortController) {
+            request.current = id;
+
+            setState(s => ({ ...s, isLoading: true }));
+            try {
+                const value = await params.queryFn(abort);
+    
+                if (request.current === id) {
+                    setState(s => ({ ...s, error: undefined, value }));
+                }
+            } catch (err) {
+                if (request.current === id) {
+                    setState(s => ({ ...s, error: err }));
+                }
+            } finally {
+                if (request.current === id) {
+                    setState(s => ({ ...s, isLoading: false, isLoaded: true }));
+                }
+            }
+        }
+
+        const abort = new AbortController();
+        loadData(new Date().getTime(), abort);
+
+        return () => {
+            abort.abort();
+        };
+    }, params.queryKey);
+
+    return state;
+}
+
+export function useDebounce<T>(value: T, debounce: number): T {
+    const [state, setState] = React.useState(value);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setState(value);
+        }, debounce);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [debounce, value]);
+
+    return state;
 }
