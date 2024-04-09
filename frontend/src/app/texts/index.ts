@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Types } from '@app/framework';
+import { Types } from '@app/framework/utils/types';
 import { EN } from './en';
 import { TR } from './tr';
 
