@@ -22,12 +22,13 @@ export class UserClient {
      * Get the current user.
      * @return User returned.
      */
-    getUser(): Promise<ProfileDto> {
+    getUser(signal?: AbortSignal): Promise<ProfileDto> {
         let url_ = this.baseUrl + "/api/me";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -66,7 +67,7 @@ export class UserClient {
      * @param request The upsert request.
      * @return Users upserted.
      */
-    postUser(request: UpdateProfileDto): Promise<ProfileDto> {
+    postUser(request: UpdateProfileDto, signal?: AbortSignal): Promise<ProfileDto> {
         let url_ = this.baseUrl + "/api/me";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -75,6 +76,7 @@ export class UserClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -119,12 +121,13 @@ export class UserClient {
      * Get the current admin user.
      * @return User returned.
      */
-    getAdminUser(): Promise<AdminProfileDto> {
+    getAdminUser(signal?: AbortSignal): Promise<AdminProfileDto> {
         let url_ = this.baseUrl + "/api/me/admin";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -163,7 +166,7 @@ export class UserClient {
      * @param language (optional) The optional language.
      * @return User subscriptions returned.
      */
-    getTopics(language?: string | null | undefined): Promise<UserTopicDto[]> {
+    getTopics(language?: string | null | undefined, signal?: AbortSignal): Promise<UserTopicDto[]> {
         let url_ = this.baseUrl + "/api/me/topics?";
         if (language !== undefined && language !== null)
             url_ += "language=" + encodeURIComponent("" + language) + "&";
@@ -171,6 +174,7 @@ export class UserClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -212,7 +216,7 @@ export class UserClient {
      * @param skip (optional) The number of items to skip.
      * @return User subscriptions returned.
      */
-    getMySubscriptions(topics?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
+    getMySubscriptions(topics?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/me/subscriptions?";
         if (topics !== undefined && topics !== null)
             url_ += "Topics=" + encodeURIComponent("" + topics) + "&";
@@ -230,6 +234,7 @@ export class UserClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -268,7 +273,7 @@ export class UserClient {
      * @param request The subscription settings.
      * @return User subscribed.
      */
-    postMySubscriptions(request: SubscribeManyDto): Promise<void> {
+    postMySubscriptions(request: SubscribeManyDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -277,6 +282,7 @@ export class UserClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -319,7 +325,7 @@ export class UserClient {
      * @param topic The topic path.
      * @return Subscription exists.
      */
-    getMySubscription(topic: string): Promise<SubscriptionDto> {
+    getMySubscription(topic: string, signal?: AbortSignal): Promise<SubscriptionDto> {
         let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
         if (topic === undefined || topic === null)
             throw new Error("The parameter 'topic' must be defined.");
@@ -328,6 +334,7 @@ export class UserClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -370,7 +377,7 @@ export class UserClient {
      * @param prefix The topic prefix.
      * @return User unsubscribed.
      */
-    deleteSubscription(prefix: string): Promise<void> {
+    deleteSubscription(prefix: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions/{prefix}";
         if (prefix === undefined || prefix === null)
             throw new Error("The parameter 'prefix' must be defined.");
@@ -379,6 +386,7 @@ export class UserClient {
 
         let options_: RequestInit = {
             method: "POST",
+            signal,
             headers: {
             }
         };
@@ -435,7 +443,7 @@ export class UsersClient {
      * @param withDetails (optional) Provide extra details, might be expensive.
      * @return Users returned.
      */
-    getUsers(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, withDetails?: boolean | undefined): Promise<ListResponseDtoOfUserDto> {
+    getUsers(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, withDetails?: boolean | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -458,6 +466,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -501,7 +510,7 @@ export class UsersClient {
      * @param request The upsert request.
      * @return Users upserted.
      */
-    postUsers(appId: string, request: UpsertUsersDto): Promise<UserDto[]> {
+    postUsers(appId: string, request: UpsertUsersDto, signal?: AbortSignal): Promise<UserDto[]> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -513,6 +522,7 @@ export class UsersClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -564,7 +574,7 @@ export class UsersClient {
      * @param withDetails (optional) Provide extra details, might be expensive.
      * @return User returned.
      */
-    getUser(appId: string, id: string, withDetails?: boolean | undefined): Promise<UserDto> {
+    getUser(appId: string, id: string, withDetails?: boolean | undefined, signal?: AbortSignal): Promise<UserDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -580,6 +590,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -623,7 +634,7 @@ export class UsersClient {
      * @param id The user id to delete.
      * @return User deleted.
      */
-    deleteUser(appId: string, id: string): Promise<void> {
+    deleteUser(appId: string, id: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -635,6 +646,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -684,7 +696,7 @@ export class UsersClient {
      * @param skip (optional) The number of items to skip.
      * @return User subscriptions returned.
      */
-    getSubscriptions(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
+    getSubscriptions(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -706,6 +718,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -750,7 +763,7 @@ export class UsersClient {
      * @param request The subscription object.
      * @return User subscribed.
      */
-    postSubscriptions(appId: string, id: string, request: SubscribeManyDto): Promise<void> {
+    postSubscriptions(appId: string, id: string, request: SubscribeManyDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -765,6 +778,7 @@ export class UsersClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -813,7 +827,7 @@ export class UsersClient {
      * @param prefix The topic prefix.
      * @return User unsubscribed.
      */
-    deleteSubscription(appId: string, id: string, prefix: string): Promise<void> {
+    deleteSubscription(appId: string, id: string, prefix: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions/{prefix}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -828,6 +842,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -875,7 +890,7 @@ export class UsersClient {
      * @param request The upsert request.
      * @return User updated.
      */
-    postAllowedTopic(appId: string, id: string, request: AddAllowedTopicDto): Promise<void> {
+    postAllowedTopic(appId: string, id: string, request: AddAllowedTopicDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/allowed-topics";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -890,6 +905,7 @@ export class UsersClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -938,7 +954,7 @@ export class UsersClient {
      * @param prefix The topic prefix.
      * @return User updated.
      */
-    deleteAllowedTopic(appId: string, id: string, prefix: string): Promise<void> {
+    deleteAllowedTopic(appId: string, id: string, prefix: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/allowed-topics/{prefix}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -953,6 +969,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1000,7 +1017,7 @@ export class UsersClient {
      * @param token The token.
      * @return User updated.
      */
-    deleteMobilePushToken(appId: string, id: string, token: string): Promise<void> {
+    deleteMobilePushToken(appId: string, id: string, token: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/mobilepush/{token}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1015,6 +1032,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1062,7 +1080,7 @@ export class UsersClient {
      * @param endpoint The endpoint.
      * @return User updated.
      */
-    deleteWebPushSubscription(appId: string, id: string, endpoint: string): Promise<void> {
+    deleteWebPushSubscription(appId: string, id: string, endpoint: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/webpush/{endpoint}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1077,6 +1095,7 @@ export class UsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1137,7 +1156,7 @@ export class TopicsClient {
      * @param skip (optional) The number of items to skip.
      * @return Topics returned.
      */
-    getTopics(appId: string, scope?: TopicQueryScope | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTopicDto> {
+    getTopics(appId: string, scope?: TopicQueryScope | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfTopicDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1160,6 +1179,7 @@ export class TopicsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1203,7 +1223,7 @@ export class TopicsClient {
      * @param request The upsert request.
      * @return Named topics upserted.
      */
-    postTopics(appId: string, request: UpsertTopicsDto): Promise<TopicDto[]> {
+    postTopics(appId: string, request: UpsertTopicsDto, signal?: AbortSignal): Promise<TopicDto[]> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1215,6 +1235,7 @@ export class TopicsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -1261,7 +1282,7 @@ export class TopicsClient {
      * @param path The path of the topic to delete.
      * @return Topic deleted.
      */
-    deleteTopic(appId: string, path: string): Promise<void> {
+    deleteTopic(appId: string, path: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics/{path}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1273,6 +1294,7 @@ export class TopicsClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1328,7 +1350,7 @@ export class TemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Templates returned.
      */
-    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1347,6 +1369,7 @@ export class TemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1386,7 +1409,7 @@ export class TemplatesClient {
      * @param request The upsert request.
      * @return Templates upserted.
      */
-    postTemplates(appId: string, request: UpsertTemplatesDto): Promise<TemplateDto[]> {
+    postTemplates(appId: string, request: UpsertTemplatesDto, signal?: AbortSignal): Promise<TemplateDto[]> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1398,6 +1421,7 @@ export class TemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -1444,7 +1468,7 @@ export class TemplatesClient {
      * @param code The template code to delete.
      * @return Template deleted.
      */
-    deleteTemplate(appId: string, code: string): Promise<void> {
+    deleteTemplate(appId: string, code: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1456,6 +1480,7 @@ export class TemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1510,7 +1535,7 @@ export class SystemUsersClient {
      * @param skip (optional) The number of items to skip.
      * @return Users returned.
      */
-    getUsers(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSystemUserDto> {
+    getUsers(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfSystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users?";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
@@ -1526,6 +1551,7 @@ export class SystemUsersClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1564,7 +1590,7 @@ export class SystemUsersClient {
      * @param request The create request.
      * @return User created.
      */
-    postUser(request: CreateSystemUserDto): Promise<SystemUserDto> {
+    postUser(request: CreateSystemUserDto, signal?: AbortSignal): Promise<SystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1573,6 +1599,7 @@ export class SystemUsersClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -1618,7 +1645,7 @@ export class SystemUsersClient {
      * @param id The user ID.
      * @return User returned.
      */
-    getUser(id: string): Promise<SystemUserDto> {
+    getUser(id: string, signal?: AbortSignal): Promise<SystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1627,6 +1654,7 @@ export class SystemUsersClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1670,7 +1698,7 @@ export class SystemUsersClient {
      * @param request The update request.
      * @return User updated.
      */
-    putUser(id: string, request: UpdateSystemUserDto): Promise<SystemUserDto> {
+    putUser(id: string, request: UpdateSystemUserDto, signal?: AbortSignal): Promise<SystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1682,6 +1710,7 @@ export class SystemUsersClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -1733,7 +1762,7 @@ export class SystemUsersClient {
      * @param id The user ID.
      * @return User deleted.
      */
-    deleteUser(id: string): Promise<void> {
+    deleteUser(id: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1742,6 +1771,7 @@ export class SystemUsersClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -1789,7 +1819,7 @@ export class SystemUsersClient {
      * @param id The user ID.
      * @return User locked.
      */
-    lockUser(id: string): Promise<SystemUserDto> {
+    lockUser(id: string, signal?: AbortSignal): Promise<SystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users/{id}/lock";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1798,6 +1828,7 @@ export class SystemUsersClient {
 
         let options_: RequestInit = {
             method: "PUT",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1848,7 +1879,7 @@ export class SystemUsersClient {
      * @param id The user ID.
      * @return User unlocked.
      */
-    unlockUser(id: string): Promise<SystemUserDto> {
+    unlockUser(id: string, signal?: AbortSignal): Promise<SystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users/{id}/unlock";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1857,6 +1888,7 @@ export class SystemUsersClient {
 
         let options_: RequestInit = {
             method: "PUT",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -1918,12 +1950,13 @@ export class PingClient {
      * @return Service ping successful.
      * @deprecated
      */
-    getOldPing(): Promise<void> {
+    getOldPing(signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/ping";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
             }
         };
@@ -1958,12 +1991,13 @@ export class PingClient {
      * Get ping status of the API.
      * @return Service ping successful.
      */
-    getPing(): Promise<void> {
+    getPing(signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/ping";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
             }
         };
@@ -1997,12 +2031,13 @@ export class PingClient {
     /**
      * Get some info about the API.
      */
-    getInfo(): Promise<InfoDto> {
+    getInfo(signal?: AbortSignal): Promise<InfoDto> {
         let url_ = this.baseUrl + "/api/info";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2058,7 +2093,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getAllNotifications(appId: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getAllNotifications(appId: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2083,6 +2118,7 @@ export class NotificationsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2132,7 +2168,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getNotifications(appId: string, id: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getNotifications(appId: string, id: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2160,6 +2196,7 @@ export class NotificationsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2207,7 +2244,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return Notifications returned.
      */
-    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications?";
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
@@ -2229,6 +2266,7 @@ export class NotificationsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2267,7 +2305,7 @@ export class NotificationsClient {
      * @param channel (optional) The tracking channel.
      * @return Notifications returned.
      */
-    getMyArchive(channel?: string | null | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyArchive(channel?: string | null | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications/archive?";
         if (channel !== undefined && channel !== null)
             url_ += "channel=" + encodeURIComponent("" + channel) + "&";
@@ -2275,6 +2313,7 @@ export class NotificationsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2316,7 +2355,7 @@ export class NotificationsClient {
      * @param take (optional) The number of notifications to query.
      * @return Notifications returned.
      */
-    getMyDeviceNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, scope?: DeviceNotificationsQueryScope | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyDeviceNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, scope?: DeviceNotificationsQueryScope | undefined, take?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications/device?";
         if (deviceIdentifier !== undefined && deviceIdentifier !== null)
             url_ += "DeviceIdentifier=" + encodeURIComponent("" + deviceIdentifier) + "&";
@@ -2336,6 +2375,7 @@ export class NotificationsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2374,7 +2414,7 @@ export class NotificationsClient {
      * @param request The request object.
      * @return Notifications updated.
      */
-    confirmMe(request: TrackNotificationDto): Promise<void> {
+    confirmMe(request: TrackNotificationDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/notifications/handled";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2383,6 +2423,7 @@ export class NotificationsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -2435,12 +2476,13 @@ export class MobilePushClient {
      * Returns the mobile push tokens.
      * @return Mobile push tokens returned.
      */
-    getMyToken(): Promise<ListResponseDtoOfMobilePushTokenDto> {
+    getMyToken(signal?: AbortSignal): Promise<ListResponseDtoOfMobilePushTokenDto> {
         let url_ = this.baseUrl + "/api/me/mobilepush";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2479,7 +2521,7 @@ export class MobilePushClient {
      * @param request The request object.
      * @return Mobile push token registered.
      */
-    postMyToken(request: RegisterMobileTokenDto): Promise<void> {
+    postMyToken(request: RegisterMobileTokenDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2488,6 +2530,7 @@ export class MobilePushClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -2530,7 +2573,7 @@ export class MobilePushClient {
      * @param token The token to remove.
      * @return Mobile push token removed.
      */
-    deleteMyToken(token: string): Promise<void> {
+    deleteMyToken(token: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush/{token}";
         if (token === undefined || token === null)
             throw new Error("The parameter 'token' must be defined.");
@@ -2539,6 +2582,7 @@ export class MobilePushClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -2594,7 +2638,7 @@ export class MediaClient {
      * @param skip (optional) The number of items to skip.
      * @return Media returned.
      */
-    getMedias(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfMediaDto> {
+    getMedias(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfMediaDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2613,6 +2657,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -2656,7 +2701,7 @@ export class MediaClient {
      * @param file (optional) 
      * @return Media uploaded.
      */
-    upload(appId: string, file?: FileParameter | undefined): Promise<void> {
+    upload(appId: string, file?: FileParameter | undefined, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2672,6 +2717,7 @@ export class MediaClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
             }
         };
@@ -2730,7 +2776,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined, signal?: AbortSignal): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2774,6 +2820,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/octet-stream"
             }
@@ -2822,7 +2869,7 @@ export class MediaClient {
      * @param fileName The file name of the media.
      * @return Media deleted.
      */
-    delete(appId: string, fileName: string): Promise<void> {
+    delete(appId: string, fileName: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2834,6 +2881,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -2892,7 +2940,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined, signal?: AbortSignal): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/asset/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2936,6 +2984,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/octet-stream"
             }
@@ -2996,7 +3045,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined, signal?: AbortSignal): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3040,6 +3089,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/octet-stream"
             }
@@ -3099,7 +3149,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    proxyImage(url?: string | undefined, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    proxyImage(url?: string | undefined, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined, signal?: AbortSignal): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/proxy?";
         if (url === null)
             throw new Error("The parameter 'url' cannot be null.");
@@ -3141,6 +3191,7 @@ export class MediaClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/octet-stream"
             }
@@ -3205,7 +3256,7 @@ export class LogsClient {
      * @param skip (optional) The number of items to skip.
      * @return Log entries returned.
      */
-    getLogs(appId: string, systems?: string[] | null | undefined, userId?: string | null | undefined, eventCode?: number | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfLogEntryDto> {
+    getLogs(appId: string, systems?: string[] | null | undefined, userId?: string | null | undefined, eventCode?: number | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfLogEntryDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/logs?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3232,6 +3283,7 @@ export class LogsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3289,7 +3341,7 @@ export class EventsClient {
      * @param skip (optional) The number of items to skip.
      * @return Events returned.
      */
-    getEvents(appId: string, channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfEventDto> {
+    getEvents(appId: string, channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfEventDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3310,6 +3362,7 @@ export class EventsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3353,7 +3406,7 @@ export class EventsClient {
      * @param request The publish request.
      * @return Events created.
      */
-    postEvents(appId: string, request: PublishManyDto): Promise<void> {
+    postEvents(appId: string, request: PublishManyDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3365,6 +3418,7 @@ export class EventsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -3411,7 +3465,7 @@ export class EventsClient {
      * @param appId The app where the events belongs to.
      * @param request The cancel request.
      */
-    cancelEvent(appId: string, request: CancelEventDto): Promise<CancelResponseDto> {
+    cancelEvent(appId: string, request: CancelEventDto, signal?: AbortSignal): Promise<CancelResponseDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3423,6 +3477,7 @@ export class EventsClient {
         let options_: RequestInit = {
             body: content_,
             method: "DELETE",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -3472,7 +3527,7 @@ export class EventsClient {
      * @param request The publish request.
      * @return Event created.
      */
-    postMyEvents(request: PublishDto): Promise<void> {
+    postMyEvents(request: PublishDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/me/events";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -3481,6 +3536,7 @@ export class EventsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -3537,12 +3593,13 @@ export class DiagnosticsClient {
      * Creates a dump and writes it into storage..
      * @return Dump created successful.
      */
-    getDump(): Promise<void> {
+    getDump(signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/diagnostics/dump";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
             }
         };
@@ -3583,12 +3640,13 @@ export class DiagnosticsClient {
      * Creates a gc dump and writes it into storage.
      * @return Dump created successful.
      */
-    getGCDump(): Promise<void> {
+    getGCDump(signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/diagnostics/gcdump";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
             }
         };
@@ -3640,12 +3698,13 @@ export class ConfigsClient {
      * Get all supported timezones.
      * @return Timezones returned.
      */
-    getTimezones(): Promise<string[]> {
+    getTimezones(signal?: AbortSignal): Promise<string[]> {
         let url_ = this.baseUrl + "/api/timezones";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3683,12 +3742,13 @@ export class ConfigsClient {
      * Get all supported languages.
      * @return Languages returned.
      */
-    getLanguages(): Promise<string[]> {
+    getLanguages(signal?: AbortSignal): Promise<string[]> {
         let url_ = this.baseUrl + "/api/languages";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3736,12 +3796,13 @@ export class EmailTemplatesClient {
     /**
      * Gets the mjml schema.
      */
-    getSchema(): Promise<MjmlSchema> {
+    getSchema(signal?: AbortSignal): Promise<MjmlSchema> {
         let url_ = this.baseUrl + "/api/mjml/schema";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3781,7 +3842,7 @@ export class EmailTemplatesClient {
      * @param id The template ID.
      * @return Channel template preview returned.
      */
-    getPreview(appId: string, id: string): Promise<FileResponse> {
+    getPreview(appId: string, id: string, signal?: AbortSignal): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/preview";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3793,6 +3854,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/octet-stream"
             }
@@ -3841,7 +3903,7 @@ export class EmailTemplatesClient {
      * @param request The template to render.
      * @return Template rendered.
      */
-    postPreview(appId: string, request: EmailPreviewRequestDto): Promise<EmailPreviewDto> {
+    postPreview(appId: string, request: EmailPreviewRequestDto, signal?: AbortSignal): Promise<EmailPreviewDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/render";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3853,6 +3915,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -3905,7 +3968,7 @@ export class EmailTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3924,6 +3987,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -3967,7 +4031,7 @@ export class EmailTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplate(appId: string, request: CreateChannelTemplateDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    postTemplate(appId: string, request: CreateChannelTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3979,6 +4043,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4026,9 +4091,9 @@ export class EmailTemplatesClient {
     /**
      * Get the template properties.
      * @param appId The id of the app where the templates belong to.
-     * @return Channel templates returned.
+     * @return Channel templates properties returned.
      */
-    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+    getProperties(appId: string, signal?: AbortSignal): Promise<ListResponseDtoOfTemplatePropertyDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/properties";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4037,6 +4102,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4058,7 +4124,7 @@ export class EmailTemplatesClient {
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
-            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
@@ -4080,7 +4146,7 @@ export class EmailTemplatesClient {
      * @param id The template ID.
      * @return Channel templates returned.
      */
-    getTemplate(appId: string, id: string): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    getTemplate(appId: string, id: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4092,6 +4158,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4136,7 +4203,7 @@ export class EmailTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4151,6 +4218,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4201,7 +4269,7 @@ export class EmailTemplatesClient {
      * @param code The template code.
      * @param request The request object.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfEmailTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4216,6 +4284,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4266,7 +4335,7 @@ export class EmailTemplatesClient {
      * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string, code: string): Promise<void> {
+    deleteTemplate(appId: string, code: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4278,6 +4347,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -4325,7 +4395,7 @@ export class EmailTemplatesClient {
      * @param language The language.
      * @param request The request object.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: EmailTemplateDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: EmailTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4343,6 +4413,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4393,7 +4464,7 @@ export class EmailTemplatesClient {
      * @param code The template ID.
      * @param language The language.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
+    deleteTemplateLanguage(appId: string, code: string, language: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4408,6 +4479,7 @@ export class EmailTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4470,7 +4542,7 @@ export class MessagingTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4489,6 +4561,7 @@ export class MessagingTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4532,7 +4605,7 @@ export class MessagingTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplate(appId: string, request: CreateChannelTemplateDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    postTemplate(appId: string, request: CreateChannelTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4544,6 +4617,7 @@ export class MessagingTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4591,9 +4665,9 @@ export class MessagingTemplatesClient {
     /**
      * Get the template properties.
      * @param appId The id of the app where the templates belong to.
-     * @return Channel templates returned.
+     * @return Channel templates properties returned.
      */
-    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+    getProperties(appId: string, signal?: AbortSignal): Promise<ListResponseDtoOfTemplatePropertyDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/properties";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4602,6 +4676,7 @@ export class MessagingTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4623,7 +4698,7 @@ export class MessagingTemplatesClient {
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
-            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
@@ -4645,7 +4720,7 @@ export class MessagingTemplatesClient {
      * @param id The template ID.
      * @return Channel templates returned.
      */
-    getTemplate(appId: string, id: string): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    getTemplate(appId: string, id: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4657,6 +4732,7 @@ export class MessagingTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -4701,7 +4777,7 @@ export class MessagingTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4716,6 +4792,7 @@ export class MessagingTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4766,7 +4843,7 @@ export class MessagingTemplatesClient {
      * @param code The template code.
      * @param request The request object.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfMessagingTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4781,6 +4858,7 @@ export class MessagingTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4831,7 +4909,7 @@ export class MessagingTemplatesClient {
      * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string, code: string): Promise<void> {
+    deleteTemplate(appId: string, code: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4843,6 +4921,7 @@ export class MessagingTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -4890,7 +4969,7 @@ export class MessagingTemplatesClient {
      * @param language The language.
      * @param request The request object.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: MessagingTemplateDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: MessagingTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4908,6 +4987,7 @@ export class MessagingTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -4958,7 +5038,7 @@ export class MessagingTemplatesClient {
      * @param code The template ID.
      * @param language The language.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
+    deleteTemplateLanguage(appId: string, code: string, language: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4973,6 +5053,7 @@ export class MessagingTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5035,7 +5116,7 @@ export class SmsTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5054,6 +5135,7 @@ export class SmsTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5097,7 +5179,7 @@ export class SmsTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplate(appId: string, request: CreateChannelTemplateDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    postTemplate(appId: string, request: CreateChannelTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5109,6 +5191,7 @@ export class SmsTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5156,9 +5239,9 @@ export class SmsTemplatesClient {
     /**
      * Get the template properties.
      * @param appId The id of the app where the templates belong to.
-     * @return Channel templates returned.
+     * @return Channel templates properties returned.
      */
-    getProperties(appId: string): Promise<ListResponseDtoOfTemplatePropertyDto> {
+    getProperties(appId: string, signal?: AbortSignal): Promise<ListResponseDtoOfTemplatePropertyDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/properties";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5167,6 +5250,7 @@ export class SmsTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5188,7 +5272,7 @@ export class SmsTemplatesClient {
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
-            return throwException("Channel template or app not found.", status, _responseText, _headers);
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
@@ -5210,7 +5294,7 @@ export class SmsTemplatesClient {
      * @param id The template ID.
      * @return Channel templates returned.
      */
-    getTemplate(appId: string, id: string): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    getTemplate(appId: string, id: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5222,6 +5306,7 @@ export class SmsTemplatesClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5266,7 +5351,7 @@ export class SmsTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5281,6 +5366,7 @@ export class SmsTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5331,7 +5417,7 @@ export class SmsTemplatesClient {
      * @param code The template code.
      * @param request The request object.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfSmsTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5346,6 +5432,7 @@ export class SmsTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5396,7 +5483,7 @@ export class SmsTemplatesClient {
      * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string, code: string): Promise<void> {
+    deleteTemplate(appId: string, code: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5408,6 +5495,7 @@ export class SmsTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };
@@ -5455,7 +5543,7 @@ export class SmsTemplatesClient {
      * @param language The language.
      * @param request The request object.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: SmsTemplateDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: SmsTemplateDto, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5473,6 +5561,7 @@ export class SmsTemplatesClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5523,7 +5612,7 @@ export class SmsTemplatesClient {
      * @param code The template ID.
      * @param language The language.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
+    deleteTemplateLanguage(appId: string, code: string, language: string, signal?: AbortSignal): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5538,6 +5627,7 @@ export class SmsTemplatesClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5596,12 +5686,13 @@ export class AppsClient {
      * Get the user apps.
      * @return Apps returned.
      */
-    getApps(): Promise<AppDto[]> {
+    getApps(signal?: AbortSignal): Promise<AppDto[]> {
         let url_ = this.baseUrl + "/api/apps";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5640,7 +5731,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App created.
      */
-    postApp(request: UpsertAppDto): Promise<AppDto> {
+    postApp(request: UpsertAppDto, signal?: AbortSignal): Promise<AppDto> {
         let url_ = this.baseUrl + "/api/apps";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -5649,6 +5740,7 @@ export class AppsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5694,7 +5786,7 @@ export class AppsClient {
      * @param appId The id of the app.
      * @return Apps returned.
      */
-    getApp(appId: string): Promise<AppDetailsDto> {
+    getApp(appId: string, signal?: AbortSignal): Promise<AppDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5703,6 +5795,7 @@ export class AppsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5746,7 +5839,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App updated.
      */
-    putApp(appId: string, request: UpsertAppDto): Promise<AppDetailsDto> {
+    putApp(appId: string, request: UpsertAppDto, signal?: AbortSignal): Promise<AppDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5758,6 +5851,7 @@ export class AppsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5808,7 +5902,7 @@ export class AppsClient {
      * @param request The request object.
      * @return Apps returned.
      */
-    postContributor(appId: string, request: AddContributorDto): Promise<AppDetailsDto> {
+    postContributor(appId: string, request: AddContributorDto, signal?: AbortSignal): Promise<AppDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/contributors";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5820,6 +5914,7 @@ export class AppsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -5870,7 +5965,7 @@ export class AppsClient {
      * @param contributorId The contributor to remove.
      * @return Apps returned.
      */
-    deleteContributor(appId: string, contributorId: string): Promise<AppDetailsDto> {
+    deleteContributor(appId: string, contributorId: string, signal?: AbortSignal): Promise<AppDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/contributors/{contributorId}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5882,6 +5977,7 @@ export class AppsClient {
 
         let options_: RequestInit = {
             method: "POST",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5930,7 +6026,7 @@ export class AppsClient {
      * @param appId The id of the app where the integrations belong to.
      * @return App email templates returned.
      */
-    getIntegrations(appId: string): Promise<ConfiguredIntegrationsDto> {
+    getIntegrations(appId: string, signal?: AbortSignal): Promise<ConfiguredIntegrationsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integrations";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5939,6 +6035,7 @@ export class AppsClient {
 
         let options_: RequestInit = {
             method: "GET",
+            signal,
             headers: {
                 "Accept": "application/json"
             }
@@ -5982,7 +6079,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App integration created.
      */
-    postIntegration(appId: string, request: CreateIntegrationDto): Promise<IntegrationCreatedDto> {
+    postIntegration(appId: string, request: CreateIntegrationDto, signal?: AbortSignal): Promise<IntegrationCreatedDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integration";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5994,6 +6091,7 @@ export class AppsClient {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            signal,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -6045,7 +6143,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App integration updated.
      */
-    putIntegration(appId: string, id: string, request: UpdateIntegrationDto): Promise<void> {
+    putIntegration(appId: string, id: string, request: UpdateIntegrationDto, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -6060,6 +6158,7 @@ export class AppsClient {
         let options_: RequestInit = {
             body: content_,
             method: "PUT",
+            signal,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -6107,7 +6206,7 @@ export class AppsClient {
      * @param id The id of the integration.
      * @return App integration deleted.
      */
-    deleteIntegration(appId: string, id: string): Promise<void> {
+    deleteIntegration(appId: string, id: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -6119,6 +6218,7 @@ export class AppsClient {
 
         let options_: RequestInit = {
             method: "DELETE",
+            signal,
             headers: {
             }
         };

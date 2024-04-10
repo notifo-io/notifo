@@ -154,7 +154,7 @@ type QueryState<T> = {
 
 type QueryParams<T> = {
     queryKey: string[];
-    queryFn: (abort: AbortController) => Promise<T>;
+    queryFn: (abort: AbortSignal) => Promise<T>;
     defaultValue: T;
 };
 
@@ -168,7 +168,7 @@ export function useSimpleQuery<T>(params: QueryParams<T>): QueryState<T> {
 
             setState(s => ({ ...s, isLoading: true }));
             try {
-                const value = await params.queryFn(abort);
+                const value = await params.queryFn(abort.signal);
     
                 if (request.current === id) {
                     setState(s => ({ ...s, error: undefined, value }));
@@ -184,11 +184,11 @@ export function useSimpleQuery<T>(params: QueryParams<T>): QueryState<T> {
             }
         }
 
-        const abort = new AbortController();
-        loadData(new Date().getTime(), abort);
+        const controller = new AbortController();
+        loadData(new Date().getTime(), controller);
 
         return () => {
-            abort.abort();
+            controller.abort();
         };
     }, params.queryKey);
 

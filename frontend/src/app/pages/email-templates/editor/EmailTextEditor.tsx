@@ -5,10 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import Split from 'react-split';
 import { Alert } from 'reactstrap';
 import { CodeEditor, CodeEditorProps } from '@app/framework';
-import { usePreview } from './helpers';
+import { useErrors, usePreview } from './helpers';
 import 'codemirror/mode/django/django';
 
 export interface EmailTextEditorProps extends CodeEditorProps {
@@ -16,7 +17,7 @@ export interface EmailTextEditorProps extends CodeEditorProps {
     appId: string;
 }
 
-const OPTIONS = {
+const INITIAL_OPTIONS = {
     mode: 'django',
 };
 
@@ -30,14 +31,22 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
     const emailMarkup = value || '';
     const emailPreview = usePreview(appId, emailMarkup, 'Text');
 
-    const error = emailPreview.rendering.errors?.find(x => !x.lineNumber || x.lineNumber < 0);
+    const { lint, error } = useErrors(emailPreview.rendering);
+
+    const options = React.useMemo(() => {
+        const result: CodeEditorProps['options'] = {
+            lint,
+        };
+
+        return result;
+    }, [lint]);
 
     return (
         <div className='email-editor white'>
             <Split direction='horizontal'>
                 <div className='left'>
-                    <CodeEditor value={value} {...other}
-                        initialOptions={OPTIONS} />
+                    <CodeEditor initialOptions={INITIAL_OPTIONS} options={options} value={emailMarkup}
+                        className='email-editor' {...other} />
                 </div>
 
                 <div className='right'>

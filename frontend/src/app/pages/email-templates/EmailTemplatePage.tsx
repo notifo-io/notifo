@@ -37,9 +37,9 @@ export const EmailTemplatePage = () => {
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     const properties = useSimpleQuery<TemplatePropertyDto[]>({
-        queryKey: [],
-        queryFn: async () => {
-            const result = await Clients.SmsTemplates.getProperties(appId);
+        queryKey: [appId],
+        queryFn: async abort => {
+            const result = await Clients.SmsTemplates.getProperties(appId, abort);
             
             return result.items;
         },
