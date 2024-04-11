@@ -9139,7 +9139,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -9767,7 +9767,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -9828,7 +9828,7 @@ namespace Notifo.SDK
                         if (status_ == 404)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 500)
@@ -10691,7 +10691,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -11019,7 +11019,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -11080,7 +11080,7 @@ namespace Notifo.SDK
                         if (status_ == 404)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 500)
@@ -11943,7 +11943,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -12271,7 +12271,7 @@ namespace Notifo.SDK
         /// Get the template properties.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <returns>Channel templates returned.</returns>
+        /// <returns>Channel templates properties returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplatePropertyDto> GetPropertiesAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -12332,7 +12332,7 @@ namespace Notifo.SDK
                         if (status_ == 404)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 500)

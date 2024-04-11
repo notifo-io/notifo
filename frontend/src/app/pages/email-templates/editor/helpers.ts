@@ -8,6 +8,7 @@
 /* eslint-disable quote-props */
 
 import * as CodeMirror from 'codemirror';
+import * as React from 'react';
 import { useDebounce, useSimpleQuery } from '@app/framework';
 import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
@@ -19,14 +20,14 @@ export function usePreview(appId: string, sourceTemplate: string, type: EmailPre
     const template = useDebounce(sourceTemplate, 500);
 
     const query = useSimpleQuery<MarkupResponse>({
-        queryKey: [template, type],
-        queryFn: async () => {
+        queryKey: [appId, template, type],
+        queryFn: async abort => {
             if (!template) {
                 return { rendering: {} };
             }
 
             try {
-                const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type });
+                const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type }, abort);
 
                 return { rendering, template };
             } catch (ex: any) {
@@ -43,6 +44,30 @@ export function usePreview(appId: string, sourceTemplate: string, type: EmailPre
     });
     
     return query.value;
+}
+
+export function useErrors(rendering?: EmailPreviewDto) {
+    const errors = rendering?.errors;
+    
+    return React.useMemo(() => {
+        const error = errors?.find(x => !x.lineNumber || x.lineNumber < 0);
+
+        const lint = {
+            getAnnotations: () => {
+                if (!errors) {
+                    return [];
+                }
+
+                return errors.filter(x => x.lineNumber >= 0).map(({ message, lineNumber }) => {
+                    const from = CodeMirror.Pos(lineNumber! - 1, 1);
+
+                    return { message, severity: 'error', from, to: from };
+                });
+            },
+        };
+
+        return { error, lint };
+    }, [errors]);
 }
 
 export function completeAfter(editor: CodeMirror.Editor, predicate?: (cursor: CodeMirror.Position) => boolean) {

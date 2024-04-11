@@ -63,7 +63,8 @@ public static class Program
         var generatorSettings = new TypeScriptClientGeneratorSettings
         {
             GenerateOptionalParameters = true,
-            OperationNameGenerator = new TagNameGenerator()
+            OperationNameGenerator = new TagNameGenerator(),
+            UseAbortSignal = true,
         };
 
         generatorSettings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;

@@ -39,9 +39,9 @@ export const SmsTemplatePage = () => {
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     const properties = useSimpleQuery<TemplatePropertyDto[]>({
-        queryKey: [],
+        queryKey: [appId],
         queryFn: async () => {
-            const result = await Clients.SmsTemplates.getProperties(appId);
+            const result = await Clients.SmsTemplates.getProperties(appId, abort);
             
             return result.items;
         },
