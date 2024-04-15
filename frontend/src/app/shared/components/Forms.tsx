@@ -10,7 +10,7 @@ import * as React from 'react';
 import { ControllerFieldState, FormState, get, useController, useFormState } from 'react-hook-form';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { InputType } from 'reactstrap/es/Input';
-import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
+import { CodeEditor, CodeEditorProps, FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
 import { Types } from '@app/framework/utils';
 import { Picker, PickerOptions } from './Picker';
 
@@ -56,6 +56,11 @@ export interface BooleanFormProps extends FormEditorProps {
 
     // True to provide the value as string.
     asString?: boolean;
+}
+
+export interface CodeFormProps extends FormEditorProps {
+    // The initial options.
+    initialOptions?: CodeEditorProps['initialOptions'];
 }
 
 export interface OptionsFormProps<T> extends FormEditorProps {
@@ -136,6 +141,14 @@ export module Forms {
         return (
             <Forms.Row className={classNames(className, 'localized-value')} {...other} hideError>
                 <InputLocalizedTextArea {...other} />
+            </Forms.Row>
+        );
+    };
+
+    export const LocalizedCode = ({ className, ...other }: LocalizedFormProps & CodeFormProps) => {
+        return (
+            <Forms.Row className={classNames(className, 'localized-value')} {...other} hideError>
+                <InputLocalizedCode {...other} />
             </Forms.Row>
         );
     };
@@ -346,6 +359,16 @@ const InputToggle = ({ name, ...other }: BooleanFormProps) => {
     );
 };
 
+const InputCode = ({ name, ...other }: CodeFormProps) => {
+    const { field } = useController({ name });
+
+    return (
+        <>
+            <CodeEditor {...other} value={field.value} onBlur={field.onBlur} onChange={field.onChange} />
+        </>
+    );
+};
+
 const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArray<FormEditorOption<string | number | undefined>> }) => {
     const { field, fieldState, formState } = useController({ name });
 
@@ -502,6 +525,26 @@ const InputLocalizedTextArea = (props: LocalizedFormProps) => {
             </div>
 
             <InputTextarea {...other} name={fieldName} />
+        </div>
+    );
+};
+
+const InputLocalizedCode = (props: LocalizedFormProps & CodeFormProps) => {
+    const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
+    const fieldName = `${name}.${language}`;
+
+    return (
+        <div className='localized-input'>
+            <Forms.Error name={`${name}.root`} />
+
+            <div className='localized-languages'>
+                <LanguageSelector
+                    languages={languages}
+                    language={language}
+                    onSelect={onLanguageSelect} />
+            </div>
+
+            <InputCode {...other} name={fieldName} />
         </div>
     );
 };

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
+using Notifo.Domain.Liquid;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
@@ -16,8 +17,8 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 [ApiExplorerSettings(GroupName = "SmsTemplates")]
 public sealed class SmsTemplatesController : ChannelTemplatesController<SmsTemplate, SmsTemplateDto>
 {
-    public SmsTemplatesController(IChannelTemplateStore<SmsTemplate> channelTemplateStore)
-        : base(channelTemplateStore)
+    public SmsTemplatesController(IChannelTemplateStore<SmsTemplate> channelTemplateStore, LiquidPropertiesProvider propertiesProvider)
+        : base(channelTemplateStore, propertiesProvider)
     {
     }
 }

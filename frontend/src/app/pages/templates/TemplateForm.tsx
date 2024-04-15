@@ -72,7 +72,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
     React.useEffect(() => {
         form.reset(Types.clone(template || {}));
-    }, [template]);
+    }, [form, template]);
 
     return (
         <FormProvider {...form}>

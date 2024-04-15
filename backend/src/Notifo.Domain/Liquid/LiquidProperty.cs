@@ -36,11 +36,10 @@ public sealed class LiquidProperties : List<LiquidProperty>
 
     public void AddObject(string path, Action inner, string? description = null)
     {
-        pathStack.Push(path);
-
         Add(new LiquidProperty(FullPath(path), LiquidPropertyType.Object, description));
-        inner();
 
+        pathStack.Push(path);
+        inner();
         pathStack.Pop();
     }
 

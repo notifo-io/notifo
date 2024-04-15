@@ -10,9 +10,11 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Col, Label, Row } from 'reactstrap';
-import { Icon, Loader, Toggle, useEventCallback } from '@app/framework';
+import { Button, Col, Label, Row } from 'reactstrap';
+import { Icon, Loader, Toggle, useBooleanObj, useEventCallback, useSimpleQuery } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
+import { Clients, TemplatePropertyDto } from '@app/service';
+import { TemplateProperties } from '@app/shared/components';
 import { loadEmailTemplate, updateEmailTemplate, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { EmailTemplate } from './EmailTemplate';
@@ -26,12 +28,23 @@ export const EmailTemplatePage = () => {
     const appName = app.name;
     const loadingTemplate = useEmailTemplates(x => x.loadingTemplate);
     const loadingTemplateError = useEmailTemplates(x => x.loadingTemplateError);
+    const sidebar = useBooleanObj();
     const template = useEmailTemplates(x => x.template);
     const templateId = useParams().templateId!;
     const updating = useEmailTemplates(x => x.updating);
     const updatingError = useEmailTemplates(x => x.updatingError);
     const upserting = useEmailTemplates(x => x.creatingLanguage || x.deletingLanguage || x.updatingLanguage);
     const [language, setLanguage] = React.useState(appLanguages[0]);
+
+    const properties = useSimpleQuery<TemplatePropertyDto[]>({
+        queryKey: [appId],
+        queryFn: async abort => {
+            const result = await Clients.SmsTemplates.getProperties(appId, abort);
+            
+            return result.items;
+        },
+        defaultValue: [],
+    });
 
     React.useEffect(() => {
         dispatch(loadEmailTemplate({ appId, id: templateId }));
@@ -62,7 +75,7 @@ export const EmailTemplatePage = () => {
     return (
         <>
             <div className='email-header'>
-                <Row className='align-items-center'>
+                <Row className='align-items-center gap-2' noGutters>
                     <Col xs='auto'>
                         <Row noGutters className='align-items-center'>
                             <Col xs='auto'>
@@ -100,6 +113,12 @@ export const EmailTemplatePage = () => {
                             </Col>
                         </>
                     }
+
+                    <Col xs='auto'>
+                        <Button className='btn-flat' color='blank' onClick={sidebar.toggle}>
+                            <Icon className='text-icon' type='help-circle' />
+                        </Button>
+                    </Col>
                 </Row>
             </div>
 
@@ -110,6 +129,22 @@ export const EmailTemplatePage = () => {
                     language={language}
                     template={template.languages[language]}
                     templateId={template.id} />
+            }
+
+            {sidebar.value &&
+                <div className='email-properties slide-right'>
+                    <Row>
+                        <Col>
+                            <h3>{texts.common.properties}</h3>
+                        </Col>
+                        <Col xs='auto'>
+                            <Button className='btn-flat' color='blank' size='sm' onClick={sidebar.toggle}>
+                                <Icon className='text-icon' type='clear' />
+                            </Button>
+                        </Col>
+                    </Row>
+                    <TemplateProperties properties={properties.value} />
+                </div>
             }
         </>
     );

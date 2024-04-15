@@ -12,12 +12,18 @@ import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Row } from 'reactstrap';
-import { FormError, Icon, Loader, Types, useEventCallback } from '@app/framework';
-import { Forms } from '@app/shared/components';
+import { FormError, Icon, Loader, Types, useEventCallback, useSimpleQuery } from '@app/framework';
+import { Clients, TemplatePropertyDto } from '@app/service';
+import { Forms, TemplateProperties } from '@app/shared/components';
 import { loadMessagingTemplate, updateMessagingTemplate, useApp, useMessagingTemplates } from '@app/state';
 import { texts } from '@app/texts';
+import 'codemirror/mode/django/django';
 
 type FormValues = { name?: string; primary: boolean; languages: { [key: string]: string } };
+
+const OPTIONS = {
+    mode: 'django',
+};
 
 export const MessagingTemplatePage = () => {
     const dispatch = useDispatch<any>();
@@ -31,6 +37,16 @@ export const MessagingTemplatePage = () => {
     const updating = useMessagingTemplates(x => x.updating);
     const updatingError = useMessagingTemplates(x => x.updatingError);
     const [language, setLanguage] = React.useState(appLanguages[0]);
+
+    const properties = useSimpleQuery<TemplatePropertyDto[]>({
+        queryKey: [appId],
+        queryFn: async abort => {
+            const result = await Clients.MessagingTemplates.getProperties(appId, abort);
+            
+            return result.items;
+        },
+        defaultValue: [],
+    });
 
     React.useEffect(() => {
         dispatch(loadMessagingTemplate({ appId, id: templateId }));
@@ -61,7 +77,6 @@ export const MessagingTemplatePage = () => {
     });
 
     const form = useForm<FormValues>({ mode: 'onChange' });
-    const { reset } = form;
 
     React.useEffect(() => {
         const result: any = { ...Types.clone(template), languages: {} };
@@ -73,7 +88,7 @@ export const MessagingTemplatePage = () => {
         }
 
         form.reset(result);
-    }, [template]);
+    }, [form, template]);
 
     return (
         <div className='messaging-form'>
@@ -97,35 +112,49 @@ export const MessagingTemplatePage = () => {
                 </Row>
             </div>
 
-            <FormProvider {...form}>
-                <Form onSubmit={form.handleSubmit(doSave)}>
-                    <Card>
-                        <CardBody>
-                            <fieldset disabled={updating}>
-                                <Forms.Text name='name'
-                                    label={texts.common.name} />
+            <Row>
+                <Col xs={7}>
+                    <FormProvider {...form}>
+                        <Form onSubmit={form.handleSubmit(doSave)}>
+                            <Card>
+                                <CardBody>
+                                    <fieldset disabled={updating}>
+                                        <Forms.Text name='name' vertical
+                                            label={texts.common.name} />
 
-                                <Forms.Boolean name='primary'
-                                    label={texts.common.primary} />
+                                        <Forms.LocalizedCode name='languages' vertical
+                                            languages={app.languages}
+                                            language={language}
+                                            onLanguageSelect={setLanguage}
+                                            label={texts.common.templates}
+                                            initialOptions={OPTIONS} />
 
-                                <Forms.LocalizedTextArea name='languages'
-                                    languages={app.languages}
-                                    language={language}
-                                    onLanguageSelect={setLanguage}
-                                    label={texts.common.templates} />
-                            </fieldset>
+                                        <FormError error={updatingError} />
 
-                            <FormError error={updatingError} />
+                                        <div className='d-flex justify-content-between mt-2 align-items-center'>
+                                            <Forms.Boolean name='primary' vertical className='mb-0'
+                                                label={texts.common.primary} />
 
-                            <div className='text-right mt-2'>
-                                <Button type='submit' color='success' disabled={updating}>
-                                    <Loader light small visible={updating} /> {texts.common.save}
-                                </Button>
-                            </div>
+                                            <div className='text-right'>
+                                                <Button type='submit' color='success' disabled={updating}>
+                                                    <Loader light small visible={updating} /> {texts.common.save}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </CardBody>
+                            </Card>
+                        </Form>
+                    </FormProvider>
+                </Col>
+                <Col xs={5}>
+                    <Card style={{ height: 'calc(100vh - 200px)' }}>
+                        <CardBody className='overflow-auto'>
+                            <TemplateProperties properties={properties.value} />
                         </CardBody>
                     </Card>
-                </Form>
-            </FormProvider>
+                </Col>
+            </Row>
         </div>
     );
 };

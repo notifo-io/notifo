@@ -52,18 +52,21 @@ public abstract class LiquidNotificationBase
     protected static void DescribeBase(LiquidProperties properties)
     {
         properties.AddString("subject",
-            "The notification subject.");
+            "The notification subject. Cannot be null or undefined.");
 
         properties.AddString("body",
-            "The notification body. Can be null.");
+            "The notification body. Can be null or undefined.");
 
         properties.AddString("linkUrl",
-            "The link URL. Can be null.");
+            "The link URL. Can be null or undefined.");
+
+        properties.AddString("linkText",
+            "The link text that can be set when a linkUrl is set. Can be null or undefined.");
 
         properties.AddString("imageSmall",
-            "The URL to the small image. Optimized for the current use case (e.g. emails). Can be null.");
+            "The URL to the small image. Optimized for the current use case (e.g. emails). Can be null or undefined.");
 
         properties.AddString("imageLarge",
-            "The URL to the large image. Optimized for the current use case (e.g. emails). Can be null.");
+            "The URL to the large image. Optimized for the current use case (e.g. emails). Can be null or undefined.");
     }
 }

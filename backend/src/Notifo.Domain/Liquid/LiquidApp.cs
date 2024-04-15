@@ -19,6 +19,6 @@ public sealed class LiquidApp(App app)
     public static void Describe(LiquidProperties properties)
     {
         properties.AddString("name",
-            "The name of the app.");
+            "The name of the app. Cannot be null or undefined.");
     }
 }

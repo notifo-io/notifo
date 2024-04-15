@@ -9,56 +9,65 @@
 
 import * as CodeMirror from 'codemirror';
 import * as React from 'react';
+import { useDebounce, useSimpleQuery } from '@app/framework';
 import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
-type MarkupRequest = { requestId?: any };
 type MarkupResponse = { rendering: EmailPreviewDto; template?: string };
 
-export function usePreview(appId: string, template: string, type: EmailPreviewType): MarkupResponse {
-    const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({ rendering: {} });
+const DEFAULT_RESPONSE: MarkupResponse = { rendering: {} };
 
-    const status = React.useRef<MarkupRequest>({});
+export function usePreview(appId: string, sourceTemplate: string, type: EmailPreviewType): MarkupResponse {
+    const template = useDebounce(sourceTemplate, 500);
 
-    React.useEffect(() => {
-        async function render() {
-            const requestId = new Date().getTime();
-
-            status.current.requestId = requestId;
+    const query = useSimpleQuery<MarkupResponse>({
+        queryKey: [appId, template, type],
+        queryFn: async abort => {
+            if (!template) {
+                return { rendering: {} };
+            }
 
             try {
-                const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type });
+                const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type }, abort);
 
-                if (status.current.requestId === requestId) {
-                    setEmailPreview({ rendering, template });
-                }
+                return { rendering, template };
             } catch (ex: any) {
-                if (status.current.requestId === requestId) {
-                    const rendering: EmailPreviewDto = {
-                        errors: [{
-                            message: ex.message,
-                        } as any],
-                    };
-
-                    setEmailPreview({ rendering, template });
-                }
+                const rendering: EmailPreviewDto = {
+                    errors: [{
+                        message: ex.message,
+                    } as any],
+                };
+                
+                return { rendering, template };
             }
-        }
+        },
+        defaultValue: DEFAULT_RESPONSE,
+    });
+    
+    return query.value;
+}
 
-        if (!status.current.requestId) {
-            render();
-            return undefined;
-        }
+export function useErrors(rendering?: EmailPreviewDto) {
+    const errors = rendering?.errors;
+    
+    return React.useMemo(() => {
+        const error = errors?.find(x => !x.lineNumber || x.lineNumber < 0);
 
-        const timeout = setTimeout(async () => {
-            await render();
-        }, 2000);
+        const lint = {
+            getAnnotations: () => {
+                if (!errors) {
+                    return [];
+                }
 
-        return () => {
-            clearTimeout(timeout);
+                return errors.filter(x => x.lineNumber >= 0).map(({ message, lineNumber }) => {
+                    const from = CodeMirror.Pos(lineNumber! - 1, 1);
+
+                    return { message, severity: 'error', from, to: from };
+                });
+            },
         };
-    }, [appId, template, type]);
 
-    return emailPreview;
+        return { error, lint };
+    }, [errors]);
 }
 
 export function completeAfter(editor: CodeMirror.Editor, predicate?: (cursor: CodeMirror.Position) => boolean) {
