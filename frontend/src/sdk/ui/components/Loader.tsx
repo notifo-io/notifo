@@ -11,7 +11,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Icon } from './Icon';
 
 export interface LoaderProps {
-    // True if visible.
+    // True, if visible.
     visible: boolean;
 
     // The class.

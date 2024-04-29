@@ -5,34 +5,37 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer, Middleware } from '@reduxjs/toolkit';
+import { Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
-import { Clients, TopicDto, TopicQueryScope, UpsertTopicDto } from '@app/service';
-import { createApiThunk, selectApp } from './../shared';
-import { TopicsState } from './state';
+import { createExtendedReducer, createList, createMutation, formatError } from '@app/framework';
+import { Clients, TopicQueryScope, UpsertTopicDto } from '@app/service';
+import { selectApp } from './../shared';
+import { TopicsState, TopicsStateInStore } from './state';
 
-const list = listThunk<TopicsState, TopicDto>('topics', 'topics', async params => {
-    const { items, total } = await Clients.Topics.getTopics(params.appId, params.scope, params.search, params.take, params.skip);
+export const loadTopics = createList<TopicsState, TopicsStateInStore>('topics', 'topics').with({
+    name: 'topics/load',
+    queryFn: async (p: { appId: string; scope: TopicQueryScope }, q) => {
+        const { items, total } = await Clients.Topics.getTopics(p.appId, p.scope, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadTopics = (appId: string, scope: TopicQueryScope, query?: Partial<Query>, reset = false) => {
-    return list.action({ appId, scope, query, reset });
-};
-
-export const upsertTopic = createApiThunk('topics/upsert',
-    async (arg: { appId: string; scope: TopicQueryScope; params: UpsertTopicDto }) => {
+export const upsertTopic = createMutation<TopicsState>('upserting').with({
+    name: 'topics/upsert',
+    mutateFn: async (arg: { appId: string; scope: TopicQueryScope; params: UpsertTopicDto }) => {
         const response = await Clients.Topics.postTopics(arg.appId, { requests: [arg.params] });
 
         return response[0];
-    });
+    },
+});
 
-export const deleteTopic = createApiThunk('topics/delete',
-    (arg: { appId: string; path: string; scope: TopicQueryScope }) => {
+export const deleteTopic = createMutation<TopicsState>('upserting').with({
+    name: 'topics/delete',
+    mutateFn: (arg: { appId: string; path: string; scope: TopicQueryScope }) => {
         return Clients.Topics.deleteTopic(arg.appId, arg.path);
-    });
+    },
+});
 
 export const topicsMiddleware: Middleware = store => next => action => {
     const result = next(action);
@@ -40,7 +43,7 @@ export const topicsMiddleware: Middleware = store => next => action => {
     if (upsertTopic.fulfilled.match(action) || deleteTopic.fulfilled.match(action)) {
         const { appId, scope } = action.meta.arg;
 
-        store.dispatch(loadTopics(appId, scope) as any);
+        store.dispatch(loadTopics({ appId, scope }) as any);
     } else if (deleteTopic.rejected.match(action)) {
         toast.error(formatError(action.payload as any));
     }
@@ -49,22 +52,17 @@ export const topicsMiddleware: Middleware = store => next => action => {
 };
 
 const initialState: TopicsState = {
-    topics: list.createInitial(),
+    topics: loadTopics.createInitial(),
 };
 
-export const topicsReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    deleteTopic,
+    loadTopics,
+    upsertTopic,
+];
+
+export const topicsReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    })
-    .addCase(upsertTopic.pending, (state) => {
-        state.upserting = true;
-        state.upsertingError = undefined;
-    })
-    .addCase(upsertTopic.rejected, (state, action) => {
-        state.upserting = false;
-        state.upsertingError = action.payload as ErrorInfo;
-    })
-    .addCase(upsertTopic.fulfilled, (state) => {
-        state.upserting = false;
-        state.upsertingError = undefined;
-    }));
+    }),
+operations);

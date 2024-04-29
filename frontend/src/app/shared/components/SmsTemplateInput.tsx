@@ -20,7 +20,7 @@ export const SmsTemplateInput = (props: FormEditorProps) => {
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadSmsTemplates(appId));
+            dispatch(loadSmsTemplates({ appId }));
         }
     }, [dispatch, appId, templates.isLoaded]);
 

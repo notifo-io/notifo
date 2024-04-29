@@ -5,27 +5,29 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import { listThunk, Query } from '@app/framework';
-import { Clients, UserNotificationDetailsDto } from '@app/service';
+import { createExtendedReducer, createList } from '@app/framework';
+import { Clients } from '@app/service';
 import { selectApp } from './../shared';
-import { NotificationsState } from './state';
+import { NotificationsState, NotificationsStateInStore } from './state';
 
-const list = listThunk<NotificationsState, UserNotificationDetailsDto>('notifications', 'notifications', async (params) => {
-    const { items, total } = await Clients.Notifications.getNotifications(params.appId, params.userId, params.channels, undefined, undefined, params.search, params.take, params.skip);
+export const loadNotifications = createList<NotificationsState, NotificationsStateInStore>('notifications', 'notifications').with({
+    name: 'notifications/load',
+    queryFn: async (p: { appId: string; userId: string; channels: string[] }, q) => {
+        const { items, total } = await Clients.Notifications.getNotifications(p.appId, p.userId, p.channels, undefined, undefined, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadNotifications = (appId: string, userId: string, query?: Partial<Query>, reset = false, channels?: string[]) => {
-    return list.action({ appId, userId, query, reset, channels });
-};
-
 const initialState: NotificationsState = {
-    notifications: list.createInitial(),
+    notifications: loadNotifications.createInitial(),
 };
 
-export const notificationsReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    loadNotifications,
+];
+
+export const notificationsReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    }));
+    }), operations);

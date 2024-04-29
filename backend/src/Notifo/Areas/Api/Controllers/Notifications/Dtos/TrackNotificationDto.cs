@@ -10,12 +10,12 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos;
 public sealed class TrackNotificationDto
 {
     /// <summary>
-    /// The id of the noitifications to mark as confirmed.
+    /// The ID of the noitifications to mark as confirmed.
     /// </summary>
     public string? Confirmed { get; set; }
 
     /// <summary>
-    /// The id of the noitifications to mark as seen.
+    /// The ID of the noitifications to mark as seen.
     /// </summary>
     public string[]? Seen { get; set; }
 

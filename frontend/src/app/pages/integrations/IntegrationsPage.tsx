@@ -31,8 +31,8 @@ export const IntegrationsPage = () => {
     const appId = app.id;
     const configured = useIntegrations(x => x.configured || DEFAULTS);
     const definitions = useIntegrations(x => x.supported || DEFAULTS);
-    const loading = useIntegrations(x => x.loading);
-    const loadingError = useIntegrations(x => x.loadingError);
+    const loading = useIntegrations(x => x.loading?.isRunning);
+    const loadingError = useIntegrations(x => x.loading?.error);
     const [selected, setSelected] = React.useState<SelectedIntegration>();
 
     React.useEffect(() => {

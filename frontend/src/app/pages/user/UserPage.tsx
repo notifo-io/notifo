@@ -23,7 +23,7 @@ export const UserPage = () => {
     const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useBooleanObj();
-    const loading = useUsers(x => x.loadingUser);
+    const loading = useUsers(x => x.loadingUser?.isRunning);
     const user = useUsers(x => x.user)!;
     const userId = useParams().userId!;
     const [activeTab, setActiveTab] = React.useState('notifications');

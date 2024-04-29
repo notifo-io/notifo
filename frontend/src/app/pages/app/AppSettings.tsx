@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import { FormError, Loader, useEventCallback } from '@app/framework';
 import { AppDetailsDto, UpsertAppDto } from '@app/service';
 import { Forms } from '@app/shared/components';
-import { upsertApp, useApps, useCore } from '@app/state';
+import { updateApp, useApps, useCore } from '@app/state';
 import { texts } from '@app/texts';
 
 const FormSchema = Yup.object().shape({
@@ -41,15 +41,15 @@ export const AppSettings = (props: AppSettingsProps) => {
 
     const dispatch = useDispatch<any>();
     const languages = useCore(x => x.languages);
-    const upserting = useApps(x => x.upserting);
-    const upsertingError = useApps(x => x.upsertingError);
+    const updateError = useApps(x => x.updating?.error);
+    const updateRunning = useApps(x => x.updating?.isRunning);
 
     const languageValues = React.useMemo(() => {
         return languages.map(x => x.value);
     }, [languages]);
 
     const doSave = useEventCallback((params: UpsertAppDto) => {
-        dispatch(upsertApp({ appId: appDetails.id, params }));
+        dispatch(updateApp({ appId: appDetails.id, params }));
     });
 
     const form = useForm<UpsertAppDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: appDetails, mode: 'onChange' });
@@ -66,7 +66,7 @@ export const AppSettings = (props: AppSettingsProps) => {
                 <Form onSubmit={form.handleSubmit(doSave)}>
                     <Card>
                         <CardBody>
-                            <fieldset disabled={upserting}>
+                            <fieldset disabled={updateRunning}>
                                 <Forms.Text name='name' vertical
                                     label={texts.common.name} />
 
@@ -74,18 +74,18 @@ export const AppSettings = (props: AppSettingsProps) => {
                                     label={texts.common.languages} />
                             </fieldset>
 
-                            <fieldset disabled={upserting}>
+                            <fieldset disabled={updateRunning}>
                                 <legend>{texts.app.urls}</legend>
 
                                 <Forms.Text name='confirmUrl' vertical placeholder={texts.common.urlPlaceholder}
                                     label={texts.app.confirmUrl} />
                             </fieldset>
 
-                            <FormError error={upsertingError} />
+                            <FormError error={updateError} />
 
                             <div className='text-right mt-2'>
-                                <Button type='submit' color='success' disabled={upserting}>
-                                    <Loader light small visible={upserting} /> {texts.common.save}
+                                <Button type='submit' color='success' disabled={updateRunning}>
+                                    <Loader light small visible={updateRunning} /> {texts.common.save}
                                 </Button>
                             </div>
                         </CardBody>

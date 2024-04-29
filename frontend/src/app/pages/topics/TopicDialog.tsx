@@ -46,8 +46,8 @@ export const TopicDialog = (props: TopicDialogProps) => {
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const upserting = useTopics(x => x.upserting);
-    const upsertingError = useTopics(x => x.upsertingError);
+    const upserting = useTopics(x => x.upserting?.isRunning);
+    const upsertingError = useTopics(x => x.upserting?.error);
     const [language, setLanguage] = React.useState(appLanguages[0]);
     const [wasUpserting, setWasUpserting] = React.useState(false);
 

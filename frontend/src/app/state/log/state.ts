@@ -14,5 +14,5 @@ export interface LogStateInStore {
 
 export interface LogState {
     // All log entries.
-    entries: ListState<LogEntryDto>;
+    log: ListState<LogEntryDto>;
 }

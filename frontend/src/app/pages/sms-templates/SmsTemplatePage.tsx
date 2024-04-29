@@ -24,12 +24,12 @@ export const SmsTemplatePage = () => {
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const loadingTemplate = useSmsTemplates(x => x.loadingTemplate);
-    const loadingTemplateError = useSmsTemplates(x => x.loadingTemplateError);
+    const loadingTemplate = useSmsTemplates(x => x.loadingTemplate?.isRunning);
+    const loadingTemplateError = useSmsTemplates(x => x.loadingTemplate?.error);
     const template = useSmsTemplates(x => x.template);
     const templateId = useParams().templateId!;
-    const updating = useSmsTemplates(x => x.updating);
-    const updatingError = useSmsTemplates(x => x.updatingError);
+    const updating = useSmsTemplates(x => x.updating?.isRunning);
+    const updatingError = useSmsTemplates(x => x.updating?.error);
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     React.useEffect(() => {

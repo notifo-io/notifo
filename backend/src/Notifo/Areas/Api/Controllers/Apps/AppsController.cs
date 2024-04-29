@@ -55,10 +55,10 @@ public sealed class AppsController : BaseController
     }
 
     /// <summary>
-    /// Get app by id.
+    /// Get app by ID.
     /// </summary>
-    /// <param name="appId">The id of the app.</param>
-    /// <response code="200">Apps returned.</response>.
+    /// <param name="appId">The ID of the app.</param>
+    /// <response code="200">App returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
@@ -68,6 +68,59 @@ public sealed class AppsController : BaseController
         var response = await AppDetailsDto.FromDomainObjectAsync(App, UserIdOrSub, userResolver);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Get app auth settings by ID.
+    /// </summary>
+    /// <param name="appId">The ID of the app.</param>
+    /// <response code="200">App auth settings returned.</response>.
+    /// <response code="404">App not found.</response>.
+    [HttpGet("api/apps/{appId:notEmpty}/auth")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(AuthSchemeResponseDto))]
+    public IActionResult GetAuthScheme(string appId)
+    {
+        var response = AuthSchemeResponseDto.FromDomainObject(App);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Updates the auth settings of the app.
+    /// </summary>
+    /// <param name="appId">The ID of the app.</param>
+    /// <param name="request">The request object.</param>
+    /// <response code="200">App auth settings returned.</response>.
+    /// <response code="404">App not found.</response>.
+    [HttpPut("api/apps/{appId:notEmpty}/auth")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(AuthSchemeResponseDto))]
+    public async Task<IActionResult> UpsertAuthScheme(string appId, [FromBody] AuthSchemeDto request)
+    {
+        var command = request.ToUpsert();
+
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
+
+        var response = AuthSchemeResponseDto.FromDomainObject(app!);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Deletes the auth settings of the app.
+    /// </summary>
+    /// <param name="appId">The ID of the app.</param> 
+    /// <response code="200">App auth settings returned.</response>.
+    /// <response code="404">App not found.</response>.
+    [HttpDelete("api/apps/{appId:notEmpty}/auth")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteAuthScheme(string appId)
+    {
+        await Mediator.SendAsync(new DeleteAppAuthScheme(), HttpContext.RequestAborted);
+
+        return NoContent();
     }
 
     /// <summary>
@@ -113,7 +166,7 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Add an app contributor.
     /// </summary>
-    /// <param name="appId">The id of the app.</param>
+    /// <param name="appId">The ID of the app.</param>
     /// <param name="request">The request object.</param>
     /// <response code="200">Apps returned.</response>.
     /// <response code="404">App not found.</response>.
@@ -134,7 +187,7 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Delete an app contributor.
     /// </summary>
-    /// <param name="appId">The id of the app.</param>
+    /// <param name="appId">The ID of the app.</param>
     /// <param name="contributorId">The contributor to remove.</param>
     /// <response code="200">Apps returned.</response>.
     /// <response code="404">App not found.</response>.
@@ -155,7 +208,7 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Get the app integrations.
     /// </summary>
-    /// <param name="appId">The id of the app where the integrations belong to.</param>
+    /// <param name="appId">The ID of the app where the integrations belong to.</param>
     /// <response code="200">App email templates returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/integrations")]
@@ -171,7 +224,7 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Create an app integrations.
     /// </summary>
-    /// <param name="appId">The id of the app where the integration belong to.</param>
+    /// <param name="appId">The ID of the app where the integration belong to.</param>
     /// <param name="request">The request object.</param>
     /// <response code="200">App integration created.</response>.
     /// <response code="404">App not found.</response>.
@@ -192,8 +245,8 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Update an app integration.
     /// </summary>
-    /// <param name="appId">The id of the app where the integration belong to.</param>
-    /// <param name="id">The id of the integration.</param>
+    /// <param name="appId">The ID of the app where the integration belong to.</param>
+    /// <param name="id">The ID of the integration.</param>
     /// <param name="request">The request object.</param>
     /// <response code="204">App integration updated.</response>.
     /// <response code="404">App not found.</response>.
@@ -212,8 +265,8 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Delete an app integration.
     /// </summary>
-    /// <param name="appId">The id of the app where the email templates belong to.</param>
-    /// <param name="id">The id of the integration.</param>
+    /// <param name="appId">The ID of the app where the email templates belong to.</param>
+    /// <param name="id">The ID of the integration.</param>
     /// <response code="204">App integration deleted.</response>.
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]

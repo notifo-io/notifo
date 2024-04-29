@@ -16,7 +16,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos;
 public sealed class UpsertUserDto
 {
     /// <summary>
-    /// The id of the user.
+    /// The ID of the user.
     /// </summary>
     public string? Id { get; set; }
 

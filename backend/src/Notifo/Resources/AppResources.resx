@@ -228,7 +228,7 @@
   <data name="ExternalLoginText" xml:space="preserve">
     <value>Login with {0}</value>
   </data>
-  <data name="ExternalSeperator" xml:space="preserve">
+  <data name="AuthSeparator" xml:space="preserve">
     <value>- Or -</value>
   </data>
   <data name="ForgotPasswordButton" xml:space="preserve">

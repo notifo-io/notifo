@@ -136,8 +136,8 @@ async function showNotification(self: ServiceWorkerGlobalScope, notification: No
 
     if (notification.confirmUrl && notification.confirmText && !notification.isConfirmed) {
         options.requireInteraction = true;
-        options.actions ||= [];
-        options.actions.push({ action: 'confirm', title: notification.confirmText });
+        (options as any).actions ||= [];
+        (options as any).actions.push({ action: 'confirm', title: notification.confirmText });
     }
 
     if (notification.body) {
@@ -149,7 +149,7 @@ async function showNotification(self: ServiceWorkerGlobalScope, notification: No
     }
 
     if (notification.imageLarge) {
-        options.image = withPreset(notification.imageLarge, 'WebPushLarge');
+        (options as any).image = withPreset(notification.imageLarge, 'WebPushLarge');
     }
 
     await self.registration.showNotification(notification.subject, options);

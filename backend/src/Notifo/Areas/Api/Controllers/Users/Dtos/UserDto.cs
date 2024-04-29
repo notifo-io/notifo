@@ -19,7 +19,7 @@ public sealed class UserDto
     private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
-    /// The id of the user.
+    /// The ID of the user.
     /// </summary>
     public string Id { get; set; }
 

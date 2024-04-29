@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorInfo, ListState } from '@app/framework';
+import { ListState, MutationState } from '@app/framework';
 import { TemplateDto } from '@app/service';
 
 export interface TemplatesStateInStore {
@@ -19,9 +19,6 @@ export interface TemplatesState {
     // The current template code.
     currentTemplateCode?: string;
 
-    // True if upserting.
-    upserting?: boolean;
-
-    // The creating error.
-    upsertingError?: ErrorInfo;
+    // Mutation for upserting.
+    upserting?: MutationState;
 }

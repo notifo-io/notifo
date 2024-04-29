@@ -5,27 +5,29 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import { listThunk, Query } from '@app/framework';
-import { Clients, EventDto } from '@app/service';
+import { createExtendedReducer, createList } from '@app/framework';
+import { Clients } from '@app/service';
 import { selectApp } from './../shared';
-import { EventsState } from './state';
+import { EventsState, EventsStateInStore } from './state';
 
-const list = listThunk<EventsState, EventDto>('events', 'events', async params => {
-    const { items, total } = await Clients.Events.getEvents(params.appId, params.channels, params.search, params.take, params.skip);
+export const loadEvents = createList<EventsState, EventsStateInStore>('events', 'events').with({
+    name: 'events/load',
+    queryFn: async (p: { appId: string; channels?: string[] }, q) => {
+        const { items, total } = await Clients.Events.getEvents(p.appId, p.channels, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadEvents = (appId: string, query?: Partial<Query>, reset = false, channels?: string[]) => {
-    return list.action({ appId, query, reset, channels });
-};
-
 const initialState: EventsState = {
-    events: list.createInitial(),
+    events: loadEvents.createInitial(),
 };
 
-export const eventsReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    loadEvents,
+];
+
+export const eventsReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    }));
+    }), operations);

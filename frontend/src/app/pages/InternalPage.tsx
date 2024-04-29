@@ -20,7 +20,7 @@ export const InternalPage = () => {
 
     React.useEffect(() => {
         dispatch(loadProfile());
-        dispatch(loadApps());
+        dispatch(loadApps({}));
         dispatch(loadLanguages());
         dispatch(loadTimezones());
         dispatch(loadMjmlSchema());

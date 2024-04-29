@@ -42,10 +42,10 @@ export const ListSearch = (props: ListSearchProps) => {
             if (hasChanged(list.search, search) && onSearch) {
                 onSearch({ search });
             }
-        }, 3000);
+        }, 1000);
 
         return () => {
-            clearInterval(timer);
+            clearTimeout(timer);
         };
     }, [list, search, onSearch]);
 

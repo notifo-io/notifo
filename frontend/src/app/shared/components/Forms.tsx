@@ -35,7 +35,7 @@ export interface FormEditorProps {
     // The layout.
     vertical?: boolean;
 
-    // True if disabled.
+    // True, if disabled.
     disabled?: boolean;
 
     // True to hide the error.
@@ -51,7 +51,7 @@ export interface ArrayFormProps<T> extends FormEditorProps {
 }
 
 export interface BooleanFormProps extends FormEditorProps {
-    // True if 3 states are allowed.
+    // True, if 3 states are allowed.
     indeterminate?: boolean;
 
     // True to provide the value as string.

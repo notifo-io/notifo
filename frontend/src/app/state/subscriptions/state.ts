@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorInfo, ListState } from '@app/framework';
+import { ListState, MutationState } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 
 export interface SubscriptionsStateInStore {
@@ -16,9 +16,6 @@ export interface SubscriptionsState {
     // All subscriptions.
     subscriptions: ListState<SubscriptionDto>;
 
-    // True if upserting.
-    upserting?: boolean;
-
-    // The creating error.
-    upsertingError?: ErrorInfo;
+    // Mutation for upserting.
+    upserting?: MutationState;
 }

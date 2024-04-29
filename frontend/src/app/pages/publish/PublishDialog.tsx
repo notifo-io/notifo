@@ -75,8 +75,8 @@ const PublishDialogInner = () => {
     const appId = app.id;
     const appLanguages = app.languages;
     const dialogValues = usePublish(x => x.dialogValues || {});
-    const publishing = usePublish(x => x.publishing);
-    const publishingError = usePublish(x => x.publishingError);
+    const publishing = usePublish(x => x.publishing?.isRunning);
+    const publishingError = usePublish(x => x.publishing?.error);
     const templates = useTemplates(x => x.templates);
     const wasPublishing = usePrevious(publishing);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
@@ -91,7 +91,7 @@ const PublishDialogInner = () => {
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadTemplates(appId));
+            dispatch(loadTemplates({ appId }));
         }
     }, [appId, dispatch, templates.isLoaded]);
 

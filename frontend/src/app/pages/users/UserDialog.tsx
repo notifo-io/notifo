@@ -31,8 +31,8 @@ export const UserDialog = (props: UserDialogProps) => {
     const appId = app.id;
     const coreLanguages = useCore(x => x.languages);
     const coreTimezones = useCore(x => x.timezones);
-    const upserting = useUsers(x => x.upserting);
-    const upsertingError = useUsers(x => x.upsertingError);
+    const upserting = useUsers(x => x.upserting?.isRunning);
+    const upsertingError = useUsers(x => x.upserting?.error);
     const [dialogUser, setDialogUser] = React.useState(props.user);
     const [dialogTab, setDialogTab] = React.useState(0);
     const [wasUpserting, setWasUpserting] = React.useState(false);

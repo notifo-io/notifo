@@ -30,17 +30,13 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
 
     public IList<AuthenticationScheme> ExternalProviders { get; set; }
 
-    [BindProperty]
-    public ChangeProfileModel Model { get; set; } = new ChangeProfileModel();
+    public RemoveLoginModel RemoveLoginForm { get; set; } = new RemoveLoginModel();
 
-    [BindProperty]
-    public ChangePasswordModel ChangePasswordModel { get; set; } = new ChangePasswordModel();
+    public ChangeProfileModel ChangeForm { get; set; } = new ChangeProfileModel();
 
-    [BindProperty]
-    public SetPasswordModel SetPasswordModel { get; set; } = new SetPasswordModel();
+    public ChangePasswordModel ChangePasswordForm { get; set; } = new ChangePasswordModel();
 
-    [BindProperty]
-    public RemoveLoginModel RemoveLoginModel { get; set; } = new RemoveLoginModel();
+    public SetPasswordModel SetPasswordForm { get; set; } = new SetPasswordModel();
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
@@ -57,7 +53,7 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
             UserService.HasPasswordAsync(user, HttpContext.RequestAborted),
             UserService.GetLoginsAsync(user, HttpContext.RequestAborted));
 
-        Model.Email ??= user.Email;
+        ChangeForm.Email ??= user.Email;
         ExternalLogins = logins;
         ExternalProviders = providers.ToList();
         HasPassword = hasPassword;
@@ -75,35 +71,39 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
             T["UsersProfileAddLoginDone"]);
     }
 
-    public Task<IActionResult> OnPost()
+    public Task<IActionResult> OnPost(
+        [FromForm] ChangeProfileModel form)
     {
-        ClearErrors(nameof(Model));
+        ChangeForm = form with { IsActive = true };
 
-        return MakeChangeAsync((id, ct) => UserService.UpdateAsync(id, new UserValues { Email = Model.Email }, ct: ct),
+        return MakeChangeAsync((id, ct) => UserService.UpdateAsync(id, new UserValues { Email = form.Email }, ct: ct),
             T["UsersProfileUpdateProfileDone"]);
     }
 
-    public Task<IActionResult> OnPostRemoveLogin()
+    public Task<IActionResult> OnPostRemoveLogin(
+        [FromForm] RemoveLoginModel form)
     {
-        ClearErrors(nameof(RemoveLoginModel));
+        RemoveLoginForm = form with { IsActive = true };
 
-        return MakeChangeAsync((id, ct) => UserService.RemoveLoginAsync(id, RemoveLoginModel.LoginProvider, RemoveLoginModel.ProviderKey, ct),
+        return MakeChangeAsync((id, ct) => UserService.RemoveLoginAsync(id, form.LoginProvider, form.ProviderKey, ct),
             T["UsersProfileRemoveLoginDone"]);
     }
 
-    public Task<IActionResult> OnPostSetPassword()
+    public Task<IActionResult> OnPostSetPassword(
+        [FromForm] SetPasswordModel form)
     {
-        ClearErrors(nameof(SetPasswordModel));
+        SetPasswordForm = form with { IsActive = true };
 
-        return MakeChangeAsync((id, ct) => UserService.SetPasswordAsync(id, SetPasswordModel.Password, ct: ct),
+        return MakeChangeAsync((id, ct) => UserService.SetPasswordAsync(id, form.Password, ct: ct),
             T["UsersProfileSetPasswordDone"]);
     }
 
-    public Task<IActionResult> OnPostChangePassword()
+    public Task<IActionResult> OnPostChangePassword(
+        [FromForm] ChangePasswordModel form)
     {
-        ClearErrors(nameof(ChangePasswordModel));
+        ChangePasswordForm = form with { IsActive = true };
 
-        return MakeChangeAsync((id, ct) => UserService.SetPasswordAsync(id, ChangePasswordModel.Password, ChangePasswordModel.OldPassword, ct),
+        return MakeChangeAsync((id, ct) => UserService.SetPasswordAsync(id, form.Password, form.OldPassword, ct),
             T["UsersProfileChangePasswordDone"]);
     }
 
@@ -168,20 +168,9 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
 
         return Page();
     }
-
-    private void ClearErrors(string prefix)
-    {
-        foreach (var errorKey in ModelState.Keys.ToList())
-        {
-            if (!errorKey.StartsWith(prefix, StringComparison.Ordinal))
-            {
-                ModelState.Remove(errorKey);
-            }
-        }
-    }
 }
 
-public class ChangePasswordModel
+public sealed record ChangePasswordModel
 {
     [Required]
     [Display(Name = nameof(OldPassword))]
@@ -194,9 +183,11 @@ public class ChangePasswordModel
     [Compare(nameof(Password))]
     [Display(Name = nameof(PasswordConfirm))]
     public string PasswordConfirm { get; set; }
+
+    public bool IsActive { get; set; }
 }
 
-public class SetPasswordModel
+public sealed record SetPasswordModel
 {
     [Required]
     [Display(Name = nameof(Password))]
@@ -205,9 +196,11 @@ public class SetPasswordModel
     [Required]
     [Display(Name = nameof(PasswordConfirm))]
     public string PasswordConfirm { get; set; }
+
+    public bool IsActive { get; set; }
 }
 
-public class RemoveLoginModel
+public sealed record RemoveLoginModel
 {
     [Required]
     [Display(Name = nameof(LoginProvider))]
@@ -216,12 +209,16 @@ public class RemoveLoginModel
     [Required]
     [Display(Name = nameof(ProviderKey))]
     public string ProviderKey { get; set; }
+
+    public bool IsActive { get; set; }
 }
 
-public class ChangeProfileModel
+public sealed record ChangeProfileModel
 {
     [Required]
     [EmailAddress]
     [Display(Name = nameof(Email))]
     public string Email { get; set; }
+
+    public bool IsActive { get; set; }
 }

@@ -19,7 +19,7 @@ public sealed class EventDto
     private static readonly Dictionary<string, ChannelSettingDto> EmptySettings = [];
 
     /// <summary>
-    /// The id of the event.
+    /// The ID of the event.
     /// </summary>
     public string Id { get; set; }
 

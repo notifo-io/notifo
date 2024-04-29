@@ -5,47 +5,70 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer, Middleware } from '@reduxjs/toolkit';
+import { Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
-import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfMessagingTemplateDto } from '@app/service';
-import { createApiThunk, selectApp } from './../shared';
-import { MessagingTemplatesState } from './state';
+import { createExtendedReducer, createList, createMutation, formatError } from '@app/framework';
+import { Clients, UpdateChannelTemplateDtoOfMessagingTemplateDto } from '@app/service';
+import { selectApp } from './../shared';
+import { MessagingTemplatesState, MessagingTemplatesStateInStore } from './state';
 
-const list = listThunk<MessagingTemplatesState, ChannelTemplateDto>('messagingTemplates', 'templates', async params => {
-    const { items, total } = await Clients.MessagingTemplates.getTemplates(params.appId, params.search, params.take, params.skip);
+export const loadMessagingTemplates = createList<MessagingTemplatesState, MessagingTemplatesStateInStore>('templates', 'messagingTemplates').with({
+    name: 'messagingTemplates/load',
+    queryFn: async (p: { appId: string }, q) => {
+        const { items, total } = await Clients.MessagingTemplates.getTemplates(p.appId, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadMessagingTemplates = (appId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ appId, query, reset });
-};
-
-export const loadMessagingTemplate = createApiThunk('messagingTemplates/load',
-    (arg: { appId: string; id: string }) => {
+export const loadMessagingTemplate = createMutation<MessagingTemplatesState>('loadingTemplate').with({
+    name: 'messagingTemplates/loadOne',
+    mutateFn: (arg: { appId: string; id: string }) => {
         return Clients.MessagingTemplates.getTemplate(arg.appId, arg.id);
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const createMessagingTemplate = createApiThunk('messagingTemplates/create',
-    (arg: { appId: string }) => {
+export const createMessagingTemplate = createMutation<MessagingTemplatesState>('loadingTemplate').with({
+    name: 'messagingTemplates/create',
+    mutateFn: (arg: { appId: string }) => {
         return Clients.MessagingTemplates.postTemplate(arg.appId, { });
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const createMessagingTemplateLanguage = createApiThunk('messagingTemplates/createLanguage',
-    (arg: { appId: string; id: string; language: string }) => {
+export const createMessagingTemplateLanguage = createMutation<MessagingTemplatesState>('loadingTemplate').with({
+    name: 'messagingTemplates/createLanguage',
+    mutateFn: (arg: { appId: string; id: string; language: string }) => {
         return Clients.MessagingTemplates.postTemplateLanguage(arg.appId, arg.id, { language: arg.language });
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const updateMessagingTemplate = createApiThunk('messagingTemplates/update',
-    (arg: { appId: string; id: string; update: UpdateChannelTemplateDtoOfMessagingTemplateDto }) => {
+export const updateMessagingTemplate = createMutation<MessagingTemplatesState>('loadingTemplate').with({
+    name: 'messagingTemplates/update',
+    mutateFn: (arg: { appId: string; id: string; update: UpdateChannelTemplateDtoOfMessagingTemplateDto }) => {
         return Clients.MessagingTemplates.putTemplate(arg.appId, arg.id, arg.update);
-    });
+    },
+    updateFn(state, action) {
+        if (state.template && state.template.id === action.meta.arg.id) {
+            state.template = { ...state.template, ...action.meta.arg.update };
+        }
+    },
+});
 
-export const deleteMessagingTemplate = createApiThunk('messagingTemplates/delete',
-    (arg: { appId: string; id: string }) => {
+export const deleteMessagingTemplate = createMutation<MessagingTemplatesState>('loadingTemplate').with({
+    name: 'messagingTemplates/delete',
+    mutateFn: (arg: { appId: string; id: string }) => {
         return Clients.MessagingTemplates.deleteTemplate(arg.appId, arg.id);
-    });
+    },
+});
 
 export const messagingTemplatesMiddleware: Middleware = store => next => action => {
     const result = next(action);
@@ -53,7 +76,7 @@ export const messagingTemplatesMiddleware: Middleware = store => next => action 
     if (createMessagingTemplate.fulfilled.match(action) || deleteMessagingTemplate.fulfilled.match(action)) {
         const { appId } = action.meta.arg;
 
-        store.dispatch(loadMessagingTemplates(appId) as any);
+        store.dispatch(loadMessagingTemplates({ appId }) as any);
     } else if (deleteMessagingTemplate.rejected.match(action)) {
         toast.error(formatError(action.payload as any));
     }
@@ -62,63 +85,19 @@ export const messagingTemplatesMiddleware: Middleware = store => next => action 
 };
 
 const initialState: MessagingTemplatesState = {
-    templates: list.createInitial(),
+    templates: loadMessagingTemplates.createInitial(),
 };
 
-export const messagingTemplatesReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    createMessagingTemplate,
+    createMessagingTemplateLanguage,
+    deleteMessagingTemplate,
+    loadMessagingTemplate,
+    loadMessagingTemplates,
+    updateMessagingTemplate,
+];
+
+export const messagingTemplatesReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    })
-    .addCase(loadMessagingTemplate.pending, (state) => {
-        state.loadingTemplate = true;
-        state.loadingTemplateError = undefined;
-    })
-    .addCase(loadMessagingTemplate.rejected, (state, action) => {
-        state.loadingTemplate = false;
-        state.loadingTemplateError = action.payload as ErrorInfo;
-    })
-    .addCase(loadMessagingTemplate.fulfilled, (state, action) => {
-        state.loadingTemplate = false;
-        state.loadingTemplateError = undefined;
-        state.template = action.payload;
-    })
-    .addCase(createMessagingTemplate.pending, (state) => {
-        state.creating = true;
-        state.creatingError = undefined;
-    })
-    .addCase(createMessagingTemplate.rejected, (state, action) => {
-        state.creating = false;
-        state.creatingError = action.payload as ErrorInfo;
-    })
-    .addCase(createMessagingTemplate.fulfilled, (state) => {
-        state.creating = false;
-        state.creatingError = undefined;
-    })
-    .addCase(updateMessagingTemplate.pending, (state) => {
-        state.updating = true;
-        state.updatingError = undefined;
-    })
-    .addCase(updateMessagingTemplate.rejected, (state, action) => {
-        state.updating = false;
-        state.updatingError = action.payload as ErrorInfo;
-    })
-    .addCase(updateMessagingTemplate.fulfilled, (state, action) => {
-        state.updating = false;
-        state.updatingError = undefined;
-
-        if (state.template && state.template.id === action.meta.arg.id) {
-            state.template = { ...state.template, ...action.meta.arg.update };
-        }
-    })
-    .addCase(deleteMessagingTemplate.pending, (state) => {
-        state.deleting = true;
-        state.deletingError = undefined;
-    })
-    .addCase(deleteMessagingTemplate.rejected, (state, action) => {
-        state.deleting = false;
-        state.deletingError = action.payload as ErrorInfo;
-    })
-    .addCase(deleteMessagingTemplate.fulfilled, (state) => {
-        state.deleting = false;
-        state.deletingError = undefined;
-    }));
+    }), operations);

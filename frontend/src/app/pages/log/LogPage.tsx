@@ -25,20 +25,20 @@ export const LogPage = () => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
-    const logEntries = useLog(x => x.entries);
+    const logEntries = useLog(x => x.log);
     const userId = useParams().userId!;
     const [systems, setSystems] = React.useState<string[]>([]);
 
     React.useEffect(() => {
-        dispatch(loadLog(appId, {}, false, systems, userId));
+        dispatch(loadLog({ appId, systems, userId, query: { search: '', page: 0 } }));
     }, [dispatch, appId, systems, userId]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadLog(appId, undefined, false, systems, userId));
+        dispatch(loadLog({ appId, systems, userId }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadLog(appId, q, false, systems, userId));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadLog({ appId, systems, userId, query }));
     });
 
     return (

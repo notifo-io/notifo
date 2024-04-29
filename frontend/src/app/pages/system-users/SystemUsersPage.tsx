@@ -24,15 +24,15 @@ export const SystemUsersPage = () => {
     const [currentSystemUser, setCurrentSystemUser] = React.useState<SystemUserDto>();
 
     React.useEffect(() => {
-        dispatch(loadSystemUsers({}));
+        dispatch(loadSystemUsers({ query: { search: '', page: 0 } }));
     }, [dispatch]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadSystemUsers());
+        dispatch(loadSystemUsers({}));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadSystemUsers(q));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadSystemUsers({ query }));
     });
 
     const doLock = useEventCallback((user: SystemUserDto) => {

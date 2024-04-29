@@ -29,7 +29,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Get the channel templates.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="q">The query object.</param>
     /// <response code="200">Channel templates returned.</response>.
     /// <response code="404">Channel template or app not found.</response>.
@@ -48,9 +48,9 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     }
 
     /// <summary>
-    /// Get the channel template by id.
+    /// Get the channel template by ID.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
     /// <response code="200">Channel templates returned.</response>.
     /// <response code="404">Channel template or app not found.</response>
@@ -68,7 +68,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Create a channel template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="request">The request object.</param>
     /// <response code="200">Channel template created.</response>.
     /// <response code="404">App not found.</response>.
@@ -86,7 +86,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Create an app template language.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="code">The template code.</param>
     /// <param name="request">The request object.</param>
     /// <response code="200">Channel template created.</response>.
@@ -105,7 +105,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Update an app template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="code">The template code.</param>
     /// <param name="request">The request object.</param>
     /// <response code="204">Channel template updated.</response>.
@@ -124,7 +124,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Update a channel template language.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="code">The template code.</param>
     /// <param name="language">The language.</param>
     /// <param name="request">The request object.</param>
@@ -144,7 +144,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Delete a language channel template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="code">The template ID.</param>
     /// <param name="language">The language.</param>
     /// <response code="204">Channel template updated.</response>.
@@ -163,7 +163,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <summary>
     /// Delete a channel template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="code">The template ID.</param>
     /// <response code="204">Channel template deleted.</response>.
     /// <response code="404">Channel template or app not found.</response>.

@@ -14,7 +14,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 public sealed class ChannelTemplateDetailsDto<T>
 {
     /// <summary>
-    /// The id of the template.
+    /// The ID of the template.
     /// </summary>
     public string Id { get; set; }
 

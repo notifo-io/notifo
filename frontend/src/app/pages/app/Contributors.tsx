@@ -23,8 +23,8 @@ export const Contributors = (props: ContributorsProps) => {
 
     const dispatch = useDispatch<any>();
     const [email, setEmail] = React.useState('');
-    const contributorsError = useApps(x => x.contributorsError);
-    const contributorsUpdating = useApps(x => x.contributorsUpdating);
+    const updateError = useApps(x => x.updatingContributors?.error);
+    const updateRunning = useApps(x => x.updatingContributors?.isRunning);
     const userId = useLogin(x => x.user?.sub);
 
     const doSetEmail = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +43,7 @@ export const Contributors = (props: ContributorsProps) => {
         dispatch(removeContributor({ appId: appDetails.id, id }));
     });
 
-    const disabled = appDetails.role !== 'Owner' || contributorsUpdating;
+    const disabled = appDetails.role !== 'Owner' || updateRunning;
 
     return (
         <>
@@ -51,7 +51,7 @@ export const Contributors = (props: ContributorsProps) => {
 
             <Card>
                 <CardBody>
-                    <FormError error={contributorsError} />
+                    <FormError error={updateError} />
 
                     {appDetails.contributors.map(x =>
                         <Row noGutters className='align-items-center mb-2' key={x.userId}>

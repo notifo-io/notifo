@@ -33,6 +33,14 @@ public static class ValidatorExtensions
         }).WithMessage(Texts.ValidationUrl);
     }
 
+    public static IRuleBuilderOptions<T, string?> Domain<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        return ruleBuilder.Must(value =>
+        {
+            return string.IsNullOrWhiteSpace(value) || Uri.CheckHostName(value) == UriHostNameType.Dns;
+        }).WithMessage(Texts.ValidationDomain);
+    }
+
     public static IRuleBuilderOptions<T, string?> Language<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
         return ruleBuilder.Must(value =>

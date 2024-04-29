@@ -37,15 +37,15 @@ export const Notifications = (props: NotificationsProps) => {
     const [channels, setChannels] = React.useState<string[]>([]);
 
     React.useEffect(() => {
-        dispatch(loadNotifications(appId, userId, {}, undefined, channels));
+        dispatch(loadNotifications({ appId, userId, channels, query: { search: '', page: 0 } }));
     }, [dispatch, appId, userId, channels]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadNotifications(appId, userId, undefined, undefined, channels));
+        dispatch(loadNotifications({ appId, userId, channels }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadNotifications(appId, userId, q, undefined, channels));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadNotifications({ appId, userId, channels, query }));
     });
 
     return (

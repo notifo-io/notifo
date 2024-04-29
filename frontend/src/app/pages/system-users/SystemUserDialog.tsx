@@ -44,8 +44,8 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
     const { onClose, user } = props;
 
     const dispatch = useDispatch<any>();
-    const upserting = useSystemUsers(x => x.upserting);
-    const upsertingError = useSystemUsers(x => x.upsertingError);
+    const upserting = useSystemUsers(x => x.upserting?.isRunning);
+    const upsertingError = useSystemUsers(x => x.upserting?.error);
     const [wasUpserting, setWasUpserting] = React.useState(false);
 
     React.useEffect(() => {

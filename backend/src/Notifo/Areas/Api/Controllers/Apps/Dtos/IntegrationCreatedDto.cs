@@ -12,7 +12,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 public sealed class IntegrationCreatedDto
 {
     /// <summary>
-    /// The id of the integration.
+    /// The ID of the integration.
     /// </summary>
     public string Id { get; set; }
 

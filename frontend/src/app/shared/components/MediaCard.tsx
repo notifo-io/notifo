@@ -16,7 +16,7 @@ export interface MediaCardProps {
     // The media.
     media: MediaDto;
 
-    // True if selected.
+    // True, if selected.
     selected?: boolean;
 
     // When clicked.

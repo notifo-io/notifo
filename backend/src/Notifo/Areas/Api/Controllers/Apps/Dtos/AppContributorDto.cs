@@ -10,7 +10,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 public sealed class AppContributorDto
 {
     /// <summary>
-    /// The id of the user.
+    /// The ID of the user.
     /// </summary>
     public string UserId { get; set; }
 

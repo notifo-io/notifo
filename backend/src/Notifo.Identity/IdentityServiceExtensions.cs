@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
+using Notifo.Identity.Dynamic;
 using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
@@ -41,6 +42,9 @@ public static class IdentityServiceExtensions
 
         services.AddSingletonAs<TokenStoreInitializer>()
             .AsSelf();
+
+        services.AddSingletonAs<DynamicSchemeProvider>()
+            .AsSelf().As<IAuthenticationSchemeProvider>();
 
         services.AddSingletonAs<DefaultUserResolver>()
             .As<IUserResolver>();

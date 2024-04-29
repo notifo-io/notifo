@@ -23,7 +23,7 @@ export interface LoaderProps {
     // Optional text.
     text?: string;
 
-    // True if light.
+    // True, if light.
     light?: boolean;
 }
 

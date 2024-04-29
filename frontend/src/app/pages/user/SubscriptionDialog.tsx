@@ -40,8 +40,8 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
-    const upserting = useSubscriptions(x => x.upserting);
-    const upsertingError = useSubscriptions(x => x.upsertingError);
+    const upserting = useSubscriptions(x => x.upserting?.isRunning);
+    const upsertingError = useSubscriptions(x => x.upserting?.error);
     const [wasUpserting, setWasUpserting] = React.useState(false);
 
     React.useEffect(() => {
