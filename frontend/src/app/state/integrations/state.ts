@@ -5,25 +5,19 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorInfo } from '@app/framework';
+import { MutationState } from '@app/framework';
 import { ConfiguredIntegrationDto, ConfiguredIntegrationsDto, IntegrationDefinitionDto } from '@app/service';
 
 export interface IntegrationsStateInStore {
     integrations: IntegrationsState;
 }
 
-export interface IntegrationsState extends Partial<ConfiguredIntegrationsDto> {
-    // True if loading integrations.
-    loading?: boolean;
+export interface IntegrationsState extends ConfiguredIntegrationsDto {
+    // Mutation for loading integrations.
+    loading?: MutationState;
 
-    // The loading integrations error.
-    loadingError?: ErrorInfo;
-
-    // True if upserting integrations.
-    upserting?: boolean;
-
-    // The upserting integrations error.
-    upsertingError?: ErrorInfo;
+    // Mutation for upserting integrations.
+    upserting?: MutationState;
 }
 
 export function getSummaryProperties(definition: IntegrationDefinitionDto, configured: ConfiguredIntegrationDto) {

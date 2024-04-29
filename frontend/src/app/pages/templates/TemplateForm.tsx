@@ -56,8 +56,8 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const upserting = useTemplates(x => x.upserting);
-    const upsertingError = useTemplates(x => x.upsertingError);
+    const upserting = useTemplates(x => x.upserting?.isRunning);
+    const upsertingError = useTemplates(x => x.upserting?.error);
     const [viewFullscreen, setViewFullscreen] = React.useState<boolean>(false);
 
     const doPublish = useEventCallback((params: TemplateDto) => {

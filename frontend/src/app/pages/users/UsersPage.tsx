@@ -27,15 +27,15 @@ export const UsersPage = () => {
     const [showCounters, setShowCounters] = useSavedState(false, 'show.counters');
 
     React.useEffect(() => {
-        dispatch(loadUsers(appId, {}));
+        dispatch(loadUsers({ appId, query: { search: '', page: 0 } }));
     }, [dispatch, appId]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadUsers(appId));
+        dispatch(loadUsers({ appId }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadUsers(appId, q));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadUsers({ appId, query }));
     });
 
     const doDelete = useEventCallback((user: UserDto) => {

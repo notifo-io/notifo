@@ -26,9 +26,15 @@ public interface IAppRepository : ICounterStore<string>
     Task<(App? App, string? Etag)> GetAsync(string id,
         CancellationToken ct = default);
 
+    Task<(App? App, string? Etag)> GetByAuthDomainAsync(string domain,
+        CancellationToken ct = default);
+
     Task UpsertAsync(App app, string? oldEtag = null,
         CancellationToken ct = default);
 
     Task DeleteAsync(string id,
+        CancellationToken ct = default);
+
+    Task<bool> AnyAuthDomainAsync(
         CancellationToken ct = default);
 }

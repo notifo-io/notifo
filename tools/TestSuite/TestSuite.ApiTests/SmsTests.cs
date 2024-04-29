@@ -135,7 +135,7 @@ public class SmsTests : IClassFixture<ClientFixture>
             {
                 var messages = await messageBird.GetMessagesAsync(200);
 
-                if (messages.Items.Any(x => x.Body == text && x.Recipients.Items[0].Status == "delivered"))
+                if (messages.Items.Any(x => x.Body == text && x.Recipients.Items.Any(y => y.Status == "delivered")))
                 {
                     return;
                 }
@@ -239,7 +239,7 @@ public class SmsTests : IClassFixture<ClientFixture>
             {
                 var messages = await messageBird.GetMessagesAsync(200);
 
-                if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items[0].Status == "delivered"))
+                if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items.Any(y => y.Status == "delivered")))
                 {
                     return;
                 }
@@ -486,7 +486,7 @@ public class SmsTests : IClassFixture<ClientFixture>
                 if (messages.Items.Any(x =>
                     x.Body.Contains(subjectId, StringComparison.OrdinalIgnoreCase) &&
                     x.Body.Contains(subjectMore, StringComparison.OrdinalIgnoreCase) &&
-                    x.Recipients.Items[0].Status == "delivered"))
+                    x.Recipients.Items.Any(y => y.Status == "delivered")))
                 {
                     return;
                 }

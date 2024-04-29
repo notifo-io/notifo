@@ -20,7 +20,7 @@ export interface ToggleProps {
     // The field name.
     name: string;
 
-    // True if disabled.
+    // True, if disabled.
     disabled?: boolean;
 
     // Triggered when the value is changed.

@@ -35,15 +35,15 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     const [editSubscription, setEditSubscription] = React.useState<SubscriptionDto>();
 
     React.useEffect(() => {
-        dispatch(loadSubscriptions(appId, userId, {}));
+        dispatch(loadSubscriptions({ appId, userId, query: { search: '', page: 0 } }));
     }, [dispatch, appId, userId]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadSubscriptions(appId, userId));
+        dispatch(loadSubscriptions({ appId, userId }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadSubscriptions(appId, userId, q));
+    const doLoad = useEventCallback((query: Partial<Query>) => {
+        dispatch(loadSubscriptions({ appId, userId, query }));
     });
 
     const doDelete = useEventCallback((subscription: SubscriptionDto) => {

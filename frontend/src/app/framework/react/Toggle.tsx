@@ -16,7 +16,7 @@ export interface ToggleProps {
     // Set to allow three states.
     indeterminate?: boolean;
 
-    // True if disabled.
+    // True, if disabled.
     disabled?: boolean;
 
     // The label string.

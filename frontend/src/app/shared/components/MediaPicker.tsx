@@ -40,15 +40,15 @@ export const MediaPicker = (props: MediaPickerProps) => {
     const [selection, setSelection] = React.useState<string>();
 
     React.useEffect(() => {
-        dispatch(loadMedia(appId));
+        dispatch(loadMedia({ appId, query: { search: '', page: 0 } }));
     }, [dispatch, appId]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadMedia(appId));
+        dispatch(loadMedia({ appId }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadMedia(appId, q));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadMedia({ appId, query }));
     });
 
     const doSelectMedia = useEventCallback((media: MediaDto) => {

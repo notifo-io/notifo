@@ -268,6 +268,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {PropertyName} must be a valid domain..
+        /// </summary>
+        internal static string ValidationDomain {
+            get {
+                return ResourceManager.GetString("ValidationDomain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {PropertyName} must be a valid language..
         /// </summary>
         internal static string ValidationLanguage {

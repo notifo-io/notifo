@@ -186,6 +186,9 @@
   <data name="TemplateError" xml:space="preserve">
     <value>Unhandled template error.</value>
   </data>
+  <data name="ValidationDomain" xml:space="preserve">
+    <value>{PropertyName} must be a valid domain.</value>
+  </data>
   <data name="ValidationLanguage" xml:space="preserve">
     <value>{PropertyName} must be a valid language.</value>
   </data>

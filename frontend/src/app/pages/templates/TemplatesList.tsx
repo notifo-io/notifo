@@ -29,11 +29,11 @@ export const TemplatesList = (props: TemplateListProps) => {
     const templates = useTemplates(x => x.templates);
 
     React.useEffect(() => {
-        dispatch(loadTemplates(appId));
+        dispatch(loadTemplates({ appId, query: { search: '', page: 0 } }));
     }, [dispatch, appId]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadTemplates(appId));
+        dispatch(loadTemplates({ appId }));
     });
 
     const doNew = useEventCallback(() => {

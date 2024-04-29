@@ -29,15 +29,15 @@ export const TopicsPage = () => {
     const [showCounters, setShowCounters] = useSavedState(false, 'show.counters');
 
     React.useEffect(() => {
-        dispatch(loadTopics(appId, currentScope, {}));
+        dispatch(loadTopics({ appId, scope: currentScope, query: { search: '', page: 0 } }));
     }, [dispatch, appId, currentScope]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadTopics(appId, currentScope));
+        dispatch(loadTopics({ appId, scope: currentScope }));
     });
 
-    const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadTopics(appId, currentScope, q));
+    const doLoad = useEventCallback((query?: Partial<Query>) => {
+        dispatch(loadTopics({ appId, scope: currentScope, query }));
     });
 
     const doDelete = useEventCallback((topic: TopicDto) => {

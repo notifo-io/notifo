@@ -18,7 +18,7 @@ public sealed class AppDetailsDto
     private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
-    /// The id of the app.
+    /// The ID of the app.
     /// </summary>
     public string Id { get; set; }
 

@@ -13,7 +13,7 @@ import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reacts
 import * as Yup from 'yup';
 import { FormAlert, FormError, Loader, useEventCallback } from '@app/framework';
 import { Forms } from '@app/shared/components';
-import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
+import { createApp, CreateAppParams, useApps } from '@app/state';
 import { texts } from '@app/texts';
 
 const FormSchema = Yup.object().shape({
@@ -31,25 +31,25 @@ export const AppDialog = (props: AppDialogProps) => {
     const { onClose } = props;
 
     const dispatch = useDispatch<any>();
-    const creating = useApps(x => x.creating);
-    const creatingError = useApps(x => x.creatingError);
+    const createError = useApps(x => x.creating?.error);
+    const createRunning = useApps(x => x.creating?.isRunning);
     const [wasCreating, setWasCreating] = React.useState(false);
 
     React.useEffect(() => {
-        dispatch(createAppReset());
+        dispatch(createApp.reset());
     }, [dispatch]);
 
     React.useEffect(() => {
-        if (creating) {
+        if (createRunning) {
             setWasCreating(true);
         }
-    }, [creating]);
+    }, [createRunning]);
 
     React.useEffect(() => {
-        if (!creating && wasCreating && !creatingError && onClose) {
+        if (!createRunning && wasCreating && !createError && onClose) {
             onClose();
         }
-    }, [creating, creatingError, onClose, wasCreating]);
+    }, [createRunning, createError, onClose, wasCreating]);
 
     const doSave = useEventCallback((params: CreateAppParams) => {
         dispatch(createApp({ params }));
@@ -68,19 +68,19 @@ export const AppDialog = (props: AppDialogProps) => {
                     <ModalBody>
                         <FormAlert text={texts.apps.createInfo} />
 
-                        <fieldset className='mt-3' disabled={creating}>
+                        <fieldset className='mt-3' disabled={createRunning}>
                             <Forms.Text name='name' vertical
                                 label={texts.common.name} />
                         </fieldset>
 
-                        <FormError error={creatingError} />
+                        <FormError error={createError} />
                     </ModalBody>
                     <ModalFooter className='justify-content-between'>
                         <Button type='button' color='none' onClick={onClose}>
                             {texts.common.cancel}
                         </Button>
                         <Button type='submit' color='primary'>
-                            <Loader light small visible={creating} /> {texts.common.create}
+                            <Loader light small visible={createRunning} /> {texts.common.create}
                         </Button>
                     </ModalFooter>
                 </Form>

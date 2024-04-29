@@ -19,13 +19,13 @@ export const SmsTemplatesPage = () => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
-    const creating = useSmsTemplates(x => x.creating);
-    const creatingError = useSmsTemplates(x => x.creatingError);
-    const deletingError = useSmsTemplates(x => x.deletingError);
+    const creating = useSmsTemplates(x => x.creating?.isRunning);
+    const creatingError = useSmsTemplates(x => x.creating?.error);
+    const deletingError = useSmsTemplates(x => x.deleting?.error);
     const smsTemplates = useSmsTemplates(x => x.templates);
 
     React.useEffect(() => {
-        dispatch(loadSmsTemplates(appId));
+        dispatch(loadSmsTemplates({ appId }));
     }, [dispatch, appId]);
 
     React.useEffect(() => {

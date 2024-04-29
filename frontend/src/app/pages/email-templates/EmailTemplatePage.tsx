@@ -26,14 +26,14 @@ export const EmailTemplatePage = () => {
     const appId = app.id;
     const appLanguages = app.languages;
     const appName = app.name;
-    const loadingTemplate = useEmailTemplates(x => x.loadingTemplate);
-    const loadingTemplateError = useEmailTemplates(x => x.loadingTemplateError);
+    const loadingTemplate = useEmailTemplates(x => x.loadingTemplate?.isRunning);
+    const loadingTemplateError = useEmailTemplates(x => x.loadingTemplate?.error);
     const sidebar = useBooleanObj();
     const template = useEmailTemplates(x => x.template);
     const templateId = useParams().templateId!;
-    const updating = useEmailTemplates(x => x.updating);
-    const updatingError = useEmailTemplates(x => x.updatingError);
-    const upserting = useEmailTemplates(x => x.creatingLanguage || x.deletingLanguage || x.updatingLanguage);
+    const updating = useEmailTemplates(x => x.updating?.isRunning);
+    const updatingError = useEmailTemplates(x => x.updating?.error);
+    const upserting = useEmailTemplates(x => x.creatingLanguage?.isRunning || x.deletingLanguage?.isRunning || x.updatingLanguage?.isRunning);
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     const properties = useSimpleQuery<TemplatePropertyDto[]>({

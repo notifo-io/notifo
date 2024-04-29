@@ -13,7 +13,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers.Dtos;
 public sealed class SystemUserDto
 {
     /// <summary>
-    /// The id of the user.
+    /// The ID of the user.
     /// </summary>
     public string Id { get; set; }
 

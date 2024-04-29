@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Authentication;
 using Notifo.Domain;
 using Notifo.Infrastructure.MongoDb;
 using Notifo.Pipeline;

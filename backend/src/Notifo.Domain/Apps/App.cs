@@ -26,6 +26,8 @@ public sealed record App(string Id, Instant Created)
 
     public Instant LastUpdate { get; init; }
 
+    public AppAuthScheme? AuthScheme { get; init; }
+
     public ReadonlyList<string> Languages { get; init; } = DefaultLanguages;
 
     public ReadonlyDictionary<string, string> ApiKeys { get; init; } = ReadonlyDictionary.Empty<string, string>();

@@ -19,13 +19,13 @@ export const MessagingTemplatesPage = () => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
-    const creating = useMessagingTemplates(x => x.creating);
-    const creatingError = useMessagingTemplates(x => x.creatingError);
-    const deletingError = useMessagingTemplates(x => x.deletingError);
+    const creating = useMessagingTemplates(x => x.creating?.isRunning);
+    const creatingError = useMessagingTemplates(x => x.creating?.error);
+    const deletingError = useMessagingTemplates(x => x.deleting?.error);
     const messagingTemplates = useMessagingTemplates(x => x.templates);
 
     React.useEffect(() => {
-        dispatch(loadMessagingTemplates(appId));
+        dispatch(loadMessagingTemplates({ appId }));
     }, [dispatch, appId]);
 
     React.useEffect(() => {

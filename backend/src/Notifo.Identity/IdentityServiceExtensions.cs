@@ -6,14 +6,17 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
+using Notifo.Identity.Dynamic;
 using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
@@ -41,6 +44,12 @@ public static class IdentityServiceExtensions
 
         services.AddSingletonAs<TokenStoreInitializer>()
             .AsSelf();
+
+        services.AddSingletonAs<OpenIdConnectPostConfigureOptions>()
+            .AsSelf();
+
+        services.AddSingletonAs<DynamicSchemeProvider>()
+            .AsSelf().As<IAuthenticationSchemeProvider>().As<IOptionsMonitor<DynamicOpenIdConnectOptions>>();
 
         services.AddSingletonAs<DefaultUserResolver>()
             .As<IUserResolver>();

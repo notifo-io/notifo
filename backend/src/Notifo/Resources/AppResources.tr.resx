@@ -306,8 +306,8 @@
   <data name="GeneralError" xml:space="preserve">
     <value>Birşeyler başarısız oldu.</value>
   </data>
-  <data name="GithubEmailPrivateError" xml:space="preserve">
-    <value>Github e-posta adresiniz gizlenmiş.</value>
+  <data name="EmailPrivateError" xml:space="preserve">
+    <value>E-posta adresiniz gizlenmiş.</value>
   </data>
   <data name="IndexTitle" xml:space="preserve">
     <value>Hoşgeldiniz</value>

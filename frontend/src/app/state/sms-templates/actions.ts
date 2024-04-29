@@ -5,47 +5,70 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer, Middleware } from '@reduxjs/toolkit';
+import { Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
-import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfSmsTemplateDto } from '@app/service';
-import { createApiThunk, selectApp } from './../shared';
-import { SmsTemplatesState } from './state';
+import { createExtendedReducer, createList, createMutation, formatError } from '@app/framework';
+import { Clients, UpdateChannelTemplateDtoOfSmsTemplateDto } from '@app/service';
+import { selectApp } from './../shared';
+import { SmsTemplatesState, SmsTemplatesStateInStore } from './state';
 
-const list = listThunk<SmsTemplatesState, ChannelTemplateDto>('smsTemplates', 'templates', async params => {
-    const { items, total } = await Clients.SmsTemplates.getTemplates(params.appId, params.search, params.take, params.skip);
+export const loadSmsTemplates = createList<SmsTemplatesState, SmsTemplatesStateInStore>('templates', 'smsTemplates').with({
+    name: 'smsTemplates/load',
+    queryFn: async (p: { appId: string }, q) => {
+        const { items, total } = await Clients.SmsTemplates.getTemplates(p.appId, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadSmsTemplates = (appId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ appId, query, reset });
-};
-
-export const loadSmsTemplate = createApiThunk('smsTemplates/load',
-    (arg: { appId: string; id: string }) => {
+export const loadSmsTemplate = createMutation<SmsTemplatesState>('loadingTemplate').with({
+    name: 'smsTemplates/loadOne',
+    mutateFn: (arg: { appId: string; id: string }) => {
         return Clients.SmsTemplates.getTemplate(arg.appId, arg.id);
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const createSmsTemplate = createApiThunk('smsTemplates/create',
-    (arg: { appId: string }) => {
+export const createSmsTemplate = createMutation<SmsTemplatesState>('loadingTemplate').with({
+    name: 'smsTemplates/create',
+    mutateFn: (arg: { appId: string }) => {
         return Clients.SmsTemplates.postTemplate(arg.appId, { });
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const createSmsTemplateLanguage = createApiThunk('smsTemplates/createLanguage',
-    (arg: { appId: string; id: string; language: string }) => {
+export const createSmsTemplateLanguage = createMutation<SmsTemplatesState>('loadingTemplate').with({
+    name: 'smsTemplates/createLanguage',
+    mutateFn: (arg: { appId: string; id: string; language: string }) => {
         return Clients.SmsTemplates.postTemplateLanguage(arg.appId, arg.id, { language: arg.language });
-    });
+    },
+    updateFn(state, action) {
+        state.template = action.payload;
+    },
+});
 
-export const updateSmsTemplate = createApiThunk('smsTemplates/update',
-    (arg: { appId: string; id: string; update: UpdateChannelTemplateDtoOfSmsTemplateDto }) => {
+export const updateSmsTemplate = createMutation<SmsTemplatesState>('loadingTemplate').with({
+    name: 'smsTemplates/update',
+    mutateFn: (arg: { appId: string; id: string; update: UpdateChannelTemplateDtoOfSmsTemplateDto }) => {
         return Clients.SmsTemplates.putTemplate(arg.appId, arg.id, arg.update);
-    });
+    },
+    updateFn(state, action) {
+        if (state.template && state.template.id === action.meta.arg.id) {
+            state.template = { ...state.template, ...action.meta.arg.update };
+        }
+    },
+});
 
-export const deleteSmsTemplate = createApiThunk('smsTemplates/delete',
-    (arg: { appId: string; id: string }) => {
+export const deleteSmsTemplate = createMutation<SmsTemplatesState>('loadingTemplate').with({
+    name: 'smsTemplates/delete',
+    mutateFn: (arg: { appId: string; id: string }) => {
         return Clients.SmsTemplates.deleteTemplate(arg.appId, arg.id);
-    });
+    },
+});
 
 export const smsTemplatesMiddleware: Middleware = store => next => action => {
     const result = next(action);
@@ -53,7 +76,7 @@ export const smsTemplatesMiddleware: Middleware = store => next => action => {
     if (createSmsTemplate.fulfilled.match(action) || deleteSmsTemplate.fulfilled.match(action)) {
         const { appId } = action.meta.arg;
 
-        store.dispatch(loadSmsTemplates(appId) as any);
+        store.dispatch(loadSmsTemplates({ appId }) as any);
     } else if (deleteSmsTemplate.rejected.match(action)) {
         toast.error(formatError(action.payload as any));
     }
@@ -62,63 +85,19 @@ export const smsTemplatesMiddleware: Middleware = store => next => action => {
 };
 
 const initialState: SmsTemplatesState = {
-    templates: list.createInitial(),
+    templates: loadSmsTemplates.createInitial(),
 };
 
-export const smsTemplatesReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    createSmsTemplate,
+    createSmsTemplateLanguage,
+    deleteSmsTemplate,
+    loadSmsTemplate,
+    loadSmsTemplates,
+    updateSmsTemplate,
+];
+
+export const smsTemplatesReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    })
-    .addCase(loadSmsTemplate.pending, (state) => {
-        state.loadingTemplate = true;
-        state.loadingTemplateError = undefined;
-    })
-    .addCase(loadSmsTemplate.rejected, (state, action) => {
-        state.loadingTemplate = false;
-        state.loadingTemplateError = action.payload as ErrorInfo;
-    })
-    .addCase(loadSmsTemplate.fulfilled, (state, action) => {
-        state.loadingTemplate = false;
-        state.loadingTemplateError = undefined;
-        state.template = action.payload;
-    })
-    .addCase(createSmsTemplate.pending, (state) => {
-        state.creating = true;
-        state.creatingError = undefined;
-    })
-    .addCase(createSmsTemplate.rejected, (state, action) => {
-        state.creating = false;
-        state.creatingError = action.payload as ErrorInfo;
-    })
-    .addCase(createSmsTemplate.fulfilled, (state) => {
-        state.creating = false;
-        state.creatingError = undefined;
-    })
-    .addCase(updateSmsTemplate.pending, (state) => {
-        state.updating = true;
-        state.updatingError = undefined;
-    })
-    .addCase(updateSmsTemplate.rejected, (state, action) => {
-        state.updating = false;
-        state.updatingError = action.payload as ErrorInfo;
-    })
-    .addCase(updateSmsTemplate.fulfilled, (state, action) => {
-        state.updating = false;
-        state.updatingError = undefined;
-
-        if (state.template && state.template.id === action.meta.arg.id) {
-            state.template = { ...state.template, ...action.meta.arg.update };
-        }
-    })
-    .addCase(deleteSmsTemplate.pending, (state) => {
-        state.deleting = true;
-        state.deletingError = undefined;
-    })
-    .addCase(deleteSmsTemplate.rejected, (state, action) => {
-        state.deleting = false;
-        state.deletingError = action.payload as ErrorInfo;
-    })
-    .addCase(deleteSmsTemplate.fulfilled, (state) => {
-        state.deleting = false;
-        state.deletingError = undefined;
-    }));
+    }), operations);

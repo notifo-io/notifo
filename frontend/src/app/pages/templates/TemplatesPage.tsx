@@ -28,7 +28,7 @@ export const TemplatesPage = () => {
     }, [templates, templateCode]);
 
     React.useEffect(() => {
-        dispatch(loadTemplates(appId));
+        dispatch(loadTemplates({ appId }));
     }, [dispatch, appId]);
 
     return (

@@ -29,15 +29,15 @@ export const EventsPage = () => {
     const [channels, setChannels] = React.useState<string[]>([]);
 
     React.useEffect(() => {
-        dispatch(loadEvents(appId, {}, undefined, channels));
+        dispatch(loadEvents({ appId, channels, query: { search: '', page: 0 } }));
     }, [dispatch, appId, channels]);
 
     const doRefresh = useEventCallback(() => {
-        dispatch(loadEvents(appId, undefined, undefined, channels));
+        dispatch(loadEvents({ appId, channels }));
     });
 
     const doLoad = useEventCallback((q?: Partial<Query>) => {
-        dispatch(loadEvents(appId, q, undefined, channels));
+        dispatch(loadEvents({ appId, channels, ...q }));
     });
 
     return (

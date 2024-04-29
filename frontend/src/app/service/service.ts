@@ -3838,7 +3838,7 @@ export class EmailTemplatesClient {
 
     /**
      * Get the HTML preview for a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param id The template ID.
      * @return Channel template preview returned.
      */
@@ -3899,7 +3899,7 @@ export class EmailTemplatesClient {
 
     /**
      * Render a preview for a email template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param request The template to render.
      * @return Template rendered.
      */
@@ -3962,7 +3962,7 @@ export class EmailTemplatesClient {
 
     /**
      * Get the channel templates.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
@@ -4027,7 +4027,7 @@ export class EmailTemplatesClient {
 
     /**
      * Create a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param request The request object.
      * @return Channel template created.
      */
@@ -4142,7 +4142,7 @@ export class EmailTemplatesClient {
 
     /**
      * Get the channel template by id.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param id The template ID.
      * @return Channel templates returned.
      */
@@ -4198,7 +4198,7 @@ export class EmailTemplatesClient {
 
     /**
      * Create an app template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
@@ -4265,7 +4265,7 @@ export class EmailTemplatesClient {
 
     /**
      * Update an app template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      */
@@ -4331,7 +4331,7 @@ export class EmailTemplatesClient {
 
     /**
      * Delete a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @return Channel template deleted.
      */
@@ -4390,7 +4390,7 @@ export class EmailTemplatesClient {
 
     /**
      * Update a channel template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
@@ -4460,7 +4460,7 @@ export class EmailTemplatesClient {
 
     /**
      * Delete a language channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
      */
@@ -4536,7 +4536,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Get the channel templates.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
@@ -4601,7 +4601,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Create a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param request The request object.
      * @return Channel template created.
      */
@@ -4716,7 +4716,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Get the channel template by id.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param id The template ID.
      * @return Channel templates returned.
      */
@@ -4772,7 +4772,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Create an app template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
@@ -4839,7 +4839,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Update an app template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      */
@@ -4905,7 +4905,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Delete a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @return Channel template deleted.
      */
@@ -4964,7 +4964,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Update a channel template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
@@ -5034,7 +5034,7 @@ export class MessagingTemplatesClient {
 
     /**
      * Delete a language channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
      */
@@ -5110,7 +5110,7 @@ export class SmsTemplatesClient {
 
     /**
      * Get the channel templates.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
@@ -5175,7 +5175,7 @@ export class SmsTemplatesClient {
 
     /**
      * Create a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param request The request object.
      * @return Channel template created.
      */
@@ -5290,7 +5290,7 @@ export class SmsTemplatesClient {
 
     /**
      * Get the channel template by id.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param id The template ID.
      * @return Channel templates returned.
      */
@@ -5346,7 +5346,7 @@ export class SmsTemplatesClient {
 
     /**
      * Create an app template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
@@ -5413,7 +5413,7 @@ export class SmsTemplatesClient {
 
     /**
      * Update an app template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
      */
@@ -5479,7 +5479,7 @@ export class SmsTemplatesClient {
 
     /**
      * Delete a channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @return Channel template deleted.
      */
@@ -5538,7 +5538,7 @@ export class SmsTemplatesClient {
 
     /**
      * Update a channel template language.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
@@ -5608,7 +5608,7 @@ export class SmsTemplatesClient {
 
     /**
      * Delete a language channel template.
-     * @param appId The id of the app where the templates belong to.
+     * @param appId The ID of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
      */
@@ -5782,9 +5782,9 @@ export class AppsClient {
     }
 
     /**
-     * Get app by id.
-     * @param appId The id of the app.
-     * @return Apps returned.
+     * Get app by ID.
+     * @param appId The ID of the app.
+     * @return App returned.
      */
     getApp(appId: string, signal?: AbortSignal): Promise<AppDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}";
@@ -5897,8 +5897,177 @@ export class AppsClient {
     }
 
     /**
+     * Get app auth settings by ID.
+     * @param appId The ID of the app.
+     * @return App auth settings returned.
+     */
+    getAuthScheme(appId: string, signal?: AbortSignal): Promise<AuthSchemeResponseDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/auth";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAuthScheme(_response);
+        });
+    }
+
+    protected processGetAuthScheme(response: Response): Promise<AuthSchemeResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeResponseDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AuthSchemeResponseDto>(null as any);
+    }
+
+    /**
+     * Updates the auth settings of the app.
+     * @param appId The ID of the app.
+     * @param request The request object.
+     * @return App auth settings returned.
+     */
+    upsertAuthScheme(appId: string, request: AuthSchemeDto, signal?: AbortSignal): Promise<AuthSchemeResponseDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/auth";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertAuthScheme(_response);
+        });
+    }
+
+    protected processUpsertAuthScheme(response: Response): Promise<AuthSchemeResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeResponseDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AuthSchemeResponseDto>(null as any);
+    }
+
+    /**
+     * Deletes the auth settings of the app.
+     * @param appId The ID of the app.
+     */
+    deleteAuthScheme(appId: string, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/auth";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteAuthScheme(_response);
+        });
+    }
+
+    protected processDeleteAuthScheme(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * Add an app contributor.
-     * @param appId The id of the app.
+     * @param appId The ID of the app.
      * @param request The request object.
      * @return Apps returned.
      */
@@ -5961,7 +6130,7 @@ export class AppsClient {
 
     /**
      * Delete an app contributor.
-     * @param appId The id of the app.
+     * @param appId The ID of the app.
      * @param contributorId The contributor to remove.
      * @return Apps returned.
      */
@@ -6023,7 +6192,7 @@ export class AppsClient {
 
     /**
      * Get the app integrations.
-     * @param appId The id of the app where the integrations belong to.
+     * @param appId The ID of the app where the integrations belong to.
      * @return App email templates returned.
      */
     getIntegrations(appId: string, signal?: AbortSignal): Promise<ConfiguredIntegrationsDto> {
@@ -6075,7 +6244,7 @@ export class AppsClient {
 
     /**
      * Create an app integrations.
-     * @param appId The id of the app where the integration belong to.
+     * @param appId The ID of the app where the integration belong to.
      * @param request The request object.
      * @return App integration created.
      */
@@ -6138,8 +6307,8 @@ export class AppsClient {
 
     /**
      * Update an app integration.
-     * @param appId The id of the app where the integration belong to.
-     * @param id The id of the integration.
+     * @param appId The ID of the app where the integration belong to.
+     * @param id The ID of the integration.
      * @param request The request object.
      * @return App integration updated.
      */
@@ -6202,8 +6371,8 @@ export class AppsClient {
 
     /**
      * Delete an app integration.
-     * @param appId The id of the app where the email templates belong to.
-     * @param id The id of the integration.
+     * @param appId The ID of the app where the email templates belong to.
+     * @param id The ID of the integration.
      * @return App integration deleted.
      */
     deleteIntegration(appId: string, id: string, signal?: AbortSignal): Promise<void> {
@@ -6419,7 +6588,7 @@ export interface ListResponseDtoOfUserDto {
 }
 
 export interface UserDto {
-    /** The id of the user. */
+    /** The ID of the user. */
     id: string;
     /** The unique api key for the user. */
     apiKey: string;
@@ -6490,7 +6659,7 @@ export interface UpsertUsersDto {
 }
 
 export interface UpsertUserDto {
-    /** The id of the user. */
+    /** The ID of the user. */
     id?: string | undefined;
     /** The full name of the user. */
     fullName?: string | undefined;
@@ -6637,7 +6806,7 @@ export interface ListResponseDtoOfSystemUserDto {
 }
 
 export interface SystemUserDto {
-    /** The id of the user. */
+    /** The ID of the user. */
     id: string;
     /** The email of the user. Unique value. */
     email: string;
@@ -6680,7 +6849,7 @@ export interface ListResponseDtoOfUserNotificationDetailsDto {
 }
 
 export interface UserNotificationBaseDto {
-    /** The id of the notification. */
+    /** The ID of the notification. */
     id: string;
     /** The subject of the notification in the language of the user. */
     subject: string;
@@ -6792,9 +6961,9 @@ export interface UserNotificationDto extends UserNotificationBaseDto {
 export type DeviceNotificationsQueryScope = "Seen" | "Unseen" | "All";
 
 export interface TrackNotificationDto {
-    /** The id of the noitifications to mark as confirmed. */
+    /** The ID of the noitifications to mark as confirmed. */
     confirmed?: string | undefined;
-    /** The id of the noitifications to mark as seen. */
+    /** The ID of the noitifications to mark as seen. */
     seen?: string[] | undefined;
     /** The channel name. */
     channel?: string | undefined;
@@ -6896,7 +7065,7 @@ export interface ListResponseDtoOfEventDto {
 }
 
 export interface EventDto {
-    /** The id of the event. */
+    /** The ID of the event. */
     id: string;
     /** The topic path. */
     topic: string;
@@ -7019,7 +7188,7 @@ export interface ListResponseDtoOfChannelTemplateDto {
 }
 
 export interface ChannelTemplateDto {
-    /** The id of the template. */
+    /** The ID of the template. */
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
@@ -7048,7 +7217,7 @@ export interface TemplatePropertyDto {
 export type LiquidPropertyType = "Array" | "String" | "Number" | "Boolean" | "Object";
 
 export interface ChannelTemplateDetailsDtoOfEmailTemplateDto {
-    /** The id of the template. */
+    /** The ID of the template. */
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
@@ -7093,7 +7262,7 @@ export interface UpdateChannelTemplateDtoOfEmailTemplateDto {
 }
 
 export interface ChannelTemplateDetailsDtoOfMessagingTemplateDto {
-    /** The id of the template. */
+    /** The ID of the template. */
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
@@ -7122,7 +7291,7 @@ export interface UpdateChannelTemplateDtoOfMessagingTemplateDto {
 }
 
 export interface ChannelTemplateDetailsDtoOfSmsTemplateDto {
-    /** The id of the template. */
+    /** The ID of the template. */
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
@@ -7151,7 +7320,7 @@ export interface UpdateChannelTemplateDtoOfSmsTemplateDto {
 }
 
 export interface AppDto {
-    /** The id of the app. */
+    /** The ID of the app. */
     id: string;
     /** The app name. */
     name: string;
@@ -7170,7 +7339,7 @@ export interface AppDto {
 }
 
 export interface AppDetailsDto {
-    /** The id of the app. */
+    /** The ID of the app. */
     id: string;
     /** The app name. */
     name: string;
@@ -7193,12 +7362,32 @@ export interface AppDetailsDto {
 }
 
 export interface AppContributorDto {
-    /** The id of the user. */
+    /** The ID of the user. */
     userId: string;
     /** The name of the user. */
     userName: string;
     /** The role. */
     role: string;
+}
+
+export interface AuthSchemeResponseDto {
+    /** The auth scheme if configured. */
+    scheme?: AuthSchemeDto | undefined;
+}
+
+export interface AuthSchemeDto {
+    /** The domain name of your user accounts. */
+    domain?: string;
+    /** The display name for buttons. */
+    displayName: string;
+    /** The client ID. */
+    clientId: string;
+    /** The client secret. */
+    clientSecret: string;
+    /** The authority URL. */
+    authority: string;
+    /** The URL to redirect after a signout. */
+    signoutRedirectUrl?: string | undefined;
 }
 
 export interface UpsertAppDto {
@@ -7302,7 +7491,7 @@ export interface IntegrationPropertyDto {
 export type PropertyType = "Text" | "Number" | "MultilineText" | "Password" | "Boolean";
 
 export interface IntegrationCreatedDto {
-    /** The id of the integration. */
+    /** The ID of the integration. */
     id: string;
     /** The integration. */
     integration: ConfiguredIntegrationDto;

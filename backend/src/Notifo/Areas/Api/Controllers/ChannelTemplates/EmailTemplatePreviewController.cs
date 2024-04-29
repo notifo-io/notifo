@@ -49,7 +49,7 @@ public class EmailTemplatePreviewController : BaseController
     /// <summary>
     /// Get the HTML preview for a channel template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
     /// <response code="200">Channel template preview returned.</response>.
     /// <response code="404">Channel template not found.</response>.
@@ -78,7 +78,7 @@ public class EmailTemplatePreviewController : BaseController
     /// <summary>
     /// Render a preview for a email template.
     /// </summary>
-    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="request">The template to render.</param>
     /// <response code="200">Template rendered.</response>.
     /// <response code="404">App not found.</response>.

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ListState } from '@app/framework';
+import { ListState, MutationState } from '@app/framework';
 import { MediaDto } from '@app/service/service';
 
 export interface MediaStateInStore {
@@ -18,4 +18,10 @@ export interface MediaState {
 
     // The uploading files.
     uploadingFiles: ReadonlyArray<File>;
+
+    // The mutation for uploading media files.
+    uploading?: MutationState;
+
+    // The mutation for deleting media files.
+    deleting?: MutationState;
 }

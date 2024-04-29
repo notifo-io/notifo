@@ -51,8 +51,8 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
     } = props;
 
     const dispatch = useDispatch<any>();
-    const upserting = useIntegrations(x => x.upserting);
-    const upsertingError = useIntegrations(x => x.upsertingError);
+    const upserting = useIntegrations(x => x.upserting?.isRunning);
+    const upsertingError = useIntegrations(x => x.upserting?.error);
     const wasUpserting = React.useRef(false);
 
     React.useEffect(() => {

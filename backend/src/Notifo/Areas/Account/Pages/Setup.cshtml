@@ -74,7 +74,7 @@
 <div class="profile-section">
     <h2>@T["SetupRulesHeadline"]</h2>
 
-    @if (Model!.IsValidHttps)
+    @if (Model.IsValidHttps)
     {
         RenderRuleAsSuccess("SetupRuleHttpsSuccess");
     }
@@ -83,21 +83,21 @@
         RenderRuleAsCritical("SetupRuleHttpsFailure");
     }
 
-    @if (Model!.BaseUrlConfigured == Model!.BaseUrlCurrent)
+    @if (Model.BaseUrlConfigured == Model.BaseUrlCurrent)
     {
         RenderRuleAsSuccess("SetupRuleUrlSuccess");
     }
     else
     {
-        RenderRuleAsCritical("SetupRuleUrlFailure", Model!.BaseUrlCurrent, Model!.BaseUrlConfigured);
+        RenderRuleAsCritical("SetupRuleUrlFailure", Model.BaseUrlCurrent, Model.BaseUrlConfigured);
     }
 
-    @if (Model!.IsAssetStoreFtp)
+    @if (Model.IsAssetStoreFtp)
     {
         RenderRuleAsWarning("SetupRuleFtpWarning");
     }
 
-    @if (Model!.IsAssetStoreFile)
+    @if (Model.IsAssetStoreFile)
     {
         RenderRuleAsWarning("SetupRuleFolderWarning");
     }
@@ -108,7 +108,7 @@
 <div class="profile-section">
     <h2>@T["SetupCreateUserHeadline"]</h2>
 
-    @if (Model!.HasExternalLogin)
+    @if (Model.HasExternalLogin)
     {
         <div>
             <div class="form-text text-muted mt-2 mb-2">@T["SetupCreateUserLoginHint"]</div>
@@ -121,21 +121,21 @@
         </div>
     }
 
-    @if (Model!.HasExternalLogin && Model!.HasPasswordAuth)
+    @if (Model.HasExternalLogin && Model.HasPasswordAuth)
     {
         <div class="login-separator">
             <span>@T["ExternalSeperator"]</span>
         </div>
     }
 
-    @if (Model!.HasPasswordAuth)
+    @if (Model.HasPasswordAuth)
     {
         <h3>@T["SetupCreateUserHeadlineCreate"]</h3>
 
-        @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
             <div class="alert alert-danger">
-                @Model!.ErrorMessage
+                @Model.ErrorMessage
             </div>
         }
 
@@ -170,7 +170,7 @@
         </form>
     }
 
-    @if (!Model!.HasExternalLogin && !Model!.HasPasswordAuth)
+    @if (!Model.HasExternalLogin && !Model.HasPasswordAuth)
     {
         <div>
             @T["SetupCreateUserFailure"]

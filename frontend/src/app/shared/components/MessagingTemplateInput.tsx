@@ -20,7 +20,7 @@ export const MessagingTemplateInput = (props: FormEditorProps) => {
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadMessagingTemplates(appId));
+            dispatch(loadMessagingTemplates({ appId }));
         }
     }, [dispatch, appId, templates.isLoaded]);
 

@@ -13,7 +13,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos;
 public abstract class UserNotificationBaseDto
 {
     /// <summary>
-    /// The id of the notification.
+    /// The ID of the notification.
     /// </summary>
     public Guid Id { get; set; }
 

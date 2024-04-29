@@ -9,7 +9,7 @@ import * as React from 'react';
 import { texts } from '@app/texts';
 
 export interface ErrorBoundaryProps extends React.PropsWithChildren {
-    // True if silent.
+    // True, if silent.
     silent?: boolean;
 }
 

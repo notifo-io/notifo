@@ -569,6 +569,10 @@ $small-gutters: 4px;
     }
 }
 
+.transition-all {
+    transition: all .2s ease-in-out;
+}
+
 .alert {
     position: relative;
 
@@ -590,9 +594,16 @@ $small-gutters: 4px;
         background: lighten($color-background, 2%);
         border: 0;
         border-radius: $border-radius;
+        line-height: 1.7;
         padding-left: 4rem;
         padding-top: 1.25rem;
         padding-bottom: 1.25rem;
+
+        &-bordered {
+            background: $color-white;
+            border: 1px solid $color-border-dark;
+            border-radius: $border-radius;
+        }
 
         & > i {
             @include absolute(1rem, null, null, 1rem);
@@ -827,6 +838,10 @@ div {
         border-right: 1px solid $color-border;
         padding: 1rem;
     }
+}
+
+.react-tooltip {
+    z-index: 9000;
 }
 
 //

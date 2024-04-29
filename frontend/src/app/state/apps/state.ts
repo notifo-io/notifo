@@ -5,9 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorInfo } from '@app/framework';
-import { ListState } from '@app/framework/model';
-import { AppDetailsDto, AppDto } from '@app/service';
+import { ListState, MutationState } from '@app/framework/model';
+import { AppDetailsDto, AppDto, AuthSchemeResponseDto } from '@app/service';
 
 export interface AppsStateInStore {
     apps: AppsState;
@@ -27,27 +26,21 @@ export interface AppsState {
     // The app details.
     app?: AppDetailsDto;
 
-    // True if loading details.
-    loadingDetails?: boolean;
+    // The auth details.
+    auth?: AuthSchemeResponseDto;
 
-    // The loading details error.
-    loadingDetailsError?: ErrorInfo;
+    // Mutation for loading details.
+    loadingDetails?: MutationState;
 
-    // True if creating.
-    creating?: boolean;
+    // Mutation for creating.
+    creating?: MutationState;
 
-    // The creating error.
-    creatingError?: ErrorInfo;
+    // Mutation for updating the app.
+    updating?: MutationState;
 
-    // True if upserting.
-    upserting?: boolean;
+    // Mutation for updating the app.
+    updatingContributors?: MutationState;
 
-    // The upserting error.
-    upsertingError?: ErrorInfo;
-
-    // True if updating the contributors.
-    contributorsUpdating?: boolean;
-
-    // The contributor error.
-    contributorsError?: ErrorInfo;
+    // Mutation for updating the auth settings.
+    updatingAuth?: MutationState;
 }

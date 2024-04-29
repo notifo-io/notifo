@@ -45,6 +45,12 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         }
     }
 
+    public Task<bool> AnyAuthDomainAsync(
+        CancellationToken ct = default)
+    {
+        return repository.AnyAuthDomainAsync(ct);
+    }
+
     public IAsyncEnumerable<App> QueryAllAsync(
         CancellationToken ct = default)
     {
@@ -110,6 +116,18 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         Guard.NotNullOrEmpty(apiKey);
 
         var (app, _) = await repository.GetByApiKeyAsync(apiKey, ct);
+
+        await DeliverAsync(app);
+
+        return app;
+    }
+
+    public async Task<App?> GetByAuthDomainAsync(string domain,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(domain);
+
+        var (app, _) = await repository.GetByAuthDomainAsync(domain, ct);
 
         await DeliverAsync(app);
 

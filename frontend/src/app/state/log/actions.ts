@@ -5,27 +5,29 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import { listThunk, Query } from '@app/framework';
-import { Clients, LogEntryDto } from '@app/service';
+import { createExtendedReducer, createList } from '@app/framework';
+import { Clients } from '@app/service';
 import { selectApp } from './../shared';
-import { LogState } from './state';
+import { LogState, LogStateInStore } from './state';
 
-const list = listThunk<LogState, LogEntryDto>('log', 'entries', async params => {
-    const { items, total } = await Clients.Logs.getLogs(params.appId, params.systems, params.userId, undefined, params.search, params.take, params.skip);
+export const loadLog = createList<LogState, LogStateInStore>('log', 'log').with({
+    name: 'log/load',
+    queryFn: async (p: { appId: string; systems?: string[]; userId?: string }, q ) => {
+        const { items, total } = await Clients.Logs.getLogs(p.appId, p.systems, p.userId, undefined, q.search, q.take, q.skip);
 
-    return { items, total };
+        return { items, total };
+    },
 });
 
-export const loadLog = (appId: string, query?: Partial<Query>, reset = false, systems?: string[], userId?: string) => {
-    return list.action({ appId, query, reset, systems, userId });
-};
-
 const initialState: LogState = {
-    entries: list.createInitial(),
+    log: loadLog.createInitial(),
 };
 
-export const logReducer = createReducer(initialState, builder => list.initialize(builder)
+const operations = [
+    loadLog,
+];
+
+export const logReducer = createExtendedReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
-    }));
+    }), operations);

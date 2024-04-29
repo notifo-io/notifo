@@ -109,6 +109,19 @@ internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepos
         }
     }
 
+    public async Task<(App? App, string? Etag)> GetByAuthDomainAsync(string domain,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbAppRepository/GetByAuthDomainAsync"))
+        {
+            var document = await
+                Collection.Find(x => x.Doc.AuthScheme!.Domain == domain)
+                    .FirstOrDefaultAsync(ct);
+
+            return (document?.ToApp(), document?.Etag);
+        }
+    }
+
     public async Task<(App? App, string? Etag)> GetAsync(string id,
         CancellationToken ct = default)
     {
@@ -128,6 +141,15 @@ internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepos
             var document = MongoDbApp.FromApp(app);
 
             await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+        }
+    }
+
+    public async Task<bool> AnyAuthDomainAsync(
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbAppRepository/AnyAuthDomainAsync"))
+        {
+            return await Collection.Find(x => x.Doc.AuthScheme != null).AnyAsync(ct);
         }
     }
 

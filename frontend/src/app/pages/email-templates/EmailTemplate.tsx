@@ -62,15 +62,15 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     } = props;
 
     const dispatch = useDispatch<any>();
-    const creatingLanguage = useEmailTemplates(x => x.creatingLanguage);
-    const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
-    const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
-    const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
+    const creatingLanguage = useEmailTemplates(x => x.creatingLanguage?.isRunning);
+    const creatingLanguageError = useEmailTemplates(x => x.creatingLanguage?.error);
+    const deletingLanguage = useEmailTemplates(x => x.deletingLanguage?.isRunning);
+    const deletingLanguageError = useEmailTemplates(x => x.deletingLanguage?.error);
     const schema = useEmailTemplates(x => x.schema);
     const showHtml = useBooleanObj(true);
     const updateDialog = useBooleanObj();
-    const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
-    const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
+    const updatingLanguage = useEmailTemplates(x => x.updatingLanguage?.isRunning);
+    const updatingLanguageError = useEmailTemplates(x => x.updatingLanguage?.error);
     const disabled = updatingLanguage || deletingLanguage;
 
     React.useEffect(() => {

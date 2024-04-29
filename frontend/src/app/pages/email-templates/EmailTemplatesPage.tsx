@@ -19,13 +19,13 @@ export const EmailTemplatesPage = () => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
-    const creating = useEmailTemplates(x => x.creating);
-    const creatingError = useEmailTemplates(x => x.creatingError);
-    const deletingError = useEmailTemplates(x => x.deletingError);
+    const creating = useEmailTemplates(x => x.creating?.isRunning);
+    const creatingError = useEmailTemplates(x => x.creating?.error);
+    const deletingError = useEmailTemplates(x => x.deleting?.error);
     const emailTemplates = useEmailTemplates(x => x.templates);
 
     React.useEffect(() => {
-        dispatch(loadEmailTemplates(appId));
+        dispatch(loadEmailTemplates({ appId }));
     }, [dispatch, appId]);
 
     React.useEffect(() => {

@@ -5,30 +5,31 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ActionReducerMapBuilder, AnyAction, createAction, Dispatch } from '@reduxjs/toolkit';
-import { buildError, ErrorInfo, Types } from './../utils';
+import { ActionReducerMapBuilder, AnyAction, Dispatch } from '@reduxjs/toolkit';
+import { ErrorInfo, Types } from './../utils';
+import { createApiThunk } from './shared';
 
-export interface ListState<T, TExtra = any> extends Query {
+export interface ListState<Item, Extra = any> extends Query {
     // The total number of items.
     total: number;
 
     // Extra information from the search.
-    extra?: TExtra;
+    extra?: Extra;
 
     // The loading error.
     error?: ErrorInfo | null;
 
-    // True if at least loaded once.
+    // True, if at least loaded once.
     isLoaded?: boolean;
 
-    // True if currently loading.
+    // True, if currently loading.
     isLoading?: boolean;
 
-    // True if currently loading more items.
+    // True, if currently loading more items.
     isLoadingMore?: boolean;
 
     // The current items.
-    items?: ReadonlyArray<T>;
+    items?: ReadonlyArray<Item>;
 }
 
 export interface Sorting {
@@ -54,138 +55,148 @@ export interface Query {
 }
 
 export interface SearchRequest extends Query {
-    [x: string]: any;
-
     // The number of items to take.
     take: number;
 
     // The number of items to skip.
     skip: number;
+
+    // True to reset the results.
+    reset?: boolean;
 }
 
-type ListLoader<TItem, TExtra> 
-    = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>; total: number; extra?: TExtra }>;
+export interface ListProps<Item, Params, Extra> {
+    // The name of the action.
+    name: string;
 
-type ListArg 
-    = { query?: Partial<SearchRequest>; reset?: boolean } & { [x: string]: any };
+    // The function to make the actual mutation on the server.
+    queryFn: (params: Params, request: SearchRequest) => Promise<{ items: ReadonlyArray<Item>; total: number; extra?: Extra }>;
+}
 
-export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
-    const name = `${prefix}/${key}/load`;
+type List<Args, Item, Extra> = ((args: Args) => AnyAction) & {
+    // Resets the state.
+    reset: () => void;
 
-    type ActionPendingType = { reset?: boolean; request: SearchRequest };
-    type ActionFulfilledType = { items: readonly TItem[]; extra?: TExtra; total: number };
-    type ActionRejectedType = { error: ErrorInfo };
+    // Create the initial state.
+    createInitial: (pageSize?: number) => ListState<Item, Extra>;
+};
 
-    const actionPending = createAction<ActionPendingType>(`${name}/pending`);
-    const actionFulfilled = createAction<ActionFulfilledType>(`${name}/fulfilled`);
-    const actionRejected = createAction<ActionRejectedType>(`${name}/rejected`);
+type SearchArgs<Params> = ({ query?: Partial<Query>; reset?: boolean } & Params) | undefined;
 
-    const loadAction = (arg: ListArg) => {
-        const action = async (dispatch: Dispatch, getState: () => any) => {
-            const state = getState()[prefix][key] as ListState<T>;
+type ConfigFunction = {
+    with: <Item, Params = {}, Extra = any>(props: ListProps<Item, Params, Extra>) => List<SearchArgs<Params>, Item, Extra>;
+};
 
-            if (state.isLoading) {
-                return;
-            }
+export function createList<State, Root>(key: keyof State, rootKey: keyof Root): ConfigFunction {
+    function configure<Item, Params, Extra>(props: ListProps<Item, Params, Extra>) {
+        const thunk = createApiThunk(props.name, async (request: SearchRequest & Params) => {
+            const {
+                page,
+                pageSize,
+                reset,
+                search,
+                skip,
+                sorting,
+                take,
+                ...other
+            } = request;
 
-            const { query, reset, ...params } = arg || {};
+            return props.queryFn(other as any, { page, pageSize, reset, search, skip, sorting, take });
+        });
 
-            const request: SearchRequest = { ...query || {}, ...params } as any;
+        const loadAction = (args: SearchArgs<Params>) => {
+            const action = async (dispatch: Dispatch, getState: () => any) => {
+                const state = getState()[rootKey][key] as ListState<Item>;
 
-            if (!request.hasOwnProperty('search')) {
-                request.search = state.search;
-            } else if (hasChanged(request.search, state.search)) {
-                request.page = 0;
-            }
+                if (state.isLoading) {
+                    return;
+                }
+                const { query, reset, ...params } = args || {};
 
-            if (!request.hasOwnProperty('sorting')) {
-                request.sorting = state.sorting;
-            }
+                const request: SearchRequest & Params = { ...query || {}, ...params } as any;
 
-            if (!Types.isNumber(request.page)) {
-                request.page = state.page;
-            }
+                if (!request.hasOwnProperty('search')) {
+                    request.search = state.search;
+                } else if (hasChanged(request.search, state.search)) {
+                    request.page = 0;
+                }
 
-            if (!Types.isNumber(request.pageSize)) {
-                request.pageSize = state.pageSize;
-            }
+                if (!request.hasOwnProperty('sorting')) {
+                    request.sorting = state.sorting;
+                }
 
-            request.take = request.pageSize;
-            request.skip = request.pageSize * request.page;
+                if (!Types.isNumber(request.page)) {
+                    request.page = state.page;
+                }
 
-            dispatch(actionPending({ reset, request }));
+                if (!Types.isNumber(request.pageSize)) {
+                    request.pageSize = state.pageSize;
+                }
 
-            try {
-                const result = await loader(request);
+                request.take = request.pageSize;
+                request.skip = request.pageSize * request.page;
 
-                dispatch(actionFulfilled(result));
-            } catch (err: any) {
-                const error = buildError(err.status, err.message, err.details);
+                dispatch(thunk(request) as any);
+            };
 
-                dispatch(actionRejected({ error }));
-            }
+            return action;
         };
 
-        return action as any as AnyAction;
-    };
+        (loadAction as any)['initialize'] = (builder: ActionReducerMapBuilder<State>) => {
+            builder.addCase(thunk.pending, (state, action) => {
+                const list = (state as any)[key] as ListState<Item, Extra>;
+                const { page, pageSize, reset, search, sorting } = action.meta.arg;
 
-    const initialize = (builder: ActionReducerMapBuilder<T>) => {
-        builder.addCase(actionPending, (state, action) => {
-            const list = (state as any)[key] as ListState<TItem>;
-            const loaded = Types.isArray(list.items);
+                list.error = null;
+                list.isLoading = true;
+                list.isLoadingMore = Types.isArray(list.items);
+                list.page = page;
+                list.pageSize = pageSize;
+                list.search = search;
+                list.sorting = sorting;
 
-            const { request, reset } = action.payload;
+                if (reset && Types.isArray(list.items)) {
+                    list.items = [];
+                }
+            });
 
-            list.error = null;
-            list.isLoading = true;
-            list.isLoadingMore = loaded;
-            list.page = request.page;
-            list.pageSize = request.pageSize;
-            list.search = request.search;
-            list.sorting = request.sorting;
+            builder.addCase(thunk.fulfilled, (state, action) => {
+                const list = (state as any)[key] as ListState<Item, Extra>;
+                const { extra, items, total } = action.payload;
 
-            if (reset && loaded) {
-                list.items = [];
-            }
+                list.error = null;
+                list.extra = extra;
+                list.isLoaded = true;
+                list.isLoading = false;
+                list.isLoadingMore = false;
+                list.items = items;
+
+                if (Types.isNumber(total)) {
+                    list.total = total;
+                }
+            });
+
+            builder.addCase(thunk.rejected, (state, action) => {
+                const list = (state as any)[key] as ListState<Item, Extra>;
+
+                list.error = action.payload as ErrorInfo;
+                list.isLoading = false;
+                list.isLoadingMore = false;
+            });
+
+            return builder;
+        };
+
+        (loadAction as any)['createInitial'] = (pageSize = 20): ListState<Item, Extra> => ({
+            page: 0,
+            pageSize,
+            total: 0,
         });
 
-        builder.addCase(actionFulfilled, (state, action) => {
-            const list = (state as any)[key] as ListState<TItem>;
+        return loadAction as any;
+    }
 
-            const { extra, items, total } = action.payload;
-
-            list.error = null;
-            list.extra = extra;
-            list.isLoaded = true;
-            list.isLoading = false;
-            list.isLoadingMore = false;
-            list.items = items;
-
-            if (Types.isNumber(total)) {
-                list.total = total;
-            }
-        });
-
-        builder.addCase(actionRejected, (state, action) => {
-            const list = (state as any)[key] as ListState<TItem>;
-
-            const { error } = action.payload;
-
-            list.error = error;
-            list.isLoading = false;
-            list.isLoadingMore = false;
-        });
-
-        return builder;
-    };
-
-    const createInitial = (pageSize = 20): ListState<TItem, TExtra> => ({
-        page: 0,
-        pageSize,
-        total: 0,
-    });
-
-    return { action: loadAction, initialize, createInitial };
+    return { with: configure };
 }
 
 function hasChanged(lhs: string | undefined | null, rhs: string | undefined | null) {

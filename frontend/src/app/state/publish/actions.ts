@@ -5,37 +5,30 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ErrorInfo } from '@app/framework';
+import { createAction } from '@reduxjs/toolkit';
+import { createExtendedReducer, createMutation } from '@app/framework';
 import { Clients, PublishDto } from '@app/service';
-import { createApiThunk } from './../shared';
 import { PublishState } from './state';
 
 export const togglePublishDialog = createAction<{ open: boolean; values?: Partial<PublishDto> }>('publish/dialog');
 
-export const publish = createApiThunk('publish/publish',
-    async (arg: { appId: string; params: PublishDto }) => {
+export const publish = createMutation<PublishState>('publishing').with({
+    name: 'publish/publish',
+    mutateFn: async (arg: { appId: string; params: PublishDto }) => {
         await Clients.Events.postEvents(arg.appId, { requests: [arg.params] });
-    });
+    },
+});
 
 const initialState: PublishState = {};
 
-export const publishReducer = createReducer(initialState, builder => builder
+const operations = [
+    publish,
+];
+
+export const publishReducer = createExtendedReducer(initialState, builder => builder
     .addCase(togglePublishDialog, (state, action) => {
         state.dialogOpen = action.payload.open;
         state.dialogValues = action.payload?.values;
-        state.publishing = false;
-        state.publishingError = undefined;
-    })
-    .addCase(publish.pending, (state) => {
-        state.publishing = true;
-        state.publishingError = undefined;
-    })
-    .addCase(publish.rejected, (state, action) => {
-        state.publishing = false;
-        state.publishingError = action.payload as ErrorInfo;
-    })
-    .addCase(publish.fulfilled, (state) => {
-        state.publishing = false;
-        state.publishingError = undefined;
-    }));
+        state.publishing = {};
+    }),
+operations);

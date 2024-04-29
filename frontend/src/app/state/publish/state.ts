@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorInfo } from '@app/framework';
+import { MutationState } from '@app/framework';
 import { PublishDto } from '@app/service';
 
 export interface PublishStateInStore {
@@ -13,11 +13,8 @@ export interface PublishStateInStore {
 }
 
 export interface PublishState {
-    // True when publishing.
-    publishing?: boolean;
-
-    // The publishing error.
-    publishingError?: ErrorInfo;
+    // The mutation for publishing.
+    publishing?: MutationState;
 
     // True when the dialog is open.
     dialogOpen?: boolean;

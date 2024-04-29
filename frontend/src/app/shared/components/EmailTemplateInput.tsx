@@ -20,7 +20,7 @@ export const EmailTemplateInput = (props: FormEditorProps) => {
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadEmailTemplates(appId));
+            dispatch(loadEmailTemplates({ appId }));
         }
     }, [dispatch, appId, templates.isLoaded]);
 
