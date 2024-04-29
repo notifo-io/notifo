@@ -83,11 +83,11 @@ export const UserDialog = (props: UserDialogProps) => {
         return properties.sortByString(x => x.name);
     }, [dialogUser]);
 
-    const defaultValues = React.useMemo(() => {
-        return Types.clone(dialogUser || {});
-    }, [dialogUser]);
+    const form = useForm<UpsertUserDto>();
 
-    const form = useForm<UpsertUserDto>({ defaultValues });
+    React.useEffect(() => {
+        form.reset(Types.clone(dialogUser || {}));
+    }, [dialogUser, form]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>

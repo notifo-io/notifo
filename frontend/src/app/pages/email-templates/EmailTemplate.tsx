@@ -103,7 +103,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template: params }));
     });
 
-    const form = useForm<EmailTemplateDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: template, mode: 'onChange' });
+    const form = useForm<EmailTemplateDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
     React.useEffect(() => {
         form.reset(template);
@@ -146,8 +146,11 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                             <Forms.Text name='subject' label={texts.common.subject} vertical />
                         </div>
 
-                        <BodyHtml appId={appId} visible={showHtml.value} schema={schema} />
-                        <BodyText appId={appId} visible={!showHtml.value} />
+                        {showHtml.value ? (
+                            <BodyHtml appId={appId} visible={true} schema={schema} />
+                        ) : (
+                            <BodyText appId={appId} visible={true} />
+                        )}
                     </div>
                 </Form>
 

@@ -22,4 +22,5 @@ export * from './StatisticsCard';
 export * from './StatisticsLabel';
 export * from './TableFooter';
 export * from './TemplateInput';
+export * from './TemplateProperties';
 export * from './TemplateVariantsInput';

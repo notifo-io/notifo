@@ -8,7 +8,7 @@
 import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, NavItem } from 'reactstrap';
-import { Marker, useBoolean, useEventCallback } from '@app/framework';
+import { useBoolean, useEventCallback } from '@app/framework';
 import { AppsDropdown, Integrated, Logo } from '@app/shared/components';
 import { logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
@@ -34,10 +34,6 @@ export const TopNav = () => {
             </Nav>
 
             <Nav navbar className='ml-auto'>
-                <NavItem>
-                    <Marker projectId={(window as any)['options'].markerProject} />
-                </NavItem>
-
                 {userProfile?.token &&
                     <NavItem>
                         <Integrated token={userProfile.token} />

@@ -32,13 +32,14 @@ services:
     restart: unless-stopped
 
   notifo_proxy:
-    image: squidex/caddy-proxy
+    image: squidex/caddy-proxy:2.7.6
     ports:
       - "80:80"
       - "443:443"
     environment:
       - SITE_ADDRESS=${NOTIFO_DOMAIN}
       - SITE_SERVER="notifo_notifo:5000"
+    # - SITE_SETTINGS="tls internal"
     volumes:
       - /etc/notifo/caddy/data:/data
       - /etc/notifo/caddy/config:/config

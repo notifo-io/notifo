@@ -68,11 +68,11 @@ export const TemplateForm = (props: TemplateFormProps) => {
         setViewFullscreen(x => !x);
     });
 
-    const defaultValues: any = React.useMemo(() => {
-        return Types.clone(template || {});
-    }, [template]);
+    const form = useForm<TemplateDto>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
-    const form = useForm<TemplateDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
+    React.useEffect(() => {
+        form.reset(Types.clone(template || {}));
+    }, [form, template]);
 
     return (
         <FormProvider {...form}>

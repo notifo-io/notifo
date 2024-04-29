@@ -10,14 +10,15 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Liquid;
 
-public sealed class LiquidApp
+public sealed class LiquidApp(App app)
 {
-    private readonly App app;
+    private readonly App app = app;
 
     public string? Name => app.Name.OrNull();
 
-    public LiquidApp(App app)
+    public static void Describe(LiquidProperties properties)
     {
-        this.app = app;
+        properties.AddString("name",
+            "The name of the app. Cannot be null or undefined.");
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Liquid;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Pipeline;
@@ -20,10 +21,12 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 public abstract class ChannelTemplatesController<T, TDto> : BaseController where T : class, new() where TDto : class, new()
 {
     private readonly IChannelTemplateStore<T> channelTemplateStore;
+    private readonly LiquidPropertiesProvider propertiesProvider;
 
-    protected ChannelTemplatesController(IChannelTemplateStore<T> channelTemplateStore)
+    protected ChannelTemplatesController(IChannelTemplateStore<T> channelTemplateStore, LiquidPropertiesProvider propertiesProvider)
     {
         this.channelTemplateStore = channelTemplateStore;
+        this.propertiesProvider = propertiesProvider;
     }
 
     /// <summary>
@@ -48,7 +51,27 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     }
 
     /// <summary>
-    /// Get the channel template by ID.
+    /// Get the template properties.
+    /// </summary>
+    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <response code="200">Channel templates properties returned.</response>.
+    /// <response code="404">App not found.</response>
+    [HttpGet("properties")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    public ListResponseDto<TemplatePropertyDto> GetProperties(string appId)
+    {
+        var properties = propertiesProvider.GetProperties();
+
+        var response = new ListResponseDto<TemplatePropertyDto>();
+
+        response.Items.AddRange(properties.OrderBy(x => x.Path).Select(TemplatePropertyDto.FromDomainObject));
+        response.Total = 0;
+
+        return response;
+    }
+
+    /// <summary>
+    /// Get the channel template by id.
     /// </summary>
     /// <param name="appId">The ID of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>

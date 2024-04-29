@@ -25,35 +25,35 @@ export const EmailTemplateName = (props: EmailTemplateNameProps) => {
     const { appId, template } = props;
 
     const dispatch = useDispatch<any>();
-    const [name, setName] = React.useState<string>();
+    const [name, setName] = React.useState<{ text: string; stale: boolean }>();
 
     React.useEffect(() => {
-        setName(template?.name || '');
+        setName({ text: template?.name || '', stale: false });
     }, [template]);
 
     const doSave = useEventCallback((event: React.FormEvent) => {
         if (template?.id) {
-            dispatch(updateEmailTemplate({ appId, id: template.id, update: { name } }));
+            dispatch(updateEmailTemplate({ appId, id: template.id, update: { name: name?.text } }));
         }
 
         event.preventDefault();
     });
 
     const doCancel = useEventCallback(() => {
-        setName(template?.name || '');
+        setName({ text: template?.name || '', stale: false });
     });
 
     const doSetName = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+        setName({ text: event.target.value, stale: true });
     });
 
     return (
         <Form inline onSubmit={doSave}>
             <FormGroup className='mr-2'>
-                <Input value={name} onChange={doSetName} disabled={!template} />
+                <Input value={name?.text} onChange={doSetName} disabled={!template} />
             </FormGroup>
 
-            {template && name !== template?.name &&
+            {(template && name?.text !== template?.name && name?.stale) &&
                 <>
                     <Button type='submit' color='primary'>
                         {texts.common.save}

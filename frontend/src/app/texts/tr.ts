@@ -153,6 +153,7 @@ export const TR = {
         profile: 'Profil',
         profileSettings: 'Ayarlarınız',
         propability: 'Olasılık',
+        properties: 'Properties',
         property: 'Özellik',
         publish: 'Yayımla',
         refresh: 'Yenile',

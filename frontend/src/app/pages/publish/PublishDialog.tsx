@@ -23,7 +23,7 @@ import { NotificationPreview } from './../templates/NotificationPreview';
 const FormSchema = Yup.object({
     // Required topic name
     topic: Yup.string()
-        .label(texts.common.name).requiredI18n().topicI18n(),
+        .label(texts.common.topic).requiredI18n().topicI18n(),
 
     // The mode (template or formatted).
     templated: Yup.boolean()
@@ -53,7 +53,10 @@ const FormSchema = Yup.object({
 });
 
 type PublishForms = Omit<PublishDto, 'templateVariants'> & {
+    // True, if temlated.
     templated?: boolean;
+
+    // The variants.
     templateVariants: { probability: number; templateCode: string }[];
 };
 
@@ -69,12 +72,14 @@ export const PublishDialog = () => {
     );
 };
 
+const EMPTY_VALUES = {};
+
 const PublishDialogInner = () => {
     const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const dialogValues = usePublish(x => x.dialogValues || {});
+    const dialogValues = usePublish(x => x.dialogValues || EMPTY_VALUES);
     const publishing = usePublish(x => x.publishing?.isRunning);
     const publishingError = usePublish(x => x.publishing?.error);
     const templates = useTemplates(x => x.templates);
@@ -118,11 +123,11 @@ const PublishDialogInner = () => {
         dispatch(publish({ appId, params }));
     });
 
-    const defaultValues = React.useMemo(() => {
-        return Types.clone(dialogValues || {}) as any;
-    }, [dialogValues]);
+    const form = useForm<PublishForms>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
 
-    const form = useForm<PublishForms>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
+    React.useEffect(() => {        
+        form.reset(Types.clone(dialogValues || {}) as any);
+    }, [dialogValues, form]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>

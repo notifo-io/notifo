@@ -36,7 +36,9 @@ export const Loader = (props: LoaderProps) => {
                 setIsVisible(false);
             }, 300);
 
-            return () => clearTimeout(timeout);
+            return () => {
+                clearTimeout(timeout);
+            };
         }
     }, [visible]);
 

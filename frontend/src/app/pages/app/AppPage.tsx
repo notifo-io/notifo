@@ -207,7 +207,7 @@ export const AppPage = () => {
                 <Route path='sms-templates/:templateId/'
                     element={<SmsTemplatePage />} />
 
-                <Route path='messaging-templates'
+                <Route path='sms-templates'
                     element={<SmsTemplatePage />} />
 
                 <Route path='messaging-templates/:templateId/'
