@@ -62,14 +62,14 @@
                     <div class="form-group">
                         <label asp-for="LoginEmailForm.Email">@T["EmailLabel"]</label>
 
-                        <div error-for="LoginEmailForm.Email" />
+                        <div error-for="LoginEmailForm.Email"></div>
                         <input asp-for="LoginEmailForm.Email" class="form-control" />
                     </div>
 
                     <div class="form-group">
                         <label asp-for="LoginEmailForm.Password">@T["PasswordLabel"]</label>
 
-                        <div error-for="LoginEmailForm.Password" />
+                        <div error-for="LoginEmailForm.Password"></div>
                         <input asp-for="LoginEmailForm.Password" type="password" class="form-control" />
                     </div>
 
@@ -119,16 +119,20 @@
         </div>
 
         <section>
-            <form asp-action="Dynamic" method="post">
+            <form asp-page-handler="Dynamic" method="post">
                 @if (Model.LoginDynamicForm.IsActive)
                 {
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                 }
 
+                <div class="alert alert-form alert-form-bordered mb-4 pl-4">
+                    @T["LoginCustom"]
+                </div>
+
                 <div class="form-group">
                     <label asp-for="LoginDynamicForm.Email">@T["EmailLabel"]</label>
 
-                    <div error-for="LoginDynamicForm.Email" />
+                    <div error-for="LoginDynamicForm.Email"></div>
                     <input asp-for="LoginDynamicForm.Email" class="form-control" />
                 </div>
 

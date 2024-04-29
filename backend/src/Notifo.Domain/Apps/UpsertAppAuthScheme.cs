@@ -54,7 +54,7 @@ public sealed class UpsertAppAuthScheme : AppCommand
 
         if (!Equals(target.AuthScheme, newScheme))
         {
-            target = target with { AuthScheme = null };
+            target = target with { AuthScheme = newScheme };
         }
 
         return new ValueTask<App?>(target);

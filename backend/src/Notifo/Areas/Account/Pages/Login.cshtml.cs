@@ -28,7 +28,7 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     public LoginEmailForm LoginEmailForm { get; set; } = new LoginEmailForm();
 
-    public LoginDynamicModel LoginDynamicForm { get; set; } = new LoginDynamicModel();
+    public LoginDynamicForm LoginDynamicForm { get; set; } = new LoginDynamicForm();
 
     [BindProperty(SupportsGet = true)]
     public bool Signup { get; set; }
@@ -52,7 +52,7 @@ public sealed class LoginModel : PageModelBase<LoginModel>
     }
 
     public async Task<IActionResult> OnPost(
-        [FromForm(Name = "LoginForm")] LoginEmailForm form)
+        [FromForm(Name = "LoginEmailForm")] LoginEmailForm form)
     {
         LoginEmailForm = form with { IsActive = true };
 
@@ -77,6 +77,33 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
         return Page();
     }
+
+    public async Task<IActionResult> OnPostDynamic(
+        [FromForm(Name = "LoginDynamicForm")] LoginDynamicForm form)
+    {
+        LoginDynamicForm = form with { IsActive = true };
+
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        var scheme = await schemeProvider.GetSchemaByEmailAddressAsync(form.Email);
+
+        if (scheme != null)
+        {
+            var provider = scheme.Name;
+
+            var challengeRedirectUrl = Url.Page("ExternalLogin", "Callback", new { ReturnUrl });
+            var challengeProperties = SignInManager.ConfigureExternalAuthenticationProperties(provider, challengeRedirectUrl);
+
+            return Challenge(challengeProperties, provider);
+        }
+
+        ModelState.AddModelError(string.Empty, T["LoginCustomNoProvider"]!);
+
+        return Page();
+    }
 }
 
 public sealed record LoginEmailForm
@@ -97,7 +124,7 @@ public sealed record LoginEmailForm
     public bool IsActive { get; set; }
 }
 
-public sealed record LoginDynamicModel
+public sealed record LoginDynamicForm
 {
     [Required]
     [EmailAddress]

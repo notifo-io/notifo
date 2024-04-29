@@ -210,3 +210,11 @@ export function useDebounce<T>(value: T, debounce: number): T {
 
     return state;
 }
+
+export function useClipboard() {
+    function writeText(text: string): Promise<void> {
+        return navigator.clipboard.writeText(text);
+    }
+
+    return writeText;
+}

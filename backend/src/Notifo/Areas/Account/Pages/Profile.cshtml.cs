@@ -128,7 +128,7 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
 
         if (string.IsNullOrWhiteSpace(email))
         {
-            throw new ValidationException(T["GithubEmailPrivateError"]);
+            throw new ValidationException(T["EmailPrivateError"]);
         }
 
         loginInfo.ProviderDisplayName = email;

@@ -158,6 +158,14 @@ $width: 500px;
     text-align: center;
     text-transform: uppercase;
 
+    &:first-child {
+        display: none;
+    }
+
+    &:last-child {
+        display: none;
+    }
+
     span {
         background: #fff;
         display: inline-block;

@@ -18,7 +18,7 @@ import { updateApp, useApps, useCore } from '@app/state';
 import { texts } from '@app/texts';
 
 const FormSchema = Yup.object().shape({
-    // Required name
+    // Required name.
     name: Yup.string()
         .label(texts.common.name).requiredI18n(),
 

@@ -15,6 +15,7 @@ export type IconType =
     'browser' |
     'clear' |
     'code' |
+    'check' |
     'create' |
     'dashboard' |
     'delete' |

@@ -18,6 +18,7 @@ public sealed class AuthSchemeDto
     /// <summary>
     /// The domain name of your user accounts.
     /// </summary>
+    [Required]
     public string Domain { get; init; }
 
     /// <summary>

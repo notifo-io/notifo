@@ -7,6 +7,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Account.Pages.Utils;
@@ -20,6 +21,8 @@ namespace Notifo.Areas.Account.Pages;
 
 public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 {
+    private readonly IAuthenticationSchemeProvider schemes;
+
     public string LoginProvider { get; set; }
 
     public string TermsOfServiceUrl { get; set; }
@@ -31,7 +34,12 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
     public bool MustAcceptsPrivacyPolicy { get; set; } = true;
 
     [BindProperty]
-    public ConfirmationModel Model { get; set; } = new ConfirmationModel();
+    public ConfirmationForm Model { get; set; } = new ConfirmationForm();
+
+    public ExternalLoginModel(IAuthenticationSchemeProvider schemes)
+    {
+        this.schemes = schemes;
+    }
 
     public IActionResult OnGet()
     {
@@ -40,6 +48,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
     public async Task<IActionResult> OnGetCallback(string? remoteError = null)
     {
+        // This should actually never happen.
         if (remoteError != null)
         {
             ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
@@ -48,6 +57,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
         var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
 
+        // This should actually never happen.
         if (loginInfo == null)
         {
             return RedirectToPage("./Login");
@@ -55,6 +65,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
         var result = await SignInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
 
+        // Only redirect the user if he is not locked out manually or due too many invalid login attempts.
         if (result.Succeeded)
         {
             return RedirectTo(ReturnUrl);
@@ -64,13 +75,17 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
             return RedirectToPage("./Lockout");
         }
 
-        LoginProvider = loginInfo.LoginProvider;
+        var provider = await schemes.GetSchemeAsync(loginInfo.LoginProvider);
+
+        // Get the display name of the provider that is not added to the cookie or session.
+        LoginProvider = provider?.DisplayName ?? loginInfo.LoginProvider;
 
         var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
 
+        // Some providers do not provide an email address, therefore we need to handle it here.
         if (string.IsNullOrWhiteSpace(email))
         {
-            var errorMessage = T["GithubEmailPrivateError"];
+            var errorMessage = T["EmailPrivateError"];
 
             return RedirectToPage("./Login", new { errorMessage });
         }
@@ -113,6 +128,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
             ModelState.AddModelError($"{nameof(Model)}.{field}", T[$"{field}Error"]!);
         }
 
+        // This is invalid when we have added one of the model errors above.
         if (!ModelState.IsValid)
         {
             return Page();
@@ -120,6 +136,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
         var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
 
+        // This should actually never happen.
         if (loginInfo == null)
         {
             ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
@@ -128,6 +145,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
         var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
 
+        // Some providers do not provide an email address, therefore we need to handle it here.
         if (string.IsNullOrWhiteSpace(email))
         {
             var errorMessage = T["GithubEmailPrivateError"];
@@ -168,7 +186,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
     }
 }
 
-public sealed class ConfirmationModel
+public sealed class ConfirmationForm
 {
     [Required]
     [Display(Name = nameof(AcceptPrivacyPolicy))]

@@ -249,8 +249,8 @@
   <data name="ForgotPasswordTitle" xml:space="preserve">
     <value>Reset your password</value>
   </data>
-  <data name="GithubEmailPrivateError" xml:space="preserve">
-    <value>Your Github Email address is private.</value>
+  <data name="EmailPrivateError" xml:space="preserve">
+    <value>Your Email address is private.</value>
   </data>
   <data name="IndexTitle" xml:space="preserve">
     <value>Welcome</value>
@@ -319,7 +319,7 @@
     <value>Old password</value>
   </data>
   <data name="Password" xml:space="preserve">
-    <value>password</value>
+    <value>Password</value>
   </data>
   <data name="PasswordLabel" xml:space="preserve">
     <value>Password</value>
@@ -517,7 +517,7 @@
     <value>An user with this email address already exist. Go to your profile page to add another external login.</value>
   </data>
   <data name="PasswordConfirm" xml:space="preserve">
-    <value>password confirm</value>
+    <value>Password confirm</value>
   </data>
   <data name="LoginNoAccount" xml:space="preserve">
     <value>No account create yet?&lt;br /&gt;Just login with an social login provider to get an account.</value>
@@ -575,5 +575,11 @@
   </data>
   <data name="EmailPreferencesTitle" xml:space="preserve">
     <value>Email Preferences</value>
+  </data>
+  <data name="LoginCustom" xml:space="preserve">
+    <value>Enter your email-address and we will redirect you to the login page, if a custom authentication method is configured for your domain.</value>
+  </data>
+  <data name="LoginCustomNoProvider" xml:space="preserve">
+    <value>There is no external login provider for your email address.</value>
   </data>
 </root>

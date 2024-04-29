@@ -34,7 +34,7 @@
 
         <label asp-for="ChangeForm.Email" for="email">@T["EmailLabel"]</label>
 
-        <div error-for="ChangeForm.Email" />
+        <div error-for="ChangeForm.Email"></div>
         <input asp-for="ChangeForm.Email" type="email" class="form-control" />
     </div>
 
@@ -111,21 +111,21 @@
                 <div class="form-group">
                     <label asp-for="ChangePasswordForm.OldPassword" for="oldPassword">@T["OldPasswordLabel"]</label>
 
-                    <div error-for="ChangePasswordModel.OldPassword" />
+                    <div error-for="ChangePasswordForm.OldPassword"></div>
                     <input asp-for="ChangePasswordForm.OldPassword" type="password" class="form-control" />
                 </div>
 
                 <div class="form-group">
                     <label asp-for="ChangePasswordForm.Password" for="password">@T["PasswordLabel"]</label>
 
-                    <div error-for="ChangePasswordForm.Password" />
+                    <div error-for="ChangePasswordForm.Password"></div>
                     <input asp-for="ChangePasswordForm.Password" type="password" class="form-control" />
                 </div>
 
                 <div class="form-group">
                     <label asp-for="ChangePasswordForm.PasswordConfirm" for="passwordConfirm">@T["PasswordConfirmLabel"]</label>
 
-                    <div error-for="ChangePasswordForm.PasswordConfirm" />
+                    <div error-for="ChangePasswordForm.PasswordConfirm"></div>
                     <input asp-for="ChangePasswordForm.PasswordConfirm" type="password" class="form-control" />
                 </div>
 
@@ -145,14 +145,14 @@
                 <div class="form-group">
                     <label asp-for="SetPasswordForm.Password" for="password">@T["PasswordLabel"]</label>
 
-                    <div error-for="SetPasswordForm.Password" />
+                    <div error-for="SetPasswordForm.Password"></div>
                     <input asp-for="SetPasswordForm.Password" type="password" class="form-control"  />
                 </div>
 
                 <div class="form-group">
                     <label asp-for="SetPasswordForm.PasswordConfirm" for="passwordConfirm">@T["ConfirmPasswordLabel"]</label>
 
-                    <div error-for="SetPasswordForm.PasswordConfirm" />
+                    <div error-for="SetPasswordForm.PasswordConfirm"></div>
                     <input asp-for="SetPasswordForm.PasswordConfirm" type="password" class="form-control" />
                 </div>
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -24,6 +25,16 @@ public class ValidationPageHelper : TagHelper
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.Clear();
+
+        if (htmlHelper is IViewContextAware viewContextAware)
+        {
+            viewContextAware.Contextualize(ViewContext);
+        }
+
+        if (ViewContext.ModelState[For.Name]?.ValidationState != ModelValidationState.Invalid)
+        {
+            return;
+        }
 
         var message = htmlHelper.ValidationMessage(For.Name);
 
