@@ -59,7 +59,9 @@ public abstract class PageModelBase<TDerived> : PageModel
     [BindProperty(SupportsGet = true)]
     public string? ErrorMessage { get; set; }
 
-    public bool HasPasswordAuth => options.Value.Value.AllowPasswordAuth;
+    public bool AllowPasswordAuth => options.Value.Value.AllowPasswordAuth;
+
+    public bool AllowCustomAuth => options.Value.Value.AllowCustomAuth;
 
     protected PageModelBase()
     {
@@ -96,9 +98,7 @@ public abstract class PageModelBase<TDerived> : PageModel
         {
             var userId = UserService.GetUserId(User, HttpContext.RequestAborted);
 
-#pragma warning disable MA0014 // Do not raise System.ApplicationException type
-            throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-#pragma warning restore MA0014 // Do not raise System.ApplicationException type
+            throw new InvalidOperationException($"Unable to load user with ID '{userId}'.");
         }
 
         return user;

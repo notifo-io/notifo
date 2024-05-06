@@ -20,7 +20,6 @@ public class UserInfoController : ControllerBase<UserInfoController>
     [Authorize(AuthenticationSchemes = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
     [HttpGet("connect/userinfo")]
     [HttpPost("connect/userinfo")]
-    [Produces("application/json")]
     public async Task<IActionResult> Userinfo()
     {
         var user = await UserService.GetAsync(User, HttpContext.RequestAborted);

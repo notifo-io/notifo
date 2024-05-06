@@ -144,15 +144,6 @@ internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepos
         }
     }
 
-    public async Task<bool> AnyAuthDomainAsync(
-        CancellationToken ct = default)
-    {
-        using (Telemetry.Activities.StartActivity("MongoDbAppRepository/AnyAuthDomainAsync"))
-        {
-            return await Collection.Find(x => x.Doc.AuthScheme != null).AnyAsync(ct);
-        }
-    }
-
     public async Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters,
         CancellationToken ct)
     {

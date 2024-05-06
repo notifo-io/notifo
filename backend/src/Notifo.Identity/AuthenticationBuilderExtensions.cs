@@ -51,7 +51,7 @@ public static class AuthenticationBuilderExtensions
 
             authBuilder.AddOpenIdConnect("ExternalOidc", displayName, options =>
             {
-                options.Events = new OidcHandler(new OdicOptions
+                options.Events = new OidcHandler(new OidcOptions
                 {
                     SignoutRedirectUrl = identityOptions.OidcOnSignoutRedirectUrl
                 });

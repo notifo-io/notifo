@@ -582,4 +582,13 @@
   <data name="LoginCustomNoProvider" xml:space="preserve">
     <value>There is no external login provider for your email address.</value>
   </data>
+  <data name="LoginTestInfo" xml:space="preserve">
+    <value>Login test successfully.</value>
+  </data>
+  <data name="LoginTestText" xml:space="preserve">
+    <value>The login with your custom authentication provider was successful. Please remember to save the settings in the app screen.</value>
+  </data>
+  <data name="LoginTestTitle" xml:space="preserve">
+    <value>Login Test</value>
+  </data>
 </root>

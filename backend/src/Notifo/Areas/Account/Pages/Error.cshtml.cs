@@ -24,11 +24,16 @@ public sealed class ErrorModel : PageModel
         var response = HttpContext.GetOpenIddictServerResponse();
 
         ErrorMessage = response?.ErrorDescription;
-        ErrorCode = response?.Error;
+        ErrorCode = response?.Error ?? "400";
 
         if (string.IsNullOrWhiteSpace(ErrorMessage))
         {
             var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+            while (exception?.InnerException != null)
+            {
+                exception = exception.InnerException;
+            }
 
             ErrorMessage = exception?.Message;
         }

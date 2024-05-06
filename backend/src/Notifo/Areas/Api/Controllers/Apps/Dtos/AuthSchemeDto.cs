@@ -50,13 +50,13 @@ public sealed class AuthSchemeDto
     /// </summary>
     public string? SignoutRedirectUrl { get; init; }
 
+    public AppAuthScheme ToDomainObject()
+    {
+        return SimpleMapper.Map(this, new AppAuthScheme());
+    }
+
     public static AuthSchemeDto FromDomainObject(AppAuthScheme source)
     {
         return SimpleMapper.Map(source, new AuthSchemeDto());
-    }
-
-    public UpsertAppAuthScheme ToUpsert()
-    {
-        return SimpleMapper.Map(this, new UpsertAppAuthScheme());
     }
 }

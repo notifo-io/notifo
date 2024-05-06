@@ -9,16 +9,24 @@ using Notifo.Domain.Apps;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 
-public sealed class AuthSchemeResponseDto
+public sealed class AuthSchemeValueDto
 {
     /// <summary>
     /// The auth scheme if configured.
     /// </summary>
     public AuthSchemeDto? Scheme { get; set; }
 
-    public static AuthSchemeResponseDto FromDomainObject(App source)
+    public UpsertAppAuthScheme ToUpsert()
     {
-        var result = new AuthSchemeResponseDto();
+        return new UpsertAppAuthScheme
+        {
+            Scheme = Scheme?.ToDomainObject()
+        };
+    }
+
+    public static AuthSchemeValueDto FromDomainObject(App source)
+    {
+        var result = new AuthSchemeValueDto();
 
         if (source.AuthScheme != null)
         {

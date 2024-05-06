@@ -5901,7 +5901,7 @@ export class AppsClient {
      * @param appId The ID of the app.
      * @return App auth settings returned.
      */
-    getAuthScheme(appId: string, signal?: AbortSignal): Promise<AuthSchemeResponseDto> {
+    getAuthScheme(appId: string, signal?: AbortSignal): Promise<AuthSchemeValueDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/auth";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5921,13 +5921,13 @@ export class AppsClient {
         });
     }
 
-    protected processGetAuthScheme(response: Response): Promise<AuthSchemeResponseDto> {
+    protected processGetAuthScheme(response: Response): Promise<AuthSchemeValueDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeResponseDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeValueDto;
             return result200;
             });
         } else if (status === 404) {
@@ -5945,7 +5945,7 @@ export class AppsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<AuthSchemeResponseDto>(null as any);
+        return Promise.resolve<AuthSchemeValueDto>(null as any);
     }
 
     /**
@@ -5954,7 +5954,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App auth settings returned.
      */
-    upsertAuthScheme(appId: string, request: AuthSchemeDto, signal?: AbortSignal): Promise<AuthSchemeResponseDto> {
+    upsertAuthScheme(appId: string, request: AuthSchemeValueDto, signal?: AbortSignal): Promise<AuthSchemeValueDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/auth";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5978,13 +5978,13 @@ export class AppsClient {
         });
     }
 
-    protected processUpsertAuthScheme(response: Response): Promise<AuthSchemeResponseDto> {
+    protected processUpsertAuthScheme(response: Response): Promise<AuthSchemeValueDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeResponseDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AuthSchemeValueDto;
             return result200;
             });
         } else if (status === 404) {
@@ -6008,61 +6008,7 @@ export class AppsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<AuthSchemeResponseDto>(null as any);
-    }
-
-    /**
-     * Deletes the auth settings of the app.
-     * @param appId The ID of the app.
-     */
-    deleteAuthScheme(appId: string, signal?: AbortSignal): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/auth";
-        if (appId === undefined || appId === null)
-            throw new Error("The parameter 'appId' must be defined.");
-        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "DELETE",
-            signal,
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteAuthScheme(_response);
-        });
-    }
-
-    protected processDeleteAuthScheme(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("App not found.", status, _responseText, _headers);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 500) {
-            return response.text().then((_responseText) => {
-            let result500: any = null;
-            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed.", status, _responseText, _headers, result500);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<AuthSchemeValueDto>(null as any);
     }
 
     /**
@@ -7370,14 +7316,14 @@ export interface AppContributorDto {
     role: string;
 }
 
-export interface AuthSchemeResponseDto {
+export interface AuthSchemeValueDto {
     /** The auth scheme if configured. */
     scheme?: AuthSchemeDto | undefined;
 }
 
 export interface AuthSchemeDto {
     /** The domain name of your user accounts. */
-    domain?: string;
+    domain: string;
     /** The display name for buttons. */
     displayName: string;
     /** The client ID. */

@@ -7,11 +7,11 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Account.Pages.Utils;
 using Notifo.Domain.Identity;
+using Notifo.Identity.Dynamic;
 using Notifo.Infrastructure;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
@@ -21,7 +21,7 @@ namespace Notifo.Areas.Account.Pages;
 
 public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 {
-    private readonly IAuthenticationSchemeProvider schemes;
+    private readonly DynamicSchemeProvider schemes;
 
     public string LoginProvider { get; set; }
 
@@ -36,7 +36,7 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
     [BindProperty]
     public ConfirmationForm Model { get; set; } = new ConfirmationForm();
 
-    public ExternalLoginModel(IAuthenticationSchemeProvider schemes)
+    public ExternalLoginModel(DynamicSchemeProvider schemes)
     {
         this.schemes = schemes;
     }

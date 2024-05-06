@@ -78,10 +78,10 @@ public sealed class AppsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/auth")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [Produces(typeof(AuthSchemeResponseDto))]
+    [Produces(typeof(AuthSchemeValueDto))]
     public IActionResult GetAuthScheme(string appId)
     {
-        var response = AuthSchemeResponseDto.FromDomainObject(App);
+        var response = AuthSchemeValueDto.FromDomainObject(App);
 
         return Ok(response);
     }
@@ -95,32 +95,16 @@ public sealed class AppsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpPut("api/apps/{appId:notEmpty}/auth")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [Produces(typeof(AuthSchemeResponseDto))]
-    public async Task<IActionResult> UpsertAuthScheme(string appId, [FromBody] AuthSchemeDto request)
+    [Produces(typeof(AuthSchemeValueDto))]
+    public async Task<IActionResult> UpsertAuthScheme(string appId, [FromBody] AuthSchemeValueDto request)
     {
         var command = request.ToUpsert();
 
         var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
-        var response = AuthSchemeResponseDto.FromDomainObject(app!);
+        var response = AuthSchemeValueDto.FromDomainObject(app!);
 
         return Ok(response);
-    }
-
-    /// <summary>
-    /// Deletes the auth settings of the app.
-    /// </summary>
-    /// <param name="appId">The ID of the app.</param> 
-    /// <response code="200">App auth settings returned.</response>.
-    /// <response code="404">App not found.</response>.
-    [HttpDelete("api/apps/{appId:notEmpty}/auth")]
-    [AppPermission(NotifoRoles.AppAdmin)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteAuthScheme(string appId)
-    {
-        await Mediator.SendAsync(new DeleteAppAuthScheme(), HttpContext.RequestAborted);
-
-        return NoContent();
     }
 
     /// <summary>

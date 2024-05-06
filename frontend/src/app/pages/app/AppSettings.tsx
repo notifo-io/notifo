@@ -84,7 +84,7 @@ export const AppSettings = (props: AppSettingsProps) => {
                             <FormError error={updateError} />
 
                             <div className='text-right mt-2'>
-                                <Button type='submit' color='success' disabled={updateRunning}>
+                                <Button type='submit' color='primary' disabled={updateRunning}>
                                     <Loader light small visible={updateRunning} /> {texts.common.save}
                                 </Button>
                             </div>

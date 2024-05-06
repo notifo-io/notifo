@@ -45,12 +45,6 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         }
     }
 
-    public Task<bool> AnyAuthDomainAsync(
-        CancellationToken ct = default)
-    {
-        return repository.AnyAuthDomainAsync(ct);
-    }
-
     public IAsyncEnumerable<App> QueryAllAsync(
         CancellationToken ct = default)
     {

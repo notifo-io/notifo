@@ -22,10 +22,6 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-    public bool RememberMe { get; set; }
-
-    public bool HasDynamicAuthScheme { get; set; }
-
     public LoginEmailForm LoginEmailForm { get; set; } = new LoginEmailForm();
 
     public LoginDynamicForm LoginDynamicForm { get; set; } = new LoginDynamicForm();
@@ -40,8 +36,6 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
-        HasDynamicAuthScheme = await schemeProvider.HasCustomSchemeAsync();
-
         ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         await next();

@@ -7,7 +7,7 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, Form } from 'reactstrap';
 import * as Yup from 'yup';
@@ -109,7 +109,9 @@ const AuthForm = ({ appDetails, scheme }: { scheme?: AuthSchemeDto } & AppAuthPr
             <Form className='mt-4' onSubmit={form.handleSubmit(doSave)}>    
                 <fieldset disabled={updateRunning}>
                     <Forms.Text name='domain'
-                        label={texts.auth.domain} />
+                        label={texts.auth.domain} hints={texts.auth.domainHints} />
+
+                    <AppEmailAddress />
 
                     <Forms.Text name='displayName'
                         label={texts.auth.displayName} />
@@ -121,7 +123,7 @@ const AuthForm = ({ appDetails, scheme }: { scheme?: AuthSchemeDto } & AppAuthPr
                         label={texts.auth.clientSecret} />
 
                     <Forms.Url name='authority'
-                        label={texts.auth.authority} />
+                        label={texts.auth.authority} hints={texts.auth.authorityHints} />
 
                     <Forms.Url name='signoutRedirectUrl'
                         label={texts.auth.signoutRedirectUrl} />
@@ -133,14 +135,61 @@ const AuthForm = ({ appDetails, scheme }: { scheme?: AuthSchemeDto } & AppAuthPr
                     </Forms.Row>
                 </fieldset>
 
+
                 <FormError error={updateError} />
 
-                <div className='text-right mt-2'>
-                    <Button type='submit' color='success' disabled={updateRunning}>
+                <div className='d-flex justify-content-between mt-2'>
+                    <AuthTestButton />
+
+                    <Button type='submit' color='primary' disabled={updateRunning}>
                         <Loader light small visible={updateRunning} /> {texts.common.save}
                     </Button>
                 </div>
             </Form>
         </FormProvider>
+    );
+};
+
+const AppEmailAddress = () => {
+    const { watch } = useFormContext<AuthSchemeDto>();
+    const domain = watch('domain');
+    
+    const email = React.useMemo(() => {
+        const actualDomain = domain || 'empty.com';
+        
+        return `name@${actualDomain}`;
+    }, [domain]);
+
+    return (
+        <Forms.Row name='email'>
+            <div className='truncate text-xs'>
+                {texts.auth.emailLabel}: <strong className='mono text-sm'>{email}</strong>
+            </div>
+        </Forms.Row>
+    );
+};
+
+const AuthTestButton = () => {
+    const { watch } = useFormContext<AuthSchemeDto>();
+    const formValues = watch();
+    
+    const url = React.useMemo(() => {
+        const q = new URLSearchParams({
+            domain: formValues.domain,
+            displayName: formValues.displayName,
+            clientId: formValues.clientId,
+            clientSecret: formValues.clientSecret,
+            authority: formValues.authority,
+        });
+
+        const url = combineUrl(getApiUrl(), `/account/logintest?${q.toString()}`);
+        
+        return url;
+    }, [formValues]);
+
+    return (
+        <a className='btn btn-warning' target='_blank' href={url}>
+            {texts.auth.testLogin}
+        </a>
     );
 };
