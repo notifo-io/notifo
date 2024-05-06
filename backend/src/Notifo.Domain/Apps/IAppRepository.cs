@@ -34,4 +34,7 @@ public interface IAppRepository : ICounterStore<string>
 
     Task DeleteAsync(string id,
         CancellationToken ct = default);
+
+    Task<bool> AnyAuthDomainAsync(
+        CancellationToken ct = default);
 }

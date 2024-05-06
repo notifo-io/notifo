@@ -29,4 +29,7 @@ public interface IAppStore
 
     Task<App?> GetCachedAsync(string id,
         CancellationToken ct = default);
+
+    Task<bool> AnyAuthDomainAsync(
+        CancellationToken ct = default);
 }

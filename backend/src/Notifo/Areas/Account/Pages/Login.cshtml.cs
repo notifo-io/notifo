@@ -26,6 +26,12 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     public LoginDynamicForm LoginDynamicForm { get; set; } = new LoginDynamicForm();
 
+    public bool HasDynamicAuthScheme { get; set; }
+
+    public LoginEmailForm LoginEmailForm { get; set; } = new LoginEmailForm();
+
+    public LoginDynamicForm LoginDynamicForm { get; set; } = new LoginDynamicForm();
+
     [BindProperty(SupportsGet = true)]
     public bool Signup { get; set; }
 
@@ -36,6 +42,8 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
+        HasDynamicAuthScheme = await schemeProvider.HasCustomSchemeAsync();
+
         ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         await next();
