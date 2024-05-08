@@ -11,16 +11,16 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Notifo.Identity;
 
-public class OdicOptions
+public class OidcOptions
 {
     public string? SignoutRedirectUrl { get; set; }
 }
 
 public sealed class OidcHandler : OpenIdConnectEvents
 {
-    private readonly OdicOptions options;
+    private readonly OidcOptions options;
 
-    public OidcHandler(OdicOptions options)
+    public OidcHandler(OidcOptions options)
     {
         this.options = options;
     }

@@ -121,14 +121,14 @@
         </div>
     }
 
-    @if (Model.HasExternalLogin && Model.HasPasswordAuth)
+    @if (Model.HasExternalLogin && Model.AllowPasswordAuth)
     {
         <div class="login-separator">
             <span>@T["ExternalSeperator"]</span>
         </div>
     }
 
-    @if (Model.HasPasswordAuth)
+    @if (Model.AllowPasswordAuth)
     {
         <h3>@T["SetupCreateUserHeadlineCreate"]</h3>
 
@@ -170,7 +170,7 @@
         </form>
     }
 
-    @if (!Model.HasExternalLogin && !Model.HasPasswordAuth)
+    @if (!Model.HasExternalLogin && !Model.AllowPasswordAuth)
     {
         <div>
             @T["SetupCreateUserFailure"]

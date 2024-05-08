@@ -32,7 +32,6 @@ public class AuthorizationController : ControllerBase<AuthorizationController>
     }
 
     [HttpPost("connect/token")]
-    [Produces("application/json")]
     public async Task<IActionResult> Exchange()
     {
         var request = HttpContext.GetOpenIddictServerRequest();

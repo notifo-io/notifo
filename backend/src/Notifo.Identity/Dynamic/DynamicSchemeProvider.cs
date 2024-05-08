@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Apps;
 
+#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Identity.Dynamic;
 
 public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptionsMonitor<DynamicOpenIdConnectOptions>
@@ -19,23 +22,34 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
 
     private readonly IAppStore appStore;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IConfigurationStore<AppAuthScheme> temporarySchemes;
     private readonly OpenIdConnectPostConfigureOptions configure;
 
     public DynamicOpenIdConnectOptions CurrentValue => null!;
 
-    public DynamicSchemeProvider(IAppStore appStore, IHttpContextAccessor httpContextAccessor, 
+    private sealed record SchemeResult(AuthenticationScheme Scheme, DynamicOpenIdConnectOptions Options);
+
+    public DynamicSchemeProvider(
+        IAppStore appStore,
+        IHttpContextAccessor httpContextAccessor,
+        IConfigurationStore<AppAuthScheme> temporarySchemes,
         OpenIdConnectPostConfigureOptions configure,
         IOptions<AuthenticationOptions> options)
         : base(options)
     {
         this.appStore = appStore;
         this.httpContextAccessor = httpContextAccessor;
+        this.temporarySchemes = temporarySchemes;
         this.configure = configure;
     }
 
-    public Task<bool> HasCustomSchemeAsync()
+    public async Task<string> AddTemporarySchemeAsync(AppAuthScheme scheme,
+        CancellationToken ct = default)
     {
-        return appStore.AnyAuthDomainAsync(default);
+        var id = Guid.NewGuid().ToString();
+
+        await temporarySchemes.SetAsync(id, scheme, TimeSpan.FromMinutes(10), ct);
+        return id;
     }
 
     public async Task<AuthenticationScheme?> GetSchemaByEmailAddressAsync(string email)
@@ -64,7 +78,7 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
 
     public override async Task<AuthenticationScheme?> GetSchemeAsync(string name)
     {
-        var result = await GetSchemeCoreAsync(name);
+        var result = await GetSchemeCoreAsync(name, default);
 
         if (result != null)
         {
@@ -98,7 +112,8 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
             {
                 var name = lastSegment[prefix.Length..];
 
-                var scheme = await GetSchemeCoreAsync(name);
+                var scheme = await GetSchemeCoreAsync(name, httpContextAccessor.HttpContext.RequestAborted);
+
                 if (scheme != null)
                 {
                     result.Add(scheme.Scheme);
@@ -116,18 +131,19 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
             return new DynamicOpenIdConnectOptions();
         }
 
-        var scheme = GetSchemeCoreAsync(name).Result;
+        var scheme = GetSchemeCoreAsync(name, default).Result;
 
         return scheme?.Options ?? new DynamicOpenIdConnectOptions();
     }
 
-    public IDisposable? OnChange(Action<DynamicOpenIdConnectOptions, string?> listener)
+    private async Task<SchemeResult?> GetSchemeCoreAsync(string name,
+        CancellationToken ct)
     {
-        return null;
-    }
+        if (!Guid.TryParse(name, out _))
+        {
+            return null;
+        }
 
-    private async Task<SchemeResult?> GetSchemeCoreAsync(string name)
-    {
         var cacheKey = ("DYNAMIC_SCHEME", name);
 
         if (httpContextAccessor.HttpContext?.Items.TryGetValue(cacheKey, out var cached) == true)
@@ -135,13 +151,14 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
             return cached as SchemeResult;
         }
 
-        var app = await appStore.GetAsync(name, default);
+        var scheme =
+            await GetSchemeByAppAsync(name, ct) ??
+            await GetSchemeByTempNameAsync(name, ct);
 
-        var result = (SchemeResult?)null;
-        if (app?.AuthScheme != null)
-        {
-            result = CreateScheme(app.Id, app.AuthScheme);
-        }
+        var result =
+            scheme != null ?
+            CreateScheme(name, scheme) :
+            null;
 
         if (httpContextAccessor.HttpContext != null)
         {
@@ -151,13 +168,29 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
         return result;
     }
 
+    private async Task<AppAuthScheme?> GetSchemeByAppAsync(string name,
+        CancellationToken ct)
+    {
+        var app = await appStore.GetByAuthDomainAsync(name, ct);
+
+        return app?.AuthScheme;
+    }
+
+    private async Task<AppAuthScheme?> GetSchemeByTempNameAsync(string name,
+        CancellationToken ct)
+    {
+        var scheme = await temporarySchemes.GetAsync(name, ct);
+
+        return scheme;
+    }
+
     private SchemeResult CreateScheme(string name, AppAuthScheme config)
     {
         var scheme = new AuthenticationScheme(name, config.DisplayName, typeof(DynamicOpenIdConnectHandler));
 
         var options = new DynamicOpenIdConnectOptions
         {
-            Events = new OidcHandler(new OdicOptions
+            Events = new OidcHandler(new OidcOptions
             {
                 SignoutRedirectUrl = config.SignoutRedirectUrl
             }),
@@ -176,9 +209,8 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
         return new SchemeResult(scheme, options);
     }
 
-#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-    private sealed record SchemeResult(AuthenticationScheme Scheme, DynamicOpenIdConnectOptions Options);
-#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
-#pragma warning restore RECS0082 // Parameter has the same name as a member and hides it
+    public IDisposable? OnChange(Action<DynamicOpenIdConnectOptions, string?> listener)
+    {
+        return null;
+    }
 }

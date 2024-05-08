@@ -5,9 +5,13 @@
     ViewData["Title"] = T["ErrorTitle"];
 }
 
-<h1>
-    <strong>400</strong> @T["ErrorInfo"]
+<h1 class="text-xxl mb-0" style="line-height: 1.2">
+    @Model.ErrorCode
 </h1>
+
+<h2 class="mb-4">
+    @T["ErrorInfo"]
+</h2>
 
 <p class="text-muted">
     @T["ErrorText"]
@@ -15,7 +19,5 @@
 
 @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
 {
-    <p>
-        <strong>@T["Error"]: @Model.ErrorMessage</strong>
-    </p>
+    <textarea readonly class="form-control mono text-xs">@Model.ErrorMessage.Trim()</textarea>
 }

@@ -12,21 +12,22 @@ namespace Notifo.Domain.Apps;
 
 public sealed class UpsertAppAuthScheme : AppCommand
 {
-    public string Domain { get; init; }
-
-    public string DisplayName { get; init; }
-
-    public string ClientId { get; init; }
-
-    public string ClientSecret { get; init; }
-
-    public string Authority { get; init; }
-
-    public string? SignoutRedirectUrl { get; init; }
+    public AppAuthScheme? Scheme { get; set; }
 
     private sealed class Validator : AbstractValidator<UpsertAppAuthScheme>
     {
         public Validator()
+        {
+            When(x => x.Scheme != null, () =>
+            {
+                RuleFor(x => x.Scheme).SetValidator(new SchemeValidator()!);
+            });
+        }
+    }
+
+    private sealed class SchemeValidator : AbstractValidator<AppAuthScheme>
+    {
+        public SchemeValidator()
         {
             RuleFor(x => x.Domain).NotNull().NotEmpty().Domain();
             RuleFor(x => x.DisplayName).NotNull().NotEmpty();
@@ -42,19 +43,9 @@ public sealed class UpsertAppAuthScheme : AppCommand
     {
         Validate<Validator>.It(this);
 
-        var newScheme = new AppAuthScheme
+        if (!Equals(target.AuthScheme, Scheme))
         {
-            Authority = Authority,
-            ClientId = ClientId,
-            ClientSecret = ClientSecret,
-            DisplayName = DisplayName,
-            Domain = Domain,
-            SignoutRedirectUrl = SignoutRedirectUrl,
-        };
-
-        if (!Equals(target.AuthScheme, newScheme))
-        {
-            target = target with { AuthScheme = newScheme };
+            target = target with { AuthScheme = Scheme };
         }
 
         return new ValueTask<App?>(target);

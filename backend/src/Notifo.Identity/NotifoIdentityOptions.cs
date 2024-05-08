@@ -11,6 +11,8 @@ public sealed class NotifoIdentityOptions
 {
     public bool AllowPasswordAuth { get; set; }
 
+    public bool AllowCustomAuth { get; set; }
+
     public string AdminClientId { get; set; }
 
     public string AdminClientSecret { get; set; }

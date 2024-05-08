@@ -18,13 +18,9 @@ namespace Notifo.Areas.Account.Pages;
 
 public sealed class LoginModel : PageModelBase<LoginModel>
 {
-    private readonly DynamicSchemeProvider schemeProvider;
+    private readonly DynamicSchemeProvider schemes;
 
     public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-    public bool RememberMe { get; set; }
-
-    public bool HasDynamicAuthScheme { get; set; }
 
     public LoginEmailForm LoginEmailForm { get; set; } = new LoginEmailForm();
 
@@ -33,15 +29,13 @@ public sealed class LoginModel : PageModelBase<LoginModel>
     [BindProperty(SupportsGet = true)]
     public bool Signup { get; set; }
 
-    public LoginModel(DynamicSchemeProvider schemeProvider)
+    public LoginModel(DynamicSchemeProvider schemes)
     {
-        this.schemeProvider = schemeProvider;
+        this.schemes = schemes;
     }
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
-        HasDynamicAuthScheme = await schemeProvider.HasCustomSchemeAsync();
-
         ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         await next();
@@ -88,7 +82,7 @@ public sealed class LoginModel : PageModelBase<LoginModel>
             return Page();
         }
 
-        var scheme = await schemeProvider.GetSchemaByEmailAddressAsync(form.Email);
+        var scheme = await schemes.GetSchemaByEmailAddressAsync(form.Email);
 
         if (scheme != null)
         {

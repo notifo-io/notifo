@@ -5,15 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Apps;
+namespace Notifo.Identity.MongoDb;
 
-public sealed class DeleteAppAuthScheme : AppCommand
+public sealed class MongoDbConfiguration<T>
 {
-    public override ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
-        CancellationToken ct)
-    {
-        target = target with { AuthScheme = null };
+    public string Id { get; set; }
 
-        return new ValueTask<App?>(target);
-    }
+    public T Value { get; set; }
+
+    public DateTime Expires { get; set; }
 }

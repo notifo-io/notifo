@@ -80,7 +80,7 @@ export const removeContributor = createMutation<AppsState>('updatingContributors
 export const upsertAuth = createMutation<AppsState>('updatingAuth').with({
     name: 'apps/auth/upsert',
     mutateFn: (arg: { appId: string; params: AuthSchemeDto }) => {
-        return Clients.Apps.upsertAuthScheme(arg.appId, arg.params);
+        return Clients.Apps.upsertAuthScheme(arg.appId, { scheme: arg.params });
     },
     updateFn(state, action) {
         state.auth = action.payload;
@@ -90,7 +90,7 @@ export const upsertAuth = createMutation<AppsState>('updatingAuth').with({
 export const removeAuth = createMutation<AppsState>('updatingAuth').with({
     name: 'apps/auth/remove',
     mutateFn: (arg: { appId: string }) =>{
-        return Clients.Apps.deleteAuthScheme(arg.appId);
+        return Clients.Apps.upsertAuthScheme(arg.appId, { scheme: undefined });
     },
     updateFn(state) {
         state.auth = undefined;

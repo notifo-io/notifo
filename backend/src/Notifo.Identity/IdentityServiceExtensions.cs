@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
+using Notifo.Domain.Apps;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
@@ -152,6 +153,9 @@ public static class IdentityServiceExtensions
 
         services.AddSingletonAs<MongoDbXmlRepository>()
             .As<IXmlRepository>();
+
+        services.AddSingletonAs<MongoDbConfigurationStore<AppAuthScheme>>()
+            .As<IConfigurationStore<AppAuthScheme>>();
 
         services.ConfigureOptions<MongoDbKeyOptions>();
 

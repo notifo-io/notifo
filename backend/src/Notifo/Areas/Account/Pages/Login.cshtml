@@ -42,7 +42,7 @@
 </div>
 
 <div>
-    @if (Model.HasPasswordAuth)
+    @if (Model.AllowPasswordAuth)
     {
         if (Model.Signup)
         {
@@ -112,7 +112,7 @@
         </section>
     }
 
-    @if (Model.HasDynamicAuthScheme)
+    @if (Model.AllowCustomAuth)
     {
         <div class="login-separator">
             <span>@T["AuthSeparator"]</span>

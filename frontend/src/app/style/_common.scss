@@ -1163,16 +1163,24 @@ em-emoji-picker {
     }
 }
 
-.text-sm {
-    font-size: $font-size-sm;
-}
-
 .text-icon {
     font-size: 1.25rem;
 }
 
+.text-sm {
+    font-size: $font-size-sm;
+}
+
+.text-xs {
+    font-size: $font-size-xs;
+}
+
 .text-lg {
     font-size: 1.25rem;
+}
+
+.text-xxl {
+    font-size: 3rem;
 }
 
 .truncate {
