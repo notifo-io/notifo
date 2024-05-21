@@ -37,7 +37,7 @@ export const DemoPage = () => {
             userToken,
         }]);
 
-        notifo.push(['show-notifications', 'button1', { style: 'notifo' }]);
+        notifo.push(['show-notifications', 'button1', { style: 'notifo', position: 'bottom-left' }]);
 
         notifo.push(['show-topic', 'topic1', 'updates/lego', { style: 'heart' }]);
         notifo.push(['show-topic', 'topic2', 'updates/tech', { style: 'alarm' }]);
