@@ -9,7 +9,7 @@ import * as React from 'react';
 import { InputProps } from 'reactstrap';
 import { ListState, Query } from './../model';
 import { ClearInput } from './ClearInput';
-import { useDebounce, useEventCallback } from './hooks';
+import { useEventCallback } from './hooks';
 
 export interface ListSearchProps extends Pick<InputProps, Exclude<keyof InputProps, 'list'>> {
     // The bootstrap size.
@@ -37,13 +37,17 @@ export const ListSearch = (props: ListSearchProps) => {
 
     const [search, setSearch] = React.useState<string>();
 
-    const debouncedSearch = useDebounce(search, 3000);
-
     React.useEffect(() => {
-        if (hasChanged(list.search, debouncedSearch) && onSearch) {
-            onSearch({ search: debouncedSearch });
-        }
-    }, [debouncedSearch, list, onSearch]);
+        const timer = setTimeout(() => {
+            if (hasChanged(list.search, search) && onSearch) {
+                onSearch({ search });
+            }
+        }, 3000);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [list, search, onSearch]);
 
     React.useEffect(() => {
         setSearch(list.search);
@@ -66,7 +70,7 @@ export const ListSearch = (props: ListSearchProps) => {
     });
 
     return (
-        <ClearInput {...other} value={search || ''} disabled={list.isLoading}
+        <ClearInput {...other} value={search || ''} readOnly={list.isLoading}
             onClear={doClear}
             onChange={doChange}
             onKeyPress={doPress}
