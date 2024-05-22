@@ -22,8 +22,8 @@ const FormSchema = Yup.object({
     email: Yup.string()
         .label(texts.common.email).requiredI18n().emailI18n(),
 
-    // The mode (template or formatted).
-    passwordCompare: Yup.string()
+    // The password to confirm.
+    passwordConfirm: Yup.string()
         .label(texts.common.passwordConfirm).oneOf([Yup.ref('password'), '', undefined], texts.common.passwordsDoNotMatch),
 });
 
