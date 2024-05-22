@@ -26,8 +26,22 @@
     .dropdown-menu {
         margin-bottom: 0;
         margin-top: 1rem !important;
+        max-width: 15rem;;
         max-height: 15rem;
+        overflow-x: visible;
         overflow-y: auto;
+
+        a {
+            @include truncate;
+        }
+    }
+
+    &-name {
+        @include truncate;
+        display: inline-block;
+        max-width: 8rem;
+        min-width: 0;
+        vertical-align: middle;
     }
 
     .dropdown-toggle {
