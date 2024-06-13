@@ -63,7 +63,7 @@ public sealed class LiquidNotification : LiquidNotificationBase
         string imagePresetSmall,
         string imagePresetLarge,
         IImageFormatter imageFormatter)
-        : base(notification.Formatting, imagePresetSmall, imagePresetLarge, imageFormatter)
+        : base(notification.Formatting, notification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
     {
         this.notification = notification;
         this.channel = channel;

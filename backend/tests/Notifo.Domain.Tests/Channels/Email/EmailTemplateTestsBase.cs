@@ -15,7 +15,8 @@ namespace Notifo.Domain.Channels.Email;
 
 public abstract class EmailTemplateTestsBase
 {
-    private readonly EmailTemplate emailTemplate;
+    private readonly EmailTemplate templateDefault;
+    private readonly EmailTemplate templateCustom;
     private readonly IEmailFormatter emailFormatter;
 
     protected abstract string Name { get; }
@@ -33,7 +34,9 @@ public abstract class EmailTemplateTestsBase
             .ReturnsLazily(x => x.GetArgument<string>(0));
 
         emailFormatter = CreateFormatter(emailUrl, imageFormatter);
-        emailTemplate = emailFormatter.CreateInitialAsync().AsTask().Result;
+
+        templateDefault = emailFormatter.CreateInitialAsync().AsTask().Result;
+        templateCustom = ParseCustomAsync().Result;
     }
 
     protected abstract IEmailFormatter CreateFormatter(IEmailUrl url, IImageFormatter imageFormatter);
@@ -56,6 +59,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-single.html", html);
+        await WriteResultFileAsync("template-single.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -69,9 +75,6 @@ public abstract class EmailTemplateTestsBase
 
         Assert.Contains("url/to/email-preferences", html, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("url/to/email-preferences", text, StringComparison.OrdinalIgnoreCase);
-
-        await WriteResultFileAsync("template-single.html", html);
-        await WriteResultFileAsync("template-single.txt", text);
     }
 
     [Fact]
@@ -94,6 +97,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-link.html", html);
+        await WriteResultFileAsync("template-link.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -108,9 +114,6 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
-
-        await WriteResultFileAsync("template-link.html", html);
-        await WriteResultFileAsync("template-link.txt", text);
     }
 
     [Fact]
@@ -131,6 +134,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-image.html", html);
+        await WriteResultFileAsync("template-image.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -141,9 +147,6 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
-
-        await WriteResultFileAsync("template-image.html", html);
-        await WriteResultFileAsync("template-image.txt", text);
     }
 
     [Fact]
@@ -166,6 +169,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-tracking.html", html);
+        await WriteResultFileAsync("template-tracking.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -176,9 +182,6 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
-
-        await WriteResultFileAsync("template-tracking.html", html);
-        await WriteResultFileAsync("template-tracking.txt", text);
     }
 
     [Fact]
@@ -202,6 +205,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-button.html", html);
+        await WriteResultFileAsync("template-button.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -213,9 +219,6 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
-
-        await WriteResultFileAsync("template-button.html", html);
-        await WriteResultFileAsync("template-button.txt", text);
     }
 
     [Fact]
@@ -239,6 +242,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-button-image.html", html);
+        await WriteResultFileAsync("template-button-image.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -251,9 +257,42 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
+    }
 
-        await WriteResultFileAsync("template-button-image.html", html);
-        await WriteResultFileAsync("template-button-image.txt", text);
+    [Fact]
+    public async Task Should_generate_template_with_custom_property()
+    {
+        var jobs = ToJobs(
+            new UserNotification
+            {
+                UserLanguage = "en",
+                Formatting = new NotificationFormatting<string>
+                {
+                    Subject = "subject1",
+                },
+                Properties = new NotificationProperties
+                {
+                    ["myProperty1"] = "Hello World"
+                }
+            });
+
+        var (html, text) = await FormatAsync(jobs, templateCustom);
+
+        await WriteResultFileAsync("template-properties.html", html);
+        await WriteResultFileAsync("template-properties.txt", text);
+
+        foreach (var notification in jobs.Select(x => x.Notification))
+        {
+            var customValue = notification.Properties!["myProperty1"];
+
+            // Test Html result.
+            Assert.Contains(customValue, html, StringComparison.OrdinalIgnoreCase);
+
+            // Test Text result.
+            Assert.Contains(customValue, text, StringComparison.OrdinalIgnoreCase);
+        }
+
+        DoesNotContainPlaceholders(text);
     }
 
     [Fact]
@@ -281,6 +320,9 @@ public abstract class EmailTemplateTestsBase
 
         var (html, text) = await FormatAsync(jobs);
 
+        await WriteResultFileAsync("template-multi.html", html);
+        await WriteResultFileAsync("template-multi.txt", text);
+
         foreach (var notification in jobs.Select(x => x.Notification))
         {
             // Test Html result.
@@ -293,9 +335,6 @@ public abstract class EmailTemplateTestsBase
         }
 
         DoesNotContainPlaceholders(text);
-
-        await WriteResultFileAsync("template-multi.html", html);
-        await WriteResultFileAsync("template-multi.txt", text);
     }
 
     private static void DoesNotContainPlaceholders(string? text)
@@ -311,11 +350,27 @@ public abstract class EmailTemplateTestsBase
         await File.WriteAllTextAsync(Path.Combine(directory.FullName, path), contents);
     }
 
-    private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
+    private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs, EmailTemplate? template = null)
     {
-        var (message, _) = await emailFormatter.FormatAsync(emailTemplate, jobs, PreviewData.App, PreviewData.User);
+        var (message, _) = await emailFormatter.FormatAsync(
+            template ?? templateDefault,
+            jobs,
+            PreviewData.App,
+            PreviewData.User);
 
         return (message?.BodyHtml, message?.BodyText);
+    }
+
+    private async Task<EmailTemplate> ParseCustomAsync()
+    {
+        var source = new EmailTemplate
+        {
+            BodyHtml = await File.ReadAllTextAsync("Channels/Email/CustomHtml.liquid.mjml"),
+            BodyText = await File.ReadAllTextAsync("Channels/Email/CustomText.liquid.text"),
+            Subject = await File.ReadAllTextAsync("Channels/Email/CustomSubject.text")
+        };
+
+        return await emailFormatter.ParseAsync(source, true);
     }
 
     private static List<EmailJob> ToJobs(params UserNotification[] notifications)

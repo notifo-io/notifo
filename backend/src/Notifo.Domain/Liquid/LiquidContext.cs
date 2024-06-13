@@ -57,15 +57,15 @@ public sealed class LiquidContext : TemplateContext
             {
                 foreach (var (key, value) in jobProperties)
                 {
-                    context.SetValue($"notification.custom.{key}", value);
+                    context.SetValue($"notification.properties.{key}", value);
                 }
             }
         }
 
         context.SetValue("app", new LiquidApp(app));
-        context.SetValue("user", new LiquidUser(user));
         context.SetValue("notification", notifications[0]);
         context.SetValue("notifications", notifications);
+        context.SetValue("user", new LiquidUser(user));
 
         return context;
     }

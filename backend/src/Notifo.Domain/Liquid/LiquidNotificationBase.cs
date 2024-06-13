@@ -16,6 +16,7 @@ public abstract class LiquidNotificationBase
     private readonly IImageFormatter imageFormatter;
     private readonly string imagePresetSmall;
     private readonly string imagePresetLarge;
+    private NotificationProperties? properties;
     private string? imageLarge;
     private string? imageSmall;
 
@@ -37,16 +38,23 @@ public abstract class LiquidNotificationBase
         get => imageLarge ??= imageFormatter.AddPreset(formatting.ImageSmall, imagePresetLarge);
     }
 
+    public Dictionary<string, string> Properties
+    {
+        get => properties ??= [];
+    }
+
     protected LiquidNotificationBase(
         NotificationFormatting<string> formatting,
+        NotificationProperties? properties,
         string imagePresetSmall,
         string imagePresetLarge,
         IImageFormatter imageFormatter)
     {
+        this.formatting = formatting;
         this.imageFormatter = imageFormatter;
         this.imagePresetSmall = imagePresetSmall;
         this.imagePresetLarge = imagePresetLarge;
-        this.formatting = formatting;
+        this.properties = properties;
     }
 
     protected static void DescribeBase(LiquidProperties properties)
