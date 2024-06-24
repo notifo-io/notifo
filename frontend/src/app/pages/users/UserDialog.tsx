@@ -133,7 +133,7 @@ export const UserDialog = (props: UserDialogProps) => {
                                             <hr />
 
                                             {allProperties.map(x =>
-                                                <Forms.Text key={x.name} name={x.name} hints={x.editorDescription}
+                                                <Forms.Text key={x.name} name={`properties.${x.name}`} hints={x.editorDescription}
                                                     label={x.editorLabel || x.name} />,
                                             )}
                                         </>
