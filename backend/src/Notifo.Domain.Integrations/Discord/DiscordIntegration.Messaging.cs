@@ -13,7 +13,7 @@ namespace Notifo.Domain.Integrations.Discord;
 public sealed partial class DiscordIntegration : IMessagingSender
 {
     private const int Attempts = 5;
-    private const string DiscordChatId = nameof(DiscordChatId);
+    public const string DiscordChatId = nameof(DiscordChatId);
 
     public void AddTargets(IDictionary<string, string> targets, UserInfo user)
     {
@@ -33,9 +33,7 @@ public sealed partial class DiscordIntegration : IMessagingSender
             return DeliveryResult.Skipped();
         }
 
-        await SendMessageAsync(context, message, chatId, ct);
-
-        return DeliveryResult.Handled;
+        return await SendMessageAsync(context, message, chatId, ct);
     }
 
     private async Task<DeliveryResult> SendMessageAsync(IntegrationContext context, MessagingMessage message, string chatId,
