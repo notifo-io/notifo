@@ -262,6 +262,11 @@ public sealed class MessagingChannel : SchedulingChannelBase<MessagingJob, Messa
             Targets = lastJob.Configuration,
             // We might also format the text without the template if no primary template is defined.
             Text = text,
+            DetailedBodyText = lastJob.Notification.Formatting.Body,
+            ImageLarge = lastJob.Notification.Formatting.ImageLarge,
+            ImageSmall = lastJob.Notification.Formatting.ImageSmall,
+            LinkText = lastJob.Notification.Formatting.LinkText,
+            LinkUrl = lastJob.Notification.Formatting.LinkUrl,
         };
 
         return (default, message.Enrich(lastJob, Name));

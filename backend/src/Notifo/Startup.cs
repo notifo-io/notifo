@@ -5,18 +5,19 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Globalization;
-using System.Net;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Frontend;
 using Notifo.Domain;
+using Notifo.Domain.Integrations.Discord;
 using Notifo.Domain.Utils;
 using Notifo.Pipeline;
+using System.Globalization;
+using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Notifo;
 
@@ -146,6 +147,7 @@ public class Startup
         services.AddMyWebPushChannel(config);
 
         services.AddIntegrationAmazonSES(config);
+        services.AddIntegrationDiscord();
         services.AddIntegrationFirebase();
         services.AddIntegrationHttp();
         services.AddIntegrationMailchimp();

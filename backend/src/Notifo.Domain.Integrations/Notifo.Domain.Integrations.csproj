@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.60" />
     <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
+    <PackageReference Include="Discord.Net" Version="3.15.2" />
     <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
     <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="Fluid.Core" Version="2.7.0" />
