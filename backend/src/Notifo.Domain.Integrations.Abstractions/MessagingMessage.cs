@@ -12,8 +12,8 @@ public sealed class MessagingMessage : BaseMessage
     public IReadOnlyDictionary<string, string> Targets { get; set; }
 
     public string Text { get; set; }
-    public string? DetailedBodyText { get; init; }
 
+    public string? Body { get; init; }
 
     public string? ImageLarge { get; init; }
 

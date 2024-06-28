@@ -1,8 +1,7 @@
-﻿// =====================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
-//  Author of the file: Artur Nowak
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
@@ -45,9 +44,10 @@ public sealed partial class DiscordIntegration : IMessagingSender
         {
             try
             {
-                var client = discordBotClientPool.GetDiscordClient(botToken, ct);
+                var client = await discordBotClientPool.GetDiscordClient(botToken, ct);
+                var requestOptions = new RequestOptions { CancelToken = ct };
 
-                var user = await client.GetUserAsync(ulong.Parse(chatId));
+                var user = await client.GetUserAsync(ulong.Parse(chatId), CacheMode.AllowDownload, requestOptions);
                 if (user is null)
                 {
                     throw new InvalidOperationException("User not found.");
@@ -56,7 +56,7 @@ public sealed partial class DiscordIntegration : IMessagingSender
                 EmbedBuilder builder = new EmbedBuilder();
 
                 builder.WithTitle(message.Text);
-                builder.WithDescription(message.DetailedBodyText);
+                builder.WithDescription(message.Body);
 
                 if (!string.IsNullOrWhiteSpace(message.ImageSmall))
                 {
@@ -75,7 +75,8 @@ public sealed partial class DiscordIntegration : IMessagingSender
 
                 builder.WithFooter("Sent with Notifo");
 
-                await user.SendMessageAsync(string.Empty, false, builder.Build()); // Throws HttpException if the user has some privacy settings that make it impossible to text them.
+                // Throws HttpException if the user has some privacy settings that make it impossible to text them.
+                await user.SendMessageAsync(string.Empty, false, builder.Build(), requestOptions);
                 break;
             }
             catch (HttpException ex) when (ex.DiscordCode == DiscordErrorCode.CannotSendMessageToUser)
