@@ -9,6 +9,7 @@ using Discord;
 using Discord.Net;
 
 namespace Notifo.Domain.Integrations.Discord;
+
 public sealed partial class DiscordIntegration : IMessagingSender
 {
     private const int Attempts = 5;
@@ -25,7 +26,7 @@ public sealed partial class DiscordIntegration : IMessagingSender
     }
 
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message,
-    CancellationToken ct)
+       CancellationToken ct)
     {
         if (!message.Targets.TryGetValue(DiscordChatId, out var chatId))
         {
@@ -47,7 +48,12 @@ public sealed partial class DiscordIntegration : IMessagingSender
                 var client = await discordBotClientPool.GetDiscordClient(botToken, ct);
                 var requestOptions = new RequestOptions { CancelToken = ct };
 
-                var user = await client.GetUserAsync(ulong.Parse(chatId), CacheMode.AllowDownload, requestOptions);
+                if (!ulong.TryParse(chatId, out var chatIdParsed))
+                {
+                    throw new InvalidOperationException("Invalid Discord DM chat ID.");
+                }
+
+                var user = await client.GetUserAsync(chatIdParsed, CacheMode.AllowDownload, requestOptions);
                 if (user is null)
                 {
                     throw new InvalidOperationException("User not found.");

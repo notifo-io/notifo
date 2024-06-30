@@ -5,9 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Integrations;
+using Notifo.Domain.Integrations.Discord;
 
-namespace Notifo.Domain.Integrations.Discord;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DiscordServiceExtensions
 {

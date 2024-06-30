@@ -45,7 +45,6 @@ public sealed class DiscordTests
     public async Task Should_send_full_message()
     {
         var userId = GetUserId();
-
         var message = new MessagingMessage
         {
             Text = "Test message",
@@ -97,7 +96,6 @@ public sealed class DiscordTests
     public async Task Should_accept_urls()
     {
         var userId = GetUserId();
-
         var message = new MessagingMessage
         {
             Text = "Test message",
@@ -105,6 +103,7 @@ public sealed class DiscordTests
             LinkText = "Notifo",
             Targets = new Dictionary<string, string>() { { DiscordIntegration.DiscordChatId, userId } }
         };
+
         var result = await sut.System.SendAsync(sut.Context, message, default);
 
         Assert.Equal(DeliveryResult.Handled, result);
@@ -113,7 +112,6 @@ public sealed class DiscordTests
     private static ResolvedIntegration<DiscordIntegration> CreateClient()
     {
         var botToken = TestHelpers.Configuration.GetValue<string>("discord:botToken")!;
-
         var context = BuildContext(new Dictionary<string, string>
         {
             [DiscordIntegration.BotToken.Name] = botToken,
@@ -132,8 +130,8 @@ public sealed class DiscordTests
     private string GetUserId()
     {
         var id = TestHelpers.Configuration.GetValue<string>("discord:userId");
-
         ArgumentException.ThrowIfNullOrEmpty(id, nameof(id));
+
         return id;
     }
 

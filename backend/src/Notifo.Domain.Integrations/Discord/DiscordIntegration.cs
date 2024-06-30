@@ -57,7 +57,6 @@ public sealed partial class DiscordIntegration : IIntegration
     public Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
           CancellationToken ct)
     {
-        // Validate if the token is valid.
         var botToken = BotToken.GetString(context.Properties);
 
         try
