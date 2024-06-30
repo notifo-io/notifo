@@ -39,7 +39,7 @@ public sealed class MediaStore : IMediaStore
         return mediaRepository.QueryAsync(appId, query, ct);
     }
 
-    public async Task<Media> UploadAsync(string appId, AssetFile file,
+    public async Task<Media> UploadAsync(string appId, IAssetFile file,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(appId);

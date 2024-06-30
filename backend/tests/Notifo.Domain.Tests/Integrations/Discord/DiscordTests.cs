@@ -13,11 +13,30 @@ namespace Notifo.Domain.Integrations.Discord;
 [Trait("Category", "Dependencies")]
 public sealed class DiscordTests
 {
+    private readonly string userId;
     private readonly ResolvedIntegration<DiscordIntegration> sut;
 
     public DiscordTests()
     {
-        sut = CreateClient();
+        userId = TestHelpers.Configuration.GetValue<string>("discord:userId") ??
+            throw new InvalidOperationException("Configured user Id with 'discord:userId'");
+
+        var botToken = TestHelpers.Configuration.GetValue<string>("discord:botToken") ??
+            throw new InvalidOperationException("Configured bot token with 'discord:botToken'");
+
+        var context = BuildContext(new Dictionary<string, string>
+        {
+            [DiscordIntegration.BotToken.Name] = botToken,
+        });
+
+        var integration =
+            new ServiceCollection()
+                .AddIntegrationDiscord()
+                .AddMemoryCache()
+                .BuildServiceProvider()
+                .GetRequiredService<DiscordIntegration>();
+
+        sut = new ResolvedIntegration<DiscordIntegration>(Guid.NewGuid().ToString(), context, integration);
     }
 
     [Fact]
@@ -29,7 +48,6 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_send_simple_message()
     {
-        var userId = GetUserId();
         var message = new MessagingMessage
         {
             Text = "Test message",
@@ -44,12 +62,14 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_send_full_message()
     {
-        var userId = GetUserId();
         var message = new MessagingMessage
         {
             Text = "Test message",
             Body = "Detailed body text",
-            Targets = new Dictionary<string, string>() { { DiscordIntegration.DiscordChatId, userId } }
+            Targets = new Dictionary<string, string>()
+            {
+                { DiscordIntegration.DiscordChatId, userId }
+            }
         };
 
         var result = await sut.System.SendAsync(sut.Context, message, default);
@@ -60,14 +80,15 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_fail_on_user()
     {
-        // Random 18-digit number
-        var random = new Random();
-        string userId = string.Join(string.Empty, Enumerable.Range(0, 18).Select(number => random.Next(0, 9)));
+        var invalidUser = Guid.NewGuid().ToString();
 
         var message = new MessagingMessage
         {
             Text = "Test message",
-            Targets = new Dictionary<string, string>() { { DiscordIntegration.DiscordChatId, userId } }
+            Targets = new Dictionary<string, string>()
+            {
+                { DiscordIntegration.DiscordChatId, invalidUser }
+            }
         };
 
         var result = await sut.System.SendAsync(sut.Context, message, default);
@@ -78,13 +99,15 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_accept_images()
     {
-        var userId = GetUserId();
         var message = new MessagingMessage
         {
             Text = "Test message",
             ImageSmall = "https://picsum.photos/200/300",
             ImageLarge = "https://picsum.photos/400/600",
-            Targets = new Dictionary<string, string>() { { DiscordIntegration.DiscordChatId, userId } }
+            Targets = new Dictionary<string, string>()
+            {
+                { DiscordIntegration.DiscordChatId, userId }
+            }
         };
 
         var result = await sut.System.SendAsync(sut.Context, message, default);
@@ -95,44 +118,20 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_accept_urls()
     {
-        var userId = GetUserId();
         var message = new MessagingMessage
         {
             Text = "Test message",
             LinkUrl = "https://notifo.io",
             LinkText = "Notifo",
-            Targets = new Dictionary<string, string>() { { DiscordIntegration.DiscordChatId, userId } }
+            Targets = new Dictionary<string, string>()
+            {
+                { DiscordIntegration.DiscordChatId, userId }
+            }
         };
 
         var result = await sut.System.SendAsync(sut.Context, message, default);
 
         Assert.Equal(DeliveryResult.Handled, result);
-    }
-
-    private static ResolvedIntegration<DiscordIntegration> CreateClient()
-    {
-        var botToken = TestHelpers.Configuration.GetValue<string>("discord:botToken")!;
-        var context = BuildContext(new Dictionary<string, string>
-        {
-            [DiscordIntegration.BotToken.Name] = botToken,
-        });
-
-        var integration =
-            new ServiceCollection()
-                .AddIntegrationDiscord()
-                .AddMemoryCache()
-                .BuildServiceProvider()
-                .GetRequiredService<DiscordIntegration>();
-
-        return new ResolvedIntegration<DiscordIntegration>(Guid.NewGuid().ToString(), context, integration);
-    }
-
-    private string GetUserId()
-    {
-        var id = TestHelpers.Configuration.GetValue<string>("discord:userId");
-        ArgumentException.ThrowIfNullOrEmpty(id, nameof(id));
-
-        return id;
     }
 
     private static IntegrationContext BuildContext(Dictionary<string, string> properties)

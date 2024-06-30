@@ -17,7 +17,7 @@ public class DiscordBotClientPool : CachePool<IDiscordClient>
     {
     }
 
-    public async Task<IDiscordClient> GetDiscordClient(string botToken, CancellationToken ct)
+    public async Task<IDiscordClient> GetDiscordClient(string botToken)
     {
         var cacheKey = $"{nameof(IDiscordClient)}_{botToken}";
 

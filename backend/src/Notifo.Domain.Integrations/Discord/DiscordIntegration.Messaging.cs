@@ -45,19 +45,20 @@ public sealed partial class DiscordIntegration : IMessagingSender
         {
             try
             {
-                var client = await discordBotClientPool.GetDiscordClient(botToken, ct);
-                var requestOptions = new RequestOptions { CancelToken = ct };
+                var client = await discordBotClientPool.GetDiscordClient(botToken);
+
+                var requestOptions = new RequestOptions
+                {
+                    CancelToken = ct
+                };
 
                 if (!ulong.TryParse(chatId, out var chatIdParsed))
                 {
                     throw new InvalidOperationException("Invalid Discord DM chat ID.");
                 }
 
-                var user = await client.GetUserAsync(chatIdParsed, CacheMode.AllowDownload, requestOptions);
-                if (user is null)
-                {
-                    throw new InvalidOperationException("User not found.");
-                }
+                var user = await client.GetUserAsync(chatIdParsed, CacheMode.AllowDownload, requestOptions)
+                    ?? throw new InvalidOperationException("User not found.");
 
                 EmbedBuilder builder = new EmbedBuilder();
 

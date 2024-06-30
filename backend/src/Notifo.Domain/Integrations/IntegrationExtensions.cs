@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Collections;
-using System.Collections.Generic;
 
 namespace Notifo.Domain.Integrations;
 
