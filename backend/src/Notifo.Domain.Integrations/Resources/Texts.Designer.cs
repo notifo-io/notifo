@@ -88,6 +88,60 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You will find it on your Discord Developer Platform. Go to your app and then to the &quot;Bot&quot; tab..
+        /// </summary>
+        internal static string Discord_BotTokenDescription {
+            get {
+                return ResourceManager.GetString("Discord_BotTokenDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord Bot token.
+        /// </summary>
+        internal static string Discord_BotTokenLabel {
+            get {
+                return ResourceManager.GetString("Discord_BotTokenLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send Notifo&apos;s notifications via direct messages to your Discord account..
+        /// </summary>
+        internal static string Discord_Description {
+            get {
+                return ResourceManager.GetString("Discord_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        internal static string Discord_Name {
+            get {
+                return ResourceManager.GetString("Discord_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user_id of the user the bot will send the DMs to. User is required to install the Discord bot on their account..
+        /// </summary>
+        internal static string Discord_UserIdDescription {
+            get {
+                return ResourceManager.GetString("Discord_UserIdDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord user id.
+        /// </summary>
+        internal static string Discord_UserIdLabel {
+            get {
+                return ResourceManager.GetString("Discord_UserIdLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comma or line-separated list of additional email-addresses..
         /// </summary>
         internal static string Email_AdditionalFromEmailsDescription {

@@ -126,6 +126,24 @@
   <data name="AmazonSES_ReservedEmailAddress" xml:space="preserve">
     <value>Email address {0} is already used by another app.</value>
   </data>
+  <data name="Discord_BotTokenDescription" xml:space="preserve">
+    <value>You will find it on your Discord Developer Platform. Go to your app and then to the "Bot" tab.</value>
+  </data>
+  <data name="Discord_BotTokenLabel" xml:space="preserve">
+    <value>Discord Bot token</value>
+  </data>
+  <data name="Discord_Description" xml:space="preserve">
+    <value>Send Notifo's notifications via direct messages to your Discord account.</value>
+  </data>
+  <data name="Discord_Name" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="Discord_UserIdDescription" xml:space="preserve">
+    <value>The user_id of the user the bot will send the DMs to. User is required to install the Discord bot on their account.</value>
+  </data>
+  <data name="Discord_UserIdLabel" xml:space="preserve">
+    <value>Discord user id</value>
+  </data>
   <data name="Email_AdditionalFromEmailsDescription" xml:space="preserve">
     <value>Comma or line-separated list of additional email-addresses.</value>
   </data>
