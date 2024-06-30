@@ -5,20 +5,27 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Esprima;
 using Esprima.Ast;
+using Jint;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
+using Options = Microsoft.Extensions.Options.Options;
 
 namespace Notifo.Domain.Integrations;
 
 internal static class ConditionParser
 {
-    private static readonly JavaScriptParser Parser = new JavaScriptParser(new ParserOptions { Tolerant = true });
+    private static readonly ScriptPreparationOptions PreparationOptions = new ScriptPreparationOptions
+    {
+        ParsingOptions = new ScriptParsingOptions
+        {
+            Tolerant = true
+        }
+    };
+
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
     private static readonly IMemoryCache Cache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
-    public static Script Parse(string script)
+    public static Prepared<Script> Parse(string script)
     {
         var cacheKey = $"{typeof(ConditionEvaluator)}_Script_{script}";
 
@@ -26,7 +33,7 @@ internal static class ConditionParser
         {
             entry.AbsoluteExpirationRelativeToNow = CacheDuration;
 
-            return Parser.ParseScript(script);
+            return Engine.PrepareScript(script, options: PreparationOptions);
         })!;
     }
 }

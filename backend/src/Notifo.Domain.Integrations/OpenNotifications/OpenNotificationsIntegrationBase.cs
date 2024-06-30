@@ -100,7 +100,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
                     Summary = MakeSummary(property)
                 };
             }).ToList(),
-            new List<IntegrationProperty>(),
+            [],
             capabilities)
         {
             Description = providerInfo.Description.Values.FirstOrDefault(),

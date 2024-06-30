@@ -48,14 +48,13 @@ public sealed partial class MailjetIntegration : IIntegration
             "Mailjet",
             Texts.Mailjet_Name,
             "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 520' style='enable-background:new 0 0 520 520' xml:space='preserve'><path d='M30.6 234.1 181.9 303l30.5-30.5-77.5-35.3 240.2-92.4L282.8 385l-35-77.1-30.5 30.5 1.6 3.5 67 147.5L445.4 74.6 30.6 234.1z' style='fill:#fead0d'/></svg>",
-            new List<IntegrationProperty>
-            {
+            [
                 ApiKeyProperty,
                 ApiSecretProperty,
                 FromEmailProperty,
                 FromNameProperty
-            },
-            new List<IntegrationProperty>(),
+            ],
+            [],
             new HashSet<string>
             {
                 Providers.Email

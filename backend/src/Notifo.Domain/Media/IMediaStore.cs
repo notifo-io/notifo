@@ -18,7 +18,7 @@ public interface IMediaStore
     Task<Media?> GetAsync(string appId, string fileName,
         CancellationToken ct = default);
 
-    Task<Media> UploadAsync(string appId, AssetFile file,
+    Task<Media> UploadAsync(string appId, IAssetFile file,
         CancellationToken ct = default);
 
     Task DeleteAsync(string appId, string fileName,

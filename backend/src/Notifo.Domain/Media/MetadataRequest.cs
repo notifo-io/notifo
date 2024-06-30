@@ -11,7 +11,7 @@ namespace Notifo.Domain.Media;
 
 public sealed class MetadataRequest
 {
-    public AssetFile File { get; set; }
+    public IAssetFile File { get; set; }
 
     public MediaMetadata Metadata { get; } = [];
 
