@@ -13,7 +13,8 @@ module.exports = {
     "parserOptions": {
         "project": "tsconfig.json"
     },
-    "plugins": [
+    "plugins": [   
+        "eslint-plugin-react-compiler",
         "eslint-plugin-import",
         "sort-keys-fix",
         "@typescript-eslint",
@@ -105,6 +106,7 @@ module.exports = {
         ],
         "operator-linebreak": "off",
         "prefer-destructuring": "off",
+        "react-compiler/react-compiler": "error",
         "sort-imports": [
             "error",
             {

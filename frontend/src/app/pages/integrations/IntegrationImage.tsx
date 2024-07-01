@@ -32,15 +32,15 @@ export const IntegrationImage = (props: IntegrationImageProps) => {
 };
 
 const RenderSVG = ({ svg }: { svg: string }) => {
-    const [div, setDiv] = React.useState<HTMLDivElement | null>(null);
-
-    React.useEffect(() => {
-        if (!div || !svg) {
-            return;
+    const html = React.useMemo(() => {
+        if (!svg) {
+            return null;
         }
+        
 
         const prefix = Numbers.guid();
 
+        const div = document.createElement('div');
         div.innerHTML = svg;
         div.querySelectorAll('*').forEach(element => {
             const id = element.getAttribute('id');
@@ -66,9 +66,15 @@ const RenderSVG = ({ svg }: { svg: string }) => {
                 }
             }
         });
-    }, [div, svg]);
+
+        return { __html: div.innerHTML };
+    }, [svg]);
+
+    if (!html) {
+        return null;
+    }
 
     return (
-        <div ref={setDiv} />
+        <div dangerouslySetInnerHTML={html} />
     );
 };

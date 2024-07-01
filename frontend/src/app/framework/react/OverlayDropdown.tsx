@@ -12,8 +12,6 @@ import * as ReactDOM from 'react-dom';
 import { ClickOutside } from './ClickOutside';
 import { useEventCallback } from './hooks';
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 export class OverlayController {
     private static openController?: OverlayController;
     private listener?: (opened: boolean) => void;
@@ -115,7 +113,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
 
     React.useEffect(() => {
         update();
-    }, [show]);
+    }, [show, update]);
 
     React.useEffect(() => {
         return controller?.listen(value => {

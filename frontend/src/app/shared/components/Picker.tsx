@@ -8,8 +8,6 @@ import { ClickOutside, Icon, OverlayDropdown, useEventCallback } from '@app/fram
 import { texts } from '@app/texts';
 import { MediaPicker } from './MediaPicker';
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 export interface PickerOptions {
     // True when emojis can be added.
     pickEmoji?: boolean;
@@ -64,7 +62,7 @@ export const Picker = (props: PickerProps) => {
 
     React.useEffect(() => {
         update();
-    }, [openPicker]);
+    }, [openPicker, update]);
 
     const doSelectUrl = useEventCallback((url: string) => {
         onPick(url);

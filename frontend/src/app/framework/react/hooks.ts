@@ -6,6 +6,7 @@
  */
 
 /* eslint-disable no-console */
+/* eslint-disable react-compiler/react-compiler */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';

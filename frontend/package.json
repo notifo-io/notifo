@@ -19,6 +19,7 @@
     "core-js": "3.33.2",
     "date-fns": "2.30.0",
     "emoji-mart": "^5.5.2",
+    "eslint-plugin-react-compiler": "^0.0.0-experimental-51a85ea-20240601",
     "history": "^5.3.0",
     "mousetrap": "1.6.5",
     "oidc-client-ts": "^2.4.0",

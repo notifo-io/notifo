@@ -80,7 +80,8 @@ public sealed class DiscordTests
     [Fact]
     public async Task Should_fail_on_user()
     {
-        var invalidUser = Guid.NewGuid().ToString();
+        // Discord only uses numbers in IDs with 18 characeters, therefore we cannot use GUID or so.
+        var invalidUser = "112233445566778899";
 
         var message = new MessagingMessage
         {
