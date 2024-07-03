@@ -441,6 +441,7 @@ export const EN = {
         minItemsFn: (p: { label?: string; min: number }) => `${p.label} must have at least ${p.min || 0} items.`,
         minLengthFn: (p: { label?: string; min: number }) => `${p.label} must have at least ${p.min} characters.`,
         moreThanFn: (p: { label?: string; more: number }) => `${p.label} must be greater than ${p.more || 0}.`,
+        formatFn: (p: { label?: string }) => `${p.label} is not in a valid format for this type of field.`,
         patternFn: (p: { label?: string }) => `${p.label} is not in a valid format.`,
         requiredFn: (p: { label?: string }) => `${p.label} is required.`,
         topicFn: (p: { label?: string }) => `${p.label} must be a valid topic.`,

@@ -39,6 +39,8 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
     public string? Pattern { get; init; }
 
+    public PropertyFormat Format { get; init; } = PropertyFormat.None;
+
     public bool IsValid(string? input, [MaybeNullWhen(true)] out string error)
     {
         switch (Type)

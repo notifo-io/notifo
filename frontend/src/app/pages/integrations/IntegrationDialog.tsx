@@ -19,6 +19,7 @@ import { createIntegration, deleteIntegration, updateIntegration, useIntegration
 import { texts } from '@app/texts';
 import { IntegrationImage } from './IntegrationImage';
 import { StatusLabel } from './StatusLabel';
+import { FORMAT_REGEXPS } from '@app/shared/utils/model';
 
 export interface IntegrationDialogProps {
     // The app id.
@@ -122,6 +123,15 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
                 if (property.maxLength) {
                     propertyType = propertyType.max(property.maxLength, texts.validation.maxLengthFn);
+                }
+
+                if (property.format) {
+                    const format = FORMAT_REGEXPS.get(property.format);
+
+                    
+                    if (format) {  
+                        propertyType = propertyType.matches(format, texts.validation.formatFn);
+                    }
                 }
 
                 if (property.pattern) {
@@ -271,6 +281,20 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
                         label={label} hints={property.editorDescription} />
                 );
             } else {
+                if (property.format && property.format !== 'None') {
+                    switch (property.format) {
+                        case 'Email':
+                            return (
+                                <Forms.Email name={name}
+                                    label={label} hints={property.editorDescription} />
+                            );
+                        case 'Url':
+                            return (
+                                <Forms.Url name={name}
+                                    label={label} hints={property.editorDescription} />
+                            );
+                    }
+                }
                 return (
                     <Forms.Text name={name}
                         label={label} hints={property.editorDescription} />

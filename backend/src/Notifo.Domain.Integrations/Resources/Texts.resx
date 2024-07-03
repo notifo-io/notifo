@@ -438,7 +438,7 @@ When you have done this send me an /update command.</value>
     <value>Send Always</value>
   </data>
   <data name="Webhook_URLHints" xml:space="preserve">
-    <value>The URL to your server endpoint.</value>
+    <value>The URL to your server endpoint. Remember about the protocol (http, https).</value>
   </data>
   <data name="Webhook_URLLabel" xml:space="preserve">
     <value>URL</value>

@@ -17859,6 +17859,12 @@ namespace Notifo.SDK
         public string Pattern { get; set; }
 
         /// <summary>
+        /// Format of the field, used to both validate the input and to provide hints to the user.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("format", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public PropertyFormat Format { get; set; }
+
+        /// <summary>
         /// The default value.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("defaultValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -17884,6 +17890,21 @@ namespace Notifo.SDK
 
         [System.Runtime.Serialization.EnumMember(Value = @"Boolean")]
         Boolean = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum PropertyFormat
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"None")]
+        None = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Email")]
+        Email = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Url")]
+        Url = 2,
 
     }
 

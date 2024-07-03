@@ -119,7 +119,7 @@ export const UserDialog = (props: UserDialogProps) => {
                                     <Forms.Text name='emailAddress'
                                         label={texts.common.emailAddress} />
 
-                                    <Forms.Text name='phoneNumber'
+                                    <Forms.Phone name='phoneNumber'
                                         label={texts.common.phoneNumber} />
 
                                     <Forms.Select name='preferredLanguage' options={coreLanguages}
