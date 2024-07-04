@@ -42,7 +42,6 @@ public sealed partial class SmtpIntegration : IIntegration
 
     public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
-        Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
         EditorDescription = Texts.Email_FromEmailDescription,
         IsRequired = true,
