@@ -125,7 +125,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     propertyType = propertyType.max(property.maxLength, texts.validation.maxLengthFn);
                 }
 
-                if (property.format) {
+                if (property.format && property.format !== "None") {
                     const format = FORMAT_REGEXPS.get(property.format);
 
                     
