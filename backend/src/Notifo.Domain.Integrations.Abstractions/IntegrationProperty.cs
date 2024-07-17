@@ -172,6 +172,29 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
             }
         }
 
+        if (!string.IsNullOrWhiteSpace(input) && Format != PropertyFormat.None)
+        {
+            switch (Format)
+            {
+                case PropertyFormat.Email:
+                    if (!Regex.IsMatch(input, ValidationPatterns.Email))
+                    {
+                        error = Texts.IntegrationPropertyFormatEmail;
+                        return false;
+                    }
+
+                    break;
+                case PropertyFormat.Url:
+                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri) || !((string[])["http", "https"]).Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase))
+                    {
+                        error = Texts.IntegrationPropertyFormatUrl;
+                        return false;
+                    }
+
+                    break;
+            }
+        }
+
         return true;
     }
 

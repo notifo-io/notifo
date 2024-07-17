@@ -70,6 +70,24 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field is not a valid e-mail..
+        /// </summary>
+        internal static string IntegrationPropertyFormatEmail {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyFormatEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a valid URL (remember about the protocol)..
+        /// </summary>
+        internal static string IntegrationPropertyFormatUrl {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyFormatUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a valid boolean value..
         /// </summary>
         internal static string IntegrationPropertyInvalidBoolean {

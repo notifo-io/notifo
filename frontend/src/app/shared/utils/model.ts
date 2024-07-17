@@ -107,18 +107,3 @@ export const WEEK_DAYS: ReadonlyArray<Mode<IsoDayOfWeek | undefined>> = [{
     value: 'Saturday',
     label: texts.common.weekDays.saturday,
 }];
-
-export const FORMAT_REGEXPS: ReadonlyMap<PropertyFormat, RegExp> = new Map<PropertyFormat, RegExp>(
-    [   
-        [
-            "Email",
-            // RFC 5322
-            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i
-        ],
-        [
-            "Url",
-            // Requires protocol at start, matches the user info part (e.g. http://user:password@host:port), matches the host part (IPv4, domain, localhost, IPv6), matches the port part
-            /^(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])$/i
-        ],
-    ]
-);

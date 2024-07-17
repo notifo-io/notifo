@@ -19,7 +19,6 @@ import { createIntegration, deleteIntegration, updateIntegration, useIntegration
 import { texts } from '@app/texts';
 import { IntegrationImage } from './IntegrationImage';
 import { StatusLabel } from './StatusLabel';
-import { FORMAT_REGEXPS } from '@app/shared/utils/model';
 
 export interface IntegrationDialogProps {
     // The app id.
@@ -126,12 +125,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                 }
 
                 if (property.format && property.format !== "None") {
-                    const format = FORMAT_REGEXPS.get(property.format);
-
-                    
-                    if (format) {  
-                        propertyType = propertyType.matches(format, texts.validation.formatFn);
-                    }
+                    propertyType = propertyType.formatI18n(property.format);
                 }
 
                 if (property.pattern) {

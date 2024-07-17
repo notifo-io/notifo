@@ -6,6 +6,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { PropertyFormat } from '@app/service';
 import { NumberSchema, ObjectSchema, StringSchema } from 'yup';
 
 declare module 'yup' {
@@ -17,6 +18,8 @@ declare module 'yup' {
         requiredI18n(): StringSchema;
 
         topicI18n(): StringSchema;
+
+        formatI18n(format: PropertyFormat): StringSchema;
     }
 
     interface NumberSchema {

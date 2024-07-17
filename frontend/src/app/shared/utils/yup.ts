@@ -8,13 +8,17 @@
 import * as Yup from 'yup';
 import { Types } from '@app/framework';
 import { texts } from '@app/texts';
+import { PropertyFormat } from '@app/service';
 
 function emailI18n(this: Yup.StringSchema) {
     return this.email(texts.validation.emailFn);
 }
 
 function urlI18n(this: Yup.StringSchema) {
-    return this.url(texts.validation.urlFn);
+    // This regular expression is built on top of the one 
+    // from Yup, but it also allows localhost.
+    // See: https://github.com/jquense/yup/issues/224
+    return this.matches(/^(?:(?:https?):\/\/|www\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[A-Z0-9+&@#\/%=~_|$[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])$/i , texts.validation.urlFn);
 }
 
 function requiredI18nNumber(this: Yup.NumberSchema) {
@@ -57,6 +61,17 @@ function atLeastOneStringI18n(this: Yup.ObjectSchema<any>) {
         });
 }
 
+function formatI18n(this: Yup.StringSchema, format: PropertyFormat) {
+   switch (format) {
+        case "Email":
+            return this.emailI18n();
+        case "Url":
+            return this.urlI18n();
+        default:
+            return this;
+    }
+}
+
 export function extendYup() {
     Yup.addMethod(Yup.object, 'atLeastOneStringI18n', atLeastOneStringI18n);
 
@@ -64,6 +79,7 @@ export function extendYup() {
     Yup.addMethod(Yup.string, 'urlI18n', urlI18n);
     Yup.addMethod(Yup.string, 'requiredI18n', requiredI18n);
     Yup.addMethod(Yup.string, 'topicI18n', topicI18n);
+    Yup.addMethod(Yup.string, 'formatI18n', formatI18n);
 
     Yup.addMethod(Yup.number, 'maxI18n', maxI18N);
     Yup.addMethod(Yup.number, 'minI18n', minI18N);
