@@ -8,7 +8,6 @@
 import * as Yup from 'yup';
 import { Types } from '@app/framework';
 import { texts } from '@app/texts';
-import { PropertyFormat } from '@app/service';
 
 function emailI18n(this: Yup.StringSchema) {
     return this.email(texts.validation.emailFn);
@@ -61,17 +60,6 @@ function atLeastOneStringI18n(this: Yup.ObjectSchema<any>) {
         });
 }
 
-function formatI18n(this: Yup.StringSchema, format: PropertyFormat) {
-   switch (format) {
-        case "Email":
-            return this.emailI18n();
-        case "Url":
-            return this.urlI18n();
-        default:
-            return this;
-    }
-}
-
 export function extendYup() {
     Yup.addMethod(Yup.object, 'atLeastOneStringI18n', atLeastOneStringI18n);
 
@@ -79,7 +67,6 @@ export function extendYup() {
     Yup.addMethod(Yup.string, 'urlI18n', urlI18n);
     Yup.addMethod(Yup.string, 'requiredI18n', requiredI18n);
     Yup.addMethod(Yup.string, 'topicI18n', topicI18n);
-    Yup.addMethod(Yup.string, 'formatI18n', formatI18n);
 
     Yup.addMethod(Yup.number, 'maxI18n', maxI18N);
     Yup.addMethod(Yup.number, 'minI18n', minI18N);

@@ -125,7 +125,14 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                 }
 
                 if (property.format && property.format !== "None") {
-                    propertyType = propertyType.formatI18n(property.format);
+                    switch (property.format) {
+                        case "Email":
+                            propertyType = propertyType.emailI18n();
+                            break;
+                        case "Url":
+                            propertyType = propertyType.urlI18n();
+                            break;
+                    }
                 }
 
                 if (property.pattern) {

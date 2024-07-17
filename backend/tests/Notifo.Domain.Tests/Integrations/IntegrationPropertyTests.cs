@@ -178,6 +178,7 @@ public class IntegrationPropertyTests
         }
 
         [Theory]
+        [InlineData("http://192.168.0.101/")]
         [InlineData("http://localhost/test")]
         [InlineData("https://example.com/test?query=example")]
         [InlineData("http://login:password@test.pl/random")]
