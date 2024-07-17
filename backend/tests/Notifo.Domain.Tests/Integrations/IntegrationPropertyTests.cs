@@ -158,6 +158,76 @@ public class IntegrationPropertyTests
             Assert.Equal("allowed", property.GetString(source));
         }
 
+        [Theory]
+        [InlineData("localhost.com/test")]
+        [InlineData("192.168.0.101")]
+        [InlineData("randomString")]
+        public void Should_fail_if_url_is_invalid(string? input)
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = input!
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                Format = PropertyFormat.Url
+            };
+
+            Assert.Throws<ValidationException>(() => property.GetString(source));
+        }
+
+        [Theory]
+        [InlineData("http://localhost/test")]
+        [InlineData("https://example.com/test?query=example")]
+        [InlineData("http://login:password@test.pl/random")]
+        public void Should_get_url_if_value_is_valid(string? input)
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = input!
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                Format = PropertyFormat.Url
+            };
+
+            Assert.Equal(input, property.GetString(source));
+        }
+
+        [Fact]
+        public void Should_fail_if_email_is_invalid()
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = "invalidEmail"
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                Format = PropertyFormat.Email
+            };
+
+            Assert.Throws<ValidationException>(() => property.GetString(source));
+        }
+
+        [Fact]
+        public void Should_get_email_if_value_is_valid()
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = "john.doe@example.com"
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                Format = PropertyFormat.Email
+            };
+
+            Assert.Equal(source["key"], property.GetString(source));
+        }
+
         [Fact]
         public void Should_get_value_if_all_requirements_are_met()
         {
