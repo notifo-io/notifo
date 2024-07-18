@@ -1017,7 +1017,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The URL to your server endpoint..
+        ///   Looks up a localized string similar to The URL to your server endpoint. Remember about the protocol (http, https)..
         /// </summary>
         internal static string Webhook_URLHints {
             get {

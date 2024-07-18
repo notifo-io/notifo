@@ -444,6 +444,6 @@ export const EN = {
         patternFn: (p: { label?: string }) => `${p.label} is not in a valid format.`,
         requiredFn: (p: { label?: string }) => `${p.label} is required.`,
         topicFn: (p: { label?: string }) => `${p.label} must be a valid topic.`,
-        urlFn: (p: { label?: string }) => `${p.label} must be a valid URL.`,
+        urlFn: (p: { label?: string }) => `${p.label} must be a valid URL with a protocol (e.g. https).`,
     },
 };

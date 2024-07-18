@@ -14,7 +14,10 @@ function emailI18n(this: Yup.StringSchema) {
 }
 
 function urlI18n(this: Yup.StringSchema) {
-    return this.url(texts.validation.urlFn);
+    // This regular expression is built on top of the one 
+    // from Yup, but it also allows localhost.
+    // See: https://github.com/jquense/yup/issues/224
+    return this.matches(/^(?:(?:https?):\/\/|www\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[A-Z0-9+&@#\/%=~_|$[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])$/i , texts.validation.urlFn);
 }
 
 function requiredI18nNumber(this: Yup.NumberSchema) {

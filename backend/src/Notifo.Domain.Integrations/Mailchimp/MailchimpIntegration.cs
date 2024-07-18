@@ -22,11 +22,11 @@ public sealed partial class MailchimpIntegration : IIntegration
 
     public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
-        Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
         EditorDescription = Texts.Email_FromEmailDescription,
         IsRequired = true,
-        Summary = true
+        Summary = true,
+        Format = PropertyFormat.Email
     };
 
     public static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)

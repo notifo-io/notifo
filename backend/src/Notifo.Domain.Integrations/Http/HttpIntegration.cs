@@ -18,7 +18,8 @@ public sealed partial class HttpIntegration : IIntegration
         EditorLabel = Texts.Webhook_URLLabel,
         EditorDescription = Texts.Webhook_URLHints,
         IsRequired = true,
-        Summary = true
+        Summary = true,
+        Format = PropertyFormat.Url,
     };
 
     private static readonly IntegrationProperty HttpMethodProperty = new IntegrationProperty("Method", PropertyType.Text)

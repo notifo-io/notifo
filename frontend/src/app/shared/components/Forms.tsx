@@ -177,6 +177,14 @@ export module Forms {
         );
     };
 
+    export const Phone = ({ placeholder, ...other }: FormEditorProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputSpecial type='tel' name={other.name} placeholder={placeholder} />
+            </Forms.Row>
+        );
+    }
+
     export const Url = ({ placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>

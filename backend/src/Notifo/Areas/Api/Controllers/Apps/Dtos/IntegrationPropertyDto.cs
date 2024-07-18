@@ -73,6 +73,11 @@ public sealed class IntegrationPropertyDto
     public string? Pattern { get; set; }
 
     /// <summary>
+    /// Format of the field, used to both validate the input and to provide hints to the user.
+    /// </summary>
+    public PropertyFormat Format { get; set; }
+
+    /// <summary>
     /// The default value.
     /// </summary>
     public object? DefaultValue { get; set; }
