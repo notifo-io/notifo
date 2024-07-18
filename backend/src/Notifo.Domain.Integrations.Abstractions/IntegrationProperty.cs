@@ -185,6 +185,7 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
                     break;
                 case PropertyFormat.Url:
+                    // We only allow http and https to enable the usage of URL field for HttpClient requests.
                     if (!Uri.TryCreate(input, UriKind.Absolute, out var uri) || !((string[])["http", "https"]).Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase))
                     {
                         error = Texts.IntegrationPropertyFormatUrl;
