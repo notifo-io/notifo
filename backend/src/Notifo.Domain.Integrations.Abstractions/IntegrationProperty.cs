@@ -5,11 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure.Validation;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Notifo.Domain.Integrations.Resources;
-using Notifo.Infrastructure.Validation;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
@@ -185,8 +185,10 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
                     break;
                 case PropertyFormat.HttpUrl:
-                    // We only allow http and https to enable the usage of URL field for HttpClient requests.
-                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri) || !((string[])["http", "https"]).Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase))
+                    // We only allow "http" and "https" schemas to enable the usage of URL field for HttpClient requests.
+                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri)
+                        || (!string.Equals(uri.Scheme, "http", StringComparison.OrdinalIgnoreCase) && !string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase))
+                        )
                     {
                         error = Texts.IntegrationPropertyFormatHttpUrl;
                         return false;
