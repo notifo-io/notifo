@@ -17903,8 +17903,8 @@ namespace Notifo.SDK
         [System.Runtime.Serialization.EnumMember(Value = @"Email")]
         Email = 1,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Url")]
-        Url = 2,
+        [System.Runtime.Serialization.EnumMember(Value = @"HttpUrl")]
+        HttpUrl = 2,
 
     }
 

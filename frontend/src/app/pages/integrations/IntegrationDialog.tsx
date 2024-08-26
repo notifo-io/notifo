@@ -129,8 +129,8 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                         case "Email":
                             propertyType = propertyType.emailI18n();
                             break;
-                        case "Url":
-                            propertyType = propertyType.urlI18n();
+                        case "HttpUrl":
+                            propertyType = propertyType.httpUrlI18n();
                             break;
                     }
                 }
@@ -289,7 +289,7 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
                                 <Forms.Email name={name}
                                     label={label} hints={property.editorDescription} />
                             );
-                        case 'Url':
+                        case 'HttpUrl':
                             return (
                                 <Forms.Url name={name}
                                     label={label} hints={property.editorDescription} />

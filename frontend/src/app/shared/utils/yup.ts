@@ -13,11 +13,11 @@ function emailI18n(this: Yup.StringSchema) {
     return this.email(texts.validation.emailFn);
 }
 
-function urlI18n(this: Yup.StringSchema) {
+function httpUrlI18n(this: Yup.StringSchema) {
     // This regular expression is built on top of the one 
     // from Yup, but it also allows localhost.
     // See: https://github.com/jquense/yup/issues/224
-    return this.matches(/^(?:(?:https?):\/\/|www\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[A-Z0-9+&@#\/%=~_|$[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])$/i , texts.validation.urlFn);
+    return this.matches(/^(?:(?:https?):\/\/|www\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*\)|[A-Z0-9+&@#\/%=~_|$[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])$/i , texts.validation.httpUrlFn);
 }
 
 function requiredI18nNumber(this: Yup.NumberSchema) {
@@ -64,7 +64,7 @@ export function extendYup() {
     Yup.addMethod(Yup.object, 'atLeastOneStringI18n', atLeastOneStringI18n);
 
     Yup.addMethod(Yup.string, 'emailI18n', emailI18n);
-    Yup.addMethod(Yup.string, 'urlI18n', urlI18n);
+    Yup.addMethod(Yup.string, 'httpUrlI18n', httpUrlI18n);
     Yup.addMethod(Yup.string, 'requiredI18n', requiredI18n);
     Yup.addMethod(Yup.string, 'topicI18n', topicI18n);
 

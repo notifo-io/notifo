@@ -7437,7 +7437,7 @@ export interface IntegrationPropertyDto {
 }
 
 export type PropertyType = "Text" | "Number" | "MultilineText" | "Password" | "Boolean";
-export type PropertyFormat = "None" | "Email" | "Url";
+export type PropertyFormat = "None" | "Email" | "HttpUrl";
 
 export interface IntegrationCreatedDto {
     /** The ID of the integration. */

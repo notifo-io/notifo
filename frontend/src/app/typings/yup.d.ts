@@ -13,7 +13,7 @@ declare module 'yup' {
     interface StringSchema {
         emailI18n(): StringSchema;
 
-        urlI18n(): StringSchema;
+        httpUrlI18n(): StringSchema;
 
         requiredI18n(): StringSchema;
 

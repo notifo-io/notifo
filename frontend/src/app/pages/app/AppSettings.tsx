@@ -28,7 +28,7 @@ const FormSchema = Yup.object().shape({
 
     // Valid URL
     confirmUrl: Yup.string().nullable()
-        .label(texts.app.confirmUrl).urlI18n(),
+        .label(texts.app.confirmUrl).httpUrlI18n(),
 });
 
 export interface AppSettingsProps {

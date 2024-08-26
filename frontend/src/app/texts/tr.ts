@@ -417,6 +417,7 @@ export const TR = {
     validation: {
         atLeastOnString: (p: { label?: string }) => `${p.label} en az bir değere sahip olmalıdır.`,
         emailFn: (p: { label?: string }) => `${p.label} geçerli bir e-posta adresi olmalıdır.`,
+        httpUrlFn: (p: { label?: string }) => `${p.label} geçerli bir HTTP URL'si olmalı (protokolü ekleyin - http veya https).`,
         lessThanFn: (p: { label?: string; less: number }) => `${p.label} ${p.less || 0}\`dan küçük olmalıdır.`,
         maxFn: (p: { label?: string; max: number }) => `${p.label} ${p.max}\`dan büyük olmamalıdır.`,
         maxItemsFn: (p: { label?: string; max: number }) => `${p.label} en fazla ${p.max} öğeye sahip olmalıdır.`,
@@ -428,6 +429,5 @@ export const TR = {
         patternFn: (p: { label?: string }) => `${p.label} geçerli bir formatta değil.`,
         requiredFn: (p: { label?: string }) => `${p.label} zorunludur.`,
         topicFn: (p: { label?: string }) => `${p.label} geçerli bir konu olmalıdır.`,
-        urlFn: (p: { label?: string }) => `${p.label} geçerli bir URL olmalıdır.`,
     },
 };

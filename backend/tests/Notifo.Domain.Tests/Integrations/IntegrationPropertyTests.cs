@@ -171,7 +171,7 @@ public class IntegrationPropertyTests
 
             var property = new IntegrationProperty("key", PropertyType.Text)
             {
-                Format = PropertyFormat.Url
+                Format = PropertyFormat.HttpUrl
             };
 
             Assert.Throws<ValidationException>(() => property.GetString(source));
@@ -191,7 +191,7 @@ public class IntegrationPropertyTests
 
             var property = new IntegrationProperty("key", PropertyType.Text)
             {
-                Format = PropertyFormat.Url
+                Format = PropertyFormat.HttpUrl
             };
 
             Assert.Equal(input, property.GetString(source));

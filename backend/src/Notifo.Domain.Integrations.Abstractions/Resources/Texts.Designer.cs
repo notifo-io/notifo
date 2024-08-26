@@ -79,11 +79,11 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field is not a valid URL (remember about the protocol)..
+        ///   Looks up a localized string similar to Field is not a valid URL (remember about the protocol - http or https)..
         /// </summary>
-        internal static string IntegrationPropertyFormatUrl {
+        internal static string IntegrationPropertyFormatHttpUrl {
             get {
-                return ResourceManager.GetString("IntegrationPropertyFormatUrl", resourceCulture);
+                return ResourceManager.GetString("IntegrationPropertyFormatHttpUrl", resourceCulture);
             }
         }
         

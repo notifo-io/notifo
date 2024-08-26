@@ -11,5 +11,5 @@ public enum PropertyFormat
 {
     None,
     Email,
-    Url
+    HttpUrl
 }

@@ -123,8 +123,8 @@
   <data name="IntegrationPropertyFormatEmail" xml:space="preserve">
     <value>Field is not a valid e-mail.</value>
   </data>
-  <data name="IntegrationPropertyFormatUrl" xml:space="preserve">
-    <value>Field is not a valid URL (remember about the protocol).</value>
+  <data name="IntegrationPropertyFormatHttpUrl" xml:space="preserve">
+    <value>Field is not a valid URL (remember about the protocol - http or https).</value>
   </data>
   <data name="IntegrationPropertyInvalidBoolean" xml:space="preserve">
     <value>Not a valid boolean value.</value>
