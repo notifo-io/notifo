@@ -6,17 +6,20 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { PropertyFormat } from '@app/service';
 import { NumberSchema, ObjectSchema, StringSchema } from 'yup';
 
 declare module 'yup' {
     interface StringSchema {
         emailI18n(): StringSchema;
 
-        urlI18n(): StringSchema;
+        httpUrlI18n(): StringSchema;
 
         requiredI18n(): StringSchema;
 
         topicI18n(): StringSchema;
+
+        formatI18n(format: PropertyFormat): StringSchema;
     }
 
     interface NumberSchema {

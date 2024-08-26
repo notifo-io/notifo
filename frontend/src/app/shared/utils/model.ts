@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ChannelCondition, ChannelRequired, ChannelSend, ConfirmMode, IsoDayOfWeek, SchedulingType, TopicChannel } from '@app/service';
+import { ChannelCondition, ChannelRequired, ChannelSend, ConfirmMode, IsoDayOfWeek , SchedulingType, TopicChannel } from '@app/service';
 import { texts } from '@app/texts';
 
 export const CHANNELS = [

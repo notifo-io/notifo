@@ -433,6 +433,7 @@ export const EN = {
     validation: {
         atLeastOnString: (p: { label?: string }) => `${p.label} needs at least one value.`,
         emailFn: (p: { label?: string }) => `${p.label} must be a valid email address.`,
+        httpUrlFn: (p: { label?: string }) => `${p.label} must be a valid HTTP URL (include the protocol - http or https).`,
         lessThanFn: (p: { label?: string; less: number }) => `${p.label} must be less than ${p.less || 0}.`,
         maxFn: (p: { label?: string; max: number }) => `${p.label} must not greater than ${p.max}.`,
         maxItemsFn: (p: { label?: string; max: number }) => `${p.label} must not have more than ${p.max}.`,
@@ -444,6 +445,5 @@ export const EN = {
         patternFn: (p: { label?: string }) => `${p.label} is not in a valid format.`,
         requiredFn: (p: { label?: string }) => `${p.label} is required.`,
         topicFn: (p: { label?: string }) => `${p.label} must be a valid topic.`,
-        urlFn: (p: { label?: string }) => `${p.label} must be a valid URL.`,
     },
 };

@@ -124,6 +124,17 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     propertyType = propertyType.max(property.maxLength, texts.validation.maxLengthFn);
                 }
 
+                if (property.format && property.format !== "None") {
+                    switch (property.format) {
+                        case "Email":
+                            propertyType = propertyType.emailI18n();
+                            break;
+                        case "HttpUrl":
+                            propertyType = propertyType.httpUrlI18n();
+                            break;
+                    }
+                }
+
                 if (property.pattern) {
                     propertyType = propertyType.matches(new RegExp(property.pattern), texts.validation.patternFn);
                 }
@@ -271,6 +282,20 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
                         label={label} hints={property.editorDescription} />
                 );
             } else {
+                if (property.format && property.format !== 'None') {
+                    switch (property.format) {
+                        case 'Email':
+                            return (
+                                <Forms.Email name={name}
+                                    label={label} hints={property.editorDescription} />
+                            );
+                        case 'HttpUrl':
+                            return (
+                                <Forms.Url name={name}
+                                    label={label} hints={property.editorDescription} />
+                            );
+                    }
+                }
                 return (
                     <Forms.Text name={name}
                         label={label} hints={property.editorDescription} />

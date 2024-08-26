@@ -7430,11 +7430,14 @@ export interface IntegrationPropertyDto {
     maxLength?: number | undefined;
     /** The pattern (for strings). */
     pattern?: string | undefined;
+    /** Format of the field, used to both validate the input and to provide hints to the user. */
+    format: PropertyFormat;
     /** The default value. */
     defaultValue?: any | undefined;
 }
 
 export type PropertyType = "Text" | "Number" | "MultilineText" | "Password" | "Boolean";
+export type PropertyFormat = "None" | "Email" | "HttpUrl";
 
 export interface IntegrationCreatedDto {
     /** The ID of the integration. */

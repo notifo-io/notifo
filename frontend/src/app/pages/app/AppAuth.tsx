@@ -86,7 +86,7 @@ const FormSchema = Yup.object().shape({
 
     // Valid URL.
     signoutRedirectUrl: Yup.string()
-        .label(texts.auth.signoutRedirectUrl).urlI18n(),
+        .label(texts.auth.signoutRedirectUrl).httpUrlI18n(),
 });
 
 const AuthForm = ({ appDetails, scheme }: { scheme?: AuthSchemeDto } & AppAuthProps) => {

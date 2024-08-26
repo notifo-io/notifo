@@ -39,6 +39,8 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
     public string? Pattern { get; init; }
 
+    public PropertyFormat Format { get; init; } = PropertyFormat.None;
+
     public bool IsValid(string? input, [MaybeNullWhen(true)] out string error)
     {
         switch (Type)
@@ -167,6 +169,32 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
             {
                 error = Texts.IntegrationPropertyPattern;
                 return false;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(input) && Format != PropertyFormat.None)
+        {
+            switch (Format)
+            {
+                case PropertyFormat.Email:
+                    if (!Regex.IsMatch(input, ValidationPatterns.Email))
+                    {
+                        error = Texts.IntegrationPropertyFormatEmail;
+                        return false;
+                    }
+
+                    break;
+                case PropertyFormat.HttpUrl:
+                    // We only allow "http" and "https" schemas to enable the usage of URL field for HttpClient requests.
+                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri)
+                        || (!string.Equals(uri.Scheme, "http", StringComparison.OrdinalIgnoreCase) && !string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase))
+                        )
+                    {
+                        error = Texts.IntegrationPropertyFormatHttpUrl;
+                        return false;
+                    }
+
+                    break;
             }
         }
 
