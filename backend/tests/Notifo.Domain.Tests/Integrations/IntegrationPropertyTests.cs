@@ -162,7 +162,7 @@ public class IntegrationPropertyTests
         [InlineData("localhost.com/test")]
         [InlineData("192.168.0.101")]
         [InlineData("randomString")]
-        public void Should_fail_if_url_is_invalid(string? input)
+        public void Should_fail_if_http_url_is_invalid(string? input)
         {
             var source = new Dictionary<string, string>
             {
@@ -182,7 +182,7 @@ public class IntegrationPropertyTests
         [InlineData("http://localhost/test")]
         [InlineData("https://example.com/test?query=example")]
         [InlineData("http://login:password@test.pl/random")]
-        public void Should_get_url_if_value_is_valid(string? input)
+        public void Should_get_http_url_if_value_is_valid(string? input)
         {
             var source = new Dictionary<string, string>
             {
