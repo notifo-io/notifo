@@ -17,6 +17,8 @@ namespace Notifo.Domain.Integrations;
 
 public sealed record IntegrationProperty(string Name, PropertyType Type)
 {
+    private static readonly string[] AllowedHttpUrlSchemes = { "http", "https" };
+
     public string? DefaultValue { get; init; }
 
     public string? EditorDescription { get; init; }
@@ -185,10 +187,7 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
                     break;
                 case PropertyFormat.HttpUrl:
-                    // We only allow "http" and "https" schemas to enable the usage of URL field for HttpClient requests.
-                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri)
-                        || (!string.Equals(uri.Scheme, "http", StringComparison.OrdinalIgnoreCase) && !string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase))
-                        )
+                    if (!Uri.TryCreate(input, UriKind.Absolute, out var uri) || !AllowedHttpUrlSchemes.Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase))
                     {
                         error = Texts.IntegrationPropertyFormatHttpUrl;
                         return false;
