@@ -5,11 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Integrations.Resources;
-using Notifo.Infrastructure.Validation;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure.Validation;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
