@@ -162,6 +162,7 @@ public class IntegrationPropertyTests
         [InlineData("localhost.com/test")]
         [InlineData("192.168.0.101")]
         [InlineData("randomString")]
+        [InlineData("mqtt://localhost:1883/")]
         public void Should_fail_if_http_url_is_invalid(string? input)
         {
             var source = new Dictionary<string, string>
