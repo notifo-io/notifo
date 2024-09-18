@@ -16,17 +16,22 @@ namespace Notifo.Domain.Channels.Email.Formatting;
 
 internal static class MjmlRenderer
 {
-    private static readonly MjmlOptions OptionsOptimized = new MjmlOptions
+    private static readonly MjmlOptions DefaultOptions = new MjmlOptions().WithPostProcessors();
+
+    private static readonly MjmlOptions OptionsOptimized = DefaultOptions with
     {
         KeepComments = false,
     };
 
-    private static readonly MjmlOptions OptionsStrict = new MjmlOptions
+    private static readonly MjmlOptions OptionsStrict = DefaultOptions with
     {
         Validator = StrictValidator.Instance,
     };
 
-    private static readonly MjmlInternalRenderer Renderer = new MjmlInternalRenderer();
+    private static readonly IMjmlRenderer Renderer =
+        new MjmlInternalRenderer()
+            .AddHtmlAttributes()
+            .AddList();
 
     public static async ValueTask<(string? Html, List<TemplateError>? Errors)> RenderAsync(string? mjml, bool strict)
     {
