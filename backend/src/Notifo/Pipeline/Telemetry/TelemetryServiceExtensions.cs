@@ -7,6 +7,7 @@
 
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Google.Cloud.Diagnostics.Common;
+using MongoDB.Driver.Core.Extensions.DiagnosticSources;
 using Notifo;
 using Notifo.Pipeline;
 using OpenTelemetry.Resources;
@@ -33,7 +34,7 @@ public static class TelemetryServiceExtensions
 
             builder.AddAspNetCoreInstrumentation();
             builder.AddHttpClientInstrumentation();
-            builder.AddMongoDBInstrumentation();
+            builder.AddSource(typeof(DiagnosticsActivityEventSubscriber).Assembly.GetName().Name!);
 
             var sampling = config.GetValue<double>("logging:otlp:sampling");
 

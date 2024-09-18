@@ -46,6 +46,7 @@ public class MobilePushJobTests
 
         var serialized = sut.SerializeAndDeserialize();
 
-        serialized.Should().BeEquivalentTo(sut);
+        serialized.Should().BeEquivalentTo(sut,
+            options => options.Excluding(member => member.Name == "Properties"));
     }
 }

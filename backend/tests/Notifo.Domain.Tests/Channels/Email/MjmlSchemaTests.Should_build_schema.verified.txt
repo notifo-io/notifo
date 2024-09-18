@@ -684,7 +684,9 @@
     },
     mj-style: {
       Attributes: {
-        inline: null
+        inline: [
+          inline
+        ]
       }
     },
     mj-table: {
@@ -1483,7 +1485,9 @@
     },
     mj-style: {
       Attributes: {
-        inline: null
+        inline: [
+          inline
+        ]
       }
     },
     mj-table: {

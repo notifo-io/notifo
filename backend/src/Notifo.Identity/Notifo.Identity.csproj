@@ -9,17 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="8.1.0" />
-	<PackageReference Include="Meziantou.Analyzer" Version="2.0.159">
+	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="8.2.0" />
+	<PackageReference Include="Meziantou.Analyzer" Version="2.0.163">
 	<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.6" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.8" />
 	<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-	<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.2" />
-	<PackageReference Include="OpenIddict.AspNetCore" Version="5.7.0" />
-	<PackageReference Include="Squidex.OpenIddict.MongoDb" Version="5.1.0" />
+	<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.0.2" />
+	<PackageReference Include="OpenIddict.AspNetCore" Version="5.8.0" />
+	<PackageReference Include="Squidex.OpenIddict.MongoDb" Version="5.8.1" />
 	<PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
 	<PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>

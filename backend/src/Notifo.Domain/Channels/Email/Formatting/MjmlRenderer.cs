@@ -28,7 +28,7 @@ internal static class MjmlRenderer
 
     private static readonly MjmlInternalRenderer Renderer = new MjmlInternalRenderer();
 
-    public static (string? Html, List<TemplateError>? Errors) Render(string? mjml, bool strict)
+    public static async ValueTask<(string? Html, List<TemplateError>? Errors)> RenderAsync(string? mjml, bool strict)
     {
         if (string.IsNullOrWhiteSpace(mjml))
         {
@@ -48,7 +48,7 @@ internal static class MjmlRenderer
                     OptionsStrict :
                     OptionsOptimized;
 
-                (rendered, var mjmlErrors) = Renderer.Render(mjml, options);
+                (rendered, var mjmlErrors) = await Renderer.RenderAsync(mjml, options);
 
                 errors = mjmlErrors?.Select(x => new TemplateError(
                     x.Error,
