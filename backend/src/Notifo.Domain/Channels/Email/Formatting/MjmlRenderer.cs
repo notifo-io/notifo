@@ -16,7 +16,7 @@ namespace Notifo.Domain.Channels.Email.Formatting;
 
 internal static class MjmlRenderer
 {
-    private static readonly MjmlOptions DefaultOptions = new MjmlOptions().WithPostProcessors();
+    private static readonly MjmlOptions DefaultOptions = new MjmlOptions();
 
     private static readonly MjmlOptions OptionsOptimized = DefaultOptions with
     {

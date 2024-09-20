@@ -10,32 +10,29 @@ import ReactMarkdown from 'react-markdown';
 import { useParams } from 'react-router';
 import { Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { texts } from '@app/texts';
+import { useSearchParams } from 'react-router-dom';
 
 export const DemoPage = () => {
     const userToken = useParams().userId!;
+    const [params] = useSearchParams();
 
     React.useEffect(() => {
-        if (!userToken) {
-            return;
-        }
-
         const notifo = (window as any)['notifo'] || ((window as any)['notifo'] = []);
 
-        notifo.push(['init', {
+        const args = {
+            linkTarget: '_blank',
             apiUrl: '/',
-
+            apiKey: params.get('apiKey'),
+            userToken,
             onNotification: (notification: any) => {
                 console.log(`Received: ${JSON.stringify(notification, undefined, 2)}`);
             },
-
             onConfirm: (notification: any) => {
                 console.log(`Confirmed: ${JSON.stringify(notification, undefined, 2)}`);
             },
+        }
 
-            linkTarget: '_blank',
-
-            userToken,
-        }]);
+        notifo.push(['init', args]);
 
         notifo.push(['show-notifications', 'button1', { style: 'notifo', position: 'bottom-left' }]);
 

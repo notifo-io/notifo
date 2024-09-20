@@ -30,7 +30,7 @@ export const App = () => {
                 <Route path='/authentication/*'
                     element={<AuthenticationPage />} />
 
-                <Route path='/demo/:userId'
+                <Route path='/demo/:userId?'
                     element={<DemoPage />} />
 
                 <Route index

@@ -22,8 +22,8 @@ async function init(value: any) {
     const options = buildSDKConfig(value, scriptLocation);
 
     if (options) {
-        await apiConnect(options);
         await apiRegister(options);
+        await apiConnect(options);
 
         queueInit.config = options;
     }
