@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Esprima.Ast;
+using Acornima.Ast;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Options = Microsoft.Extensions.Options.Options;

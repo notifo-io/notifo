@@ -6,8 +6,8 @@
  */
 
 import * as React from 'react';
-import { Card, CardBody, FormGroup, Label } from 'reactstrap';
-import { ApiValue, Code } from '@app/framework';
+import { Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
+import { ApiValue, Code, Icon } from '@app/framework';
 import { getApiUrl } from '@app/service';
 import { CounterCards } from '@app/shared/components';
 import { useApp } from '@app/state';
@@ -17,12 +17,14 @@ export const AppDashboardPage = () => {
     const app = useApp()!;
 
     const sortedKeys = React.useMemo(() => {
-        const keys = Object.keys(app.apiKeys).map(x => ([x, app.apiKeys[x]]));
+        const keys = Object.entries(app.apiKeys).map(x => ({ key: x[0], role: x[1] }));
 
-        keys.sort((x, y) => x[1].localeCompare(y[1]));
+        keys.sort((x, y) => x.role.localeCompare(y.role));
 
         return keys;
     }, [app]);
+
+    const apiKey = sortedKeys.filter(x => x.role === 'WebManager').map(x => x.key)[0];
 
     return (
         <div className='dashboard'>
@@ -45,10 +47,10 @@ export const AppDashboardPage = () => {
                     </FormGroup>
 
                     {sortedKeys.map(x => (
-                        <FormGroup key={x[0]}>
-                            <Label>{texts.app.apiKey} {x[1]}</Label>
+                        <FormGroup key={x.key}>
+                            <Label>{texts.app.apiKey} {x.role}</Label>
 
-                            <ApiValue value={x[0]} />
+                            <ApiValue value={x.key} />
                         </FormGroup>
                     ))}
                 </CardBody>
@@ -58,7 +60,16 @@ export const AppDashboardPage = () => {
 
             <Card>
                 <CardBody>
-                    <Label>{texts.common.webPluginHint}</Label>
+                    <Row className='mb-2 align-items-end'>
+                        <Col>
+                            <Label>{texts.common.webPluginHint}</Label>
+                        </Col>
+                        <Col xs='auto'>
+                            <a className='btn btn-secondary-link' target='_blank' href={`/demo/?apiKey=${apiKey}`}>
+                                <Icon type='code' /> {texts.common.demo}
+                            </a>
+                        </Col>
+                    </Row>
 
                     <Code mode='html' value={buildSampleCode()} autoHeight />
                 </CardBody>

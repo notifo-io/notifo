@@ -714,7 +714,9 @@
   },
   "mj-style": {
     "attrs": {
-      "inline": null
+      "inline": [
+        "inline"
+      ]
     },
     "children": null
   },

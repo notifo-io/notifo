@@ -9,31 +9,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.300.111" />
-    <PackageReference Include="Confluent.Kafka" Version="2.4.0" />
-    <PackageReference Include="Discord.Net" Version="3.15.2" />
-    <PackageReference Include="FirebaseAdmin" Version="3.0.0" />
-    <PackageReference Include="FluentValidation" Version="11.9.2" />
-    <PackageReference Include="Fluid.Core" Version="2.10.0" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.39" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.401.11" />
+    <PackageReference Include="Confluent.Kafka" Version="2.5.3" />
+    <PackageReference Include="Discord.Net" Version="3.16.0" />
+    <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="Fluid.Core" Version="2.11.1" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.45" />
     <PackageReference Include="Mailjet.Api" Version="3.0.0" />
-    <PackageReference Include="MailKit" Version="4.7.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.159">
+    <PackageReference Include="MailKit" Version="4.7.1.1" />
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.163">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.27.0" />
-    <PackageReference Include="NodaTime" Version="3.1.11" />
+    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+    <PackageReference Include="NodaTime" Version="3.1.12" />
     <PackageReference Include="OpenNotifications" Version="0.3.0" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
-    <PackageReference Include="Twilio" Version="7.2.1" />
+    <PackageReference Include="Twilio" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>

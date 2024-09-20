@@ -52,32 +52,32 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
         return new ValueTask<EmailTemplate>(template);
     }
 
-    public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
+    public async ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
         CancellationToken ct = default)
     {
         var context = EmailContext.Create(PreviewData.Jobs, PreviewData.App, PreviewData.User, imageFormatter, emailUrl);
 
-        Format(input, context, true, strict);
+        await FormatAsync(input, context, true, strict);
 
         if (context.Errors?.Count > 0)
         {
             throw new EmailFormattingException(context.Errors);
         }
 
-        return new ValueTask<EmailTemplate>(input);
+        return input;
     }
 
-    public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
+    public async ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
         CancellationToken ct = default)
     {
         var context = EmailContext.Create(jobs, app, user, imageFormatter, emailUrl);
 
-        var message = Format(input, context, noCache, false);
+        var message = await FormatAsync(input, context, noCache, false);
 
-        return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
+        return new FormattedEmail(message, context.Errors);
     }
 
-    private static EmailMessage Format(EmailTemplate template, EmailContext context, bool noCache, bool strict)
+    private static async Task<EmailMessage> FormatAsync(EmailTemplate template, EmailContext context, bool noCache, bool strict)
     {
         var subject = string.Empty;
 
@@ -97,7 +97,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
         if (!string.IsNullOrWhiteSpace(template.BodyHtml))
         {
-            bodyHtml = FormatBodyHtml(template.BodyHtml, context, noCache, strict)!;
+            bodyHtml = await FormatBodyHtmlAsync(template.BodyHtml, context, noCache, strict)!;
         }
 
         var firstJob = context.Jobs[0];
@@ -135,13 +135,13 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
         return result;
     }
 
-    private static string? FormatBodyHtml(string template, EmailContext context, bool noCache, bool strict)
+    private static async Task<string?> FormatBodyHtmlAsync(string template, EmailContext context, bool noCache, bool strict)
     {
         var result = RenderTemplate(template, context, EmailTemplateType.BodyHtml, noCache);
 
         context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
-        var (rendered, errors) = MjmlRenderer.Render(result, strict);
+        var (rendered, errors) = await MjmlRenderer.RenderAsync(result, strict);
 
         foreach (var error in errors.OrEmpty())
         {
