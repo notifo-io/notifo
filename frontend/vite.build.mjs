@@ -51,6 +51,8 @@ async function buildPackages() {
                         [chunk]: source,
                     },
                     output: {
+                        format: 'iife',
+
                         entryFileNames: chunk => {
                             return `${chunk.name}.js`;
                         },
