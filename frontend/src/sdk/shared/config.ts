@@ -6,7 +6,7 @@
  */
 
 import { de, enUS, tr } from 'date-fns/locale';
-import { isDev, isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
+import { isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     en: enUS,
@@ -190,10 +190,6 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
     if (!isStringOption(options.styleUrl)) {
         logWarn('init.styleUrl must be a string if defined, fallback to default.');
         options.styleUrl = undefined!;
-    }
-
-    if (!options.styleUrl && !isDev()) {
-        options.styleUrl = `${options.apiUrl}/build/notifo-sdk.css`;
     }
 
     if (!isStringOption(options.serviceWorkerUrl)) {
