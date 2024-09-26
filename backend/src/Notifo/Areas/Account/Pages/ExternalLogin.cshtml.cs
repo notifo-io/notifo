@@ -158,7 +158,16 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
         IUser user;
         try
         {
-            user = await UserService.CreateAsync(email, ct: HttpContext.RequestAborted);
+            var byEmail = await UserService.FindByEmailAsync(email, HttpContext.RequestAborted);
+            // If the user has no login it has probably been created when he was invited to an app and we can assign it.
+            if (byEmail?.HasLoginOrPassword == false)
+            {
+                user = byEmail;
+            }
+            else
+            {
+                user = await UserService.CreateAsync(email, ct: HttpContext.RequestAborted);
+            }
 
             await UserService.AddLoginAsync(user.Id, loginInfo, HttpContext.RequestAborted);
         }
@@ -169,7 +178,6 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
         }
 
         await SignInManager.SignInAsync((IdentityUser)user.Identity, false);
-
         return RedirectTo(ReturnUrl);
     }
 

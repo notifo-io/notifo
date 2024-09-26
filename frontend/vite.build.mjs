@@ -16,11 +16,20 @@ const dirName = fileURLToPath(new URL('.', import.meta.url));
 
 const inputs = {
     // The actual management app.
-    ['app']: path.resolve(dirName, 'index.html'),
+    ['app']: {
+        entry: path.resolve(dirName, 'index.html'),
+        format: undefined,
+    },
     // Build the worker separately to prevent exports.
-    ['notifo-sdk']: path.resolve(dirName, 'src/sdk/sdk.ts'),
+    ['notifo-sdk']: {
+        entry: path.resolve(dirName, 'src/sdk/sdk.ts'),
+        format: 'iife',
+    },
     // Build the worker separately so that it does not get any file.
-    ['notifo-sdk-worker']: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
+    ['notifo-sdk-worker']: {
+        entry: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
+        format: 'iife',
+    },
 };
 
 defaultConfig.plugins.push(
@@ -40,7 +49,7 @@ defaultConfig.plugins.push(
 async function buildPackages() {
     await rimraf('./build');
 
-    for (const [chunk, source] of Object.entries(inputs)) {
+    for (const [chunk, config] of Object.entries(inputs)) {
         // https://vitejs.dev/config/
         await build({
             publicDir: false,
@@ -48,10 +57,10 @@ async function buildPackages() {
                 outDir: 'build',
                 rollupOptions: {
                     input: {
-                        [chunk]: source,
+                        [chunk]: config.entry,
                     },
                     output: {
-                        format: 'iife',
+                        format: config.format,
 
                         entryFileNames: chunk => {
                             return `${chunk.name}.js`;

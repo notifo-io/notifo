@@ -69,7 +69,7 @@ export const AppDialog = (props: AppDialogProps) => {
                         <FormAlert text={texts.apps.createInfo} />
 
                         <fieldset className='mt-3' disabled={createRunning}>
-                            <Forms.Text name='name' vertical
+                            <Forms.Text name='name' vertical autoFocus
                                 label={texts.common.name} />
                         </fieldset>
 

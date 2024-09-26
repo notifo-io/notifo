@@ -19,6 +19,8 @@ public interface IUser
 
     object Identity { get; }
 
+    bool HasLoginOrPassword { get; }
+
     IReadOnlySet<string> Roles { get; }
 
     IReadOnlyList<Claim> Claims { get; }

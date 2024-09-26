@@ -20,6 +20,9 @@ export interface FormEditorProps {
     // The label.
     label?: string;
 
+    // Indicates that the input should be focused automatically.
+    autoFocus?: boolean;
+
     // The optional class name.
     className?: string;
 
@@ -169,67 +172,67 @@ export module Forms {
         );
     };
 
-    export const Text = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Text = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputText name={other.name} placeholder={placeholder} />
+                <InputText name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Phone = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Phone = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputSpecial type='tel' name={other.name} placeholder={placeholder} />
-            </Forms.Row>
-        );
-    }
-
-    export const Url = ({ placeholder, ...other }: FormEditorProps) => {
-        return (
-            <Forms.Row {...other}>
-                <InputSpecial type='url' name={other.name} placeholder={placeholder} />
+                <InputSpecial type='tel' name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Email = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Url = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputSpecial type='email' name={other.name} placeholder={placeholder} />
+                <InputSpecial type='url' name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Time = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Email = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputSpecial type='time' name={other.name} placeholder={placeholder} />
+                <InputSpecial type='email' name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Date = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Time = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputSpecial type='date' name={other.name} placeholder={placeholder} />
+                <InputSpecial type='time' name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Textarea = ({ placeholder, ...other }: FormEditorProps) => {
+    export const Date = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputTextarea name={other.name} placeholder={placeholder} />
+                <InputSpecial type='date' name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
 
-    export const Number = ({ max, min, placeholder, step, unit, ...other }: FormEditorProps & { unit?: string; min?: number; max?: number; step?: number }) => {
+    export const Textarea = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputTextarea name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
+            </Forms.Row>
+        );
+    };
+
+    export const Number = ({ autoFocus, max, min, placeholder, step, unit, ...other }: FormEditorProps & { unit?: string; min?: number; max?: number; step?: number }) => {
         return (
             <Forms.Row {...other}>
                 <InputGroup>
-                    <InputNumber name={other.name} placeholder={placeholder} max={max} min={min} step={step} />
+                    <InputNumber name={other.name} placeholder={placeholder} max={max} min={min} step={step} autoFocus={autoFocus} />
 
                     {unit &&
                         <InputGroupAddon addonType='prepend'>
@@ -241,10 +244,10 @@ export module Forms {
         );
     };
 
-    export const Password = (props: FormEditorProps) => {
+    export const Password = ({ autoFocus, placeholder, ...other }: FormEditorProps) => {
         return (
-            <Forms.Row {...props}>
-                <InputPassword name={props.name} placeholder={props.placeholder} />
+            <Forms.Row {...other}>
+                <InputPassword name={other.name} placeholder={placeholder} autoFocus={autoFocus} />
             </Forms.Row>
         );
     };
@@ -282,7 +285,7 @@ const FormDescription = ({ hints }: { hints?: string }) => {
     );
 };
 
-const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
+const InputText = ({ autoFocus, name, picker, placeholder }: FormEditorProps) => {
     const { field, fieldState, formState } = useController({ name });
 
     const doAddPick = useEventCallback((pick: string) => {
@@ -295,14 +298,14 @@ const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
                 <Picker {...picker} onPick={doAddPick} value={field.value} />
             }
 
-            <Input type='text' id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <Input type='text' id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
                 placeholder={placeholder}
             />
         </div>
     );
 };
 
-const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
+const InputTextarea = ({ autoFocus, name, picker, placeholder }: FormEditorProps) => {
     const { field, fieldState, formState } = useController({ name });
 
     const doAddPick = useEventCallback((pick: string) => {
@@ -315,31 +318,31 @@ const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
                 <Picker {...picker} onPick={doAddPick} value={field.value} />
             }
 
-            <Input type='textarea' id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <Input type='textarea' id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
                 placeholder={placeholder}
             />
         </div>
     );
 };
 
-const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
+const InputNumber = ({ autoFocus, name, max, min, placeholder, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
     const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <Input type='number' id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <Input type='number' id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
                 max={max} min={min} step={step} placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputSpecial = ({ name, placeholder, type }: FormEditorProps & { type: InputType }) => {
+const InputSpecial = ({ autoFocus, name, placeholder, type }: FormEditorProps & { type: InputType }) => {
     const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <Input type={type} id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <Input type={type} id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
                 placeholder={placeholder}
             />
         </>
@@ -350,7 +353,7 @@ const InputPassword = ({ name, placeholder }: FormEditorProps) => {
 
     return (
         <>
-            <PasswordInput id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <PasswordInput id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
                 placeholder={placeholder}
             />
         </>

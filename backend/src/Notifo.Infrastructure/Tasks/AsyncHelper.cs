@@ -26,4 +26,13 @@ public static class AsyncHelper
         return (task1.Result, task2.Result, task3.Result);
 #pragma warning restore MA0042 // Do not use blocking calls in an async method
     }
+
+    public static async Task<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4)
+    {
+        await Task.WhenAll(task1, task2, task3, task4);
+
+#pragma warning disable MA0042 // Do not use blocking calls in an async method
+        return (task1.Result, task2.Result, task3.Result, task4.Result);
+#pragma warning restore MA0042 // Do not use blocking calls in an async method
+    }
 }

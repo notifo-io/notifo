@@ -171,7 +171,6 @@ public sealed class DefaultUserService : IUserService
         Guard.NotNullOrEmpty(email);
 
         var user = userFactory.Create(email);
-
         try
         {
             var isFirst = !userManager.Users.Any();
@@ -391,11 +390,13 @@ public sealed class DefaultUserService : IUserService
 
     private async Task<IUser> ResolveAsync(IdentityUser user)
     {
-        var (claims, roles) = await AsyncHelper.WhenAll(
+        var (claims, roles, logins, hasPassword) = await AsyncHelper.WhenAll(
             userManager.GetClaimsAsync(user),
-            userManager.GetRolesAsync(user));
+            userManager.GetRolesAsync(user),
+            userManager.GetLoginsAsync(user),
+            userManager.HasPasswordAsync(user));
 
-        return new UserWithClaims(user, claims.ToList(), roles.ToHashSet());
+        return new UserWithClaims(user, claims.ToList(), roles.ToHashSet(), logins.Any() || hasPassword);
     }
 
     private async Task<IUser?> ResolveOptionalAsync(IdentityUser? user)

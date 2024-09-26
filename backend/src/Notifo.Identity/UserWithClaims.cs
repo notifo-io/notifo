@@ -12,11 +12,15 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Identity;
 
-internal sealed class UserWithClaims : IUser
+internal sealed class UserWithClaims(
+    IdentityUser user,
+    IReadOnlyList<Claim> claims,
+    IReadOnlySet<string> roles,
+    bool hasLoginOrPassword) : IUser
 {
-    private readonly IdentityUser snapshot;
+    private readonly IdentityUser snapshot = SimpleMapper.Map(user, new IdentityUser());
 
-    public IdentityUser Identity { get; }
+    public IdentityUser Identity { get; } = user;
 
     public string Id
     {
@@ -33,23 +37,11 @@ internal sealed class UserWithClaims : IUser
         get => snapshot.LockoutEnd > DateTimeOffset.UtcNow;
     }
 
-    public IReadOnlyList<Claim> Claims { get; }
+    public bool HasLoginOrPassword { get; } = hasLoginOrPassword;
 
-    public IReadOnlySet<string> Roles { get; }
+    public IReadOnlyList<Claim> Claims { get; } = claims;
+
+    public IReadOnlySet<string> Roles { get; } = roles;
 
     object IUser.Identity => Identity;
-
-    public UserWithClaims(IdentityUser user, IReadOnlyList<Claim> claims, IReadOnlySet<string> roles)
-    {
-        Identity = user;
-
-        // Clone the user so that we capture the previous values, even when the user is updated.
-        snapshot = SimpleMapper.Map(user, new IdentityUser());
-
-        // Claims are immutable so we do not need a copy of them.
-        Claims = claims;
-
-        // Roles are immutable so we do not need a copy of them.
-        Roles = roles;
-    }
 }

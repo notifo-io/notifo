@@ -31,7 +31,6 @@ jobs:
         uses: docker/build-push-action@v6.2.0
         with:
           load: true
-          build-args: "NOTIFO__RUNTIME__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: notifo-local
