@@ -14,7 +14,7 @@ using Notifo.Domain.Integrations;
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
 [Trait("Category", "Dependencies")]
-public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscriptionRepositoryFixture>
+public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture) : IClassFixture<MongoDbSubscriptionRepositoryFixture>
 {
     private readonly string topic = Guid.NewGuid().ToString();
     private readonly string appId = "my-app";
@@ -22,12 +22,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
     private readonly string userId2 = Guid.NewGuid().ToString();
     private readonly string empty = Guid.Empty.ToString();
 
-    public MongoDbSubscriptionRepositoryFixture _ { get; }
-
-    public MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture)
-    {
-        _ = fixture;
-    }
+    public MongoDbSubscriptionRepositoryFixture _ { get; } = fixture;
 
     [Fact]
     public async Task Should_be_fast()

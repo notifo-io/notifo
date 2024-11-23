@@ -15,7 +15,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Log.MongoDb;
 
-public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRepository
+public sealed class MongoDbLogRepository(IMongoDatabase database) : MongoDbStore<MongoDbLogEntry>(database), ILogRepository
 {
     static MongoDbLogRepository()
     {
@@ -28,11 +28,6 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         });
     }
 
-    public MongoDbLogRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Log";
@@ -41,8 +36,8 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
     protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbLogEntry> collection,
         CancellationToken ct = default)
     {
-        await collection.Indexes.CreateManyAsync(new[]
-        {
+        await collection.Indexes.CreateManyAsync(
+        [
             new CreateIndexModel<MongoDbLogEntry>(
                 IndexKeys
                     .Ascending(x => x.Doc.AppId)
@@ -50,7 +45,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             new CreateIndexModel<MongoDbLogEntry>(
                 IndexKeys
                     .Ascending(x => x.Doc.FirstWriteId)),
-        }, null, ct);
+        ], null, ct);
     }
 
     public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,

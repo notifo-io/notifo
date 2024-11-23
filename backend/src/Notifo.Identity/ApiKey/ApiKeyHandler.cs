@@ -19,22 +19,18 @@ using Notifo.Infrastructure.Security;
 
 namespace Notifo.Identity.ApiKey;
 
-public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
+public sealed class ApiKeyHandler(
+    IAppStore appStore,
+    IUserStore userStore,
+    IOptionsMonitor<ApiKeyOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder)
+    : AuthenticationHandler<ApiKeyOptions>(options, logger, encoder)
 {
     private const string ApiKeyPrefix = "ApiKey ";
     private const string ApiKeyHeader = "ApiKey";
     private const string ApiKeyHeaderX = "X-ApiKey";
     private const string AccessTokenQuery = "access_token";
-    private readonly IAppStore appStore;
-    private readonly IUserStore userStore;
-
-    public ApiKeyHandler(IAppStore appStore, IUserStore userStore,
-            IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder)
-        : base(options, logger, encoder)
-    {
-        this.appStore = appStore;
-        this.userStore = userStore;
-    }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -49,12 +45,12 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
 
             if (app != null && app.ApiKeys.TryGetValue(apiKey, out var role))
             {
-                var identity = new ClaimsIdentity(new[]
-                {
+                var identity = new ClaimsIdentity(
+                [
                     new Claim(DefaultClaimTypes.AppId, app.Id),
                     new Claim(DefaultClaimTypes.AppName, app.Name),
                     new Claim(DefaultClaimTypes.AppRole, role)
-                }, ApiKeyDefaults.AuthenticationScheme);
+                ], ApiKeyDefaults.AuthenticationScheme);
 
                 return Success(identity);
             }
@@ -63,13 +59,13 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
 
             if (user != null)
             {
-                var identity = new ClaimsIdentity(new[]
-                {
+                var identity = new ClaimsIdentity(
+                [
                     new Claim(ClaimTypes.NameIdentifier, user.UniqueId),
                     new Claim(DefaultClaimTypes.AppId, user.AppId),
                     new Claim(DefaultClaimTypes.AppName, user.AppId),
                     new Claim(DefaultClaimTypes.UserId, user.Id)
-                }, ApiKeyDefaults.AuthenticationScheme);
+                ], ApiKeyDefaults.AuthenticationScheme);
 
                 return Success(identity);
             }

@@ -9,20 +9,11 @@ using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation;
 
-public sealed class DelegatingScheduleHandler<T> : IInitializable
+public sealed class DelegatingScheduleHandler<T>(IScheduling<T> scheduling, IEnumerable<IScheduleHandler<T>> scheduleHandlers) : IInitializable
 {
-    private readonly IScheduling<T> scheduling;
-    private readonly IEnumerable<IScheduleHandler<T>> scheduleHandlers;
-
     public string Name => $"SchedulingHandler({typeof(T).Name})";
 
     public int Order => int.MaxValue - 1;
-
-    public DelegatingScheduleHandler(IScheduling<T> scheduling, IEnumerable<IScheduleHandler<T>> scheduleHandlers)
-    {
-        this.scheduling = scheduling;
-        this.scheduleHandlers = scheduleHandlers;
-    }
 
     public async Task InitializeAsync(
         CancellationToken ct)

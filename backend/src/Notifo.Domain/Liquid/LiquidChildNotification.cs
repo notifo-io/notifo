@@ -9,14 +9,11 @@ using Notifo.Domain.Utils;
 
 namespace Notifo.Domain.Liquid;
 
-public sealed class LiquidChildNotification : LiquidNotificationBase
+public sealed class LiquidChildNotification(
+    SimpleNotification childNotification,
+    string imagePresetSmall,
+    string imagePresetLarge,
+    IImageFormatter imageFormatter)
+    :  LiquidNotificationBase(childNotification.Formatting, childNotification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
 {
-    public LiquidChildNotification(
-        SimpleNotification childNotification,
-        string imagePresetSmall,
-        string imagePresetLarge,
-        IImageFormatter imageFormatter)
-        : base(childNotification.Formatting, childNotification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
-    {
-    }
 }

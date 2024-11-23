@@ -17,15 +17,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtensions
 {
-    private sealed class RedisConnection
+    private sealed class RedisConnection(string connectionString)
     {
-        private readonly string connectionString;
         private Task<IConnectionMultiplexer> connection;
-
-        public RedisConnection(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
 
         public Task<IConnectionMultiplexer> ConnectAsync(TextWriter writer)
         {

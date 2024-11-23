@@ -11,14 +11,17 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Liquid;
 
-public sealed class LiquidNotification : LiquidNotificationBase
+public sealed class LiquidNotification(
+    BaseUserNotification notification,
+    Guid configurationId,
+    string channel,
+    string imagePresetSmall,
+    string imagePresetLarge,
+    IImageFormatter imageFormatter)
+#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
+    : LiquidNotificationBase(notification.Formatting, notification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
+#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 {
-    private readonly BaseUserNotification notification;
-    private readonly Guid configurationId;
-    private readonly string channel;
-    private readonly string imagePresetSmall;
-    private readonly string imagePresetLarge;
-    private readonly IImageFormatter imageFormatter;
     private string? confirmUrl;
     private string? trackDeliveredUrl;
     private string? trackSeenUrl;
@@ -54,23 +57,6 @@ public sealed class LiquidNotification : LiquidNotificationBase
                     imagePresetLarge,
                     imageFormatter)).ToArray()
             ?? [];
-    }
-
-    public LiquidNotification(
-        BaseUserNotification notification,
-        Guid configurationId,
-        string channel,
-        string imagePresetSmall,
-        string imagePresetLarge,
-        IImageFormatter imageFormatter)
-        : base(notification.Formatting, notification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
-    {
-        this.notification = notification;
-        this.channel = channel;
-        this.imagePresetSmall = imagePresetSmall;
-        this.imagePresetLarge = imagePresetLarge;
-        this.imageFormatter = imageFormatter;
-        this.configurationId = configurationId;
     }
 
     public static void Describe(LiquidProperties properties)

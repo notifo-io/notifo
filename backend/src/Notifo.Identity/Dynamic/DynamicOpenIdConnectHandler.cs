@@ -12,10 +12,6 @@ using Microsoft.Extensions.Options;
 
 namespace Notifo.Identity.Dynamic;
 
-public sealed class DynamicOpenIdConnectHandler : OpenIdConnectHandler
+public sealed class DynamicOpenIdConnectHandler(IOptionsMonitor<DynamicOpenIdConnectOptions> options, ILoggerFactory logger, HtmlEncoder htmlEncoder, UrlEncoder encoder) : OpenIdConnectHandler(options, logger, htmlEncoder, encoder)
 {
-    public DynamicOpenIdConnectHandler(IOptionsMonitor<DynamicOpenIdConnectOptions> options, ILoggerFactory logger, HtmlEncoder htmlEncoder, UrlEncoder encoder)
-        : base(options, logger, htmlEncoder, encoder)
-    {
-    }
 }

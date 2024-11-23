@@ -8,16 +8,9 @@
 namespace Notifo.Domain.Integrations;
 
 [Serializable]
-public class HttpIntegrationException<TResponse> : Exception where TResponse : class
+public class HttpIntegrationException<TResponse>(string message, int statusCode = 400, TResponse? response = null, Exception? inner = null) : Exception(message, inner) where TResponse : class
 {
-    public TResponse? HttpResponse { get; }
+    public TResponse? HttpResponse { get; } = response;
 
-    public int HttpStatusCode { get; }
-
-    public HttpIntegrationException(string message, int statusCode = 400, TResponse? response = null, Exception? inner = null)
-        : base(message, inner)
-    {
-        HttpResponse = response;
-        HttpStatusCode = statusCode;
-    }
+    public int HttpStatusCode { get; } = statusCode;
 }

@@ -12,15 +12,8 @@ using Squidex.Messaging;
 
 namespace Notifo.Domain.Events.Pipeline;
 
-public sealed class EventConsumer : IMessageHandler<EventMessage>
+public sealed class EventConsumer(IUserEventPublisher userEventPublisher) : IMessageHandler<EventMessage>
 {
-    private readonly IUserEventPublisher userEventPublisher;
-
-    public EventConsumer(IUserEventPublisher userEventPublisher)
-    {
-        this.userEventPublisher = userEventPublisher;
-    }
-
     public async Task HandleAsync(EventMessage message,
         CancellationToken ct)
     {

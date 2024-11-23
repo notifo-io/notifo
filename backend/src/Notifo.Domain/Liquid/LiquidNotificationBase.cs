@@ -10,15 +10,16 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Liquid;
 
-public abstract class LiquidNotificationBase
+public abstract class LiquidNotificationBase(
+    NotificationFormatting<string> formatting,
+    NotificationProperties? properties,
+    string imagePresetSmall,
+    string imagePresetLarge,
+    IImageFormatter imageFormatter)
 {
-    private readonly NotificationFormatting<string> formatting;
-    private readonly IImageFormatter imageFormatter;
-    private readonly string imagePresetSmall;
-    private readonly string imagePresetLarge;
-    private NotificationProperties? properties;
     private string? imageLarge;
     private string? imageSmall;
+    private Dictionary<string, string>? actualProperties = properties;
 
     public string Subject => formatting.Subject;
 
@@ -40,21 +41,7 @@ public abstract class LiquidNotificationBase
 
     public Dictionary<string, string> Properties
     {
-        get => properties ??= [];
-    }
-
-    protected LiquidNotificationBase(
-        NotificationFormatting<string> formatting,
-        NotificationProperties? properties,
-        string imagePresetSmall,
-        string imagePresetLarge,
-        IImageFormatter imageFormatter)
-    {
-        this.formatting = formatting;
-        this.imageFormatter = imageFormatter;
-        this.imagePresetSmall = imagePresetSmall;
-        this.imagePresetLarge = imagePresetLarge;
-        this.properties = properties;
+        get => actualProperties ??= [];
     }
 
     protected static void DescribeBase(LiquidProperties properties)

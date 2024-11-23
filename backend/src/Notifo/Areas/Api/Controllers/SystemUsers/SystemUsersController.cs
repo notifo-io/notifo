@@ -16,15 +16,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.SystemUsers;
 
 [ApiExplorerSettings(GroupName = "SystemUsers")]
-public sealed class SystemUsersController : BaseController
+public sealed class SystemUsersController(IUserService userService) : BaseController
 {
-    private readonly IUserService userService;
-
-    public SystemUsersController(IUserService userService)
-    {
-        this.userService = userService;
-    }
-
     /// <summary>
     /// Query users.
     /// </summary>

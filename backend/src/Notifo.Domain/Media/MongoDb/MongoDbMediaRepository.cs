@@ -13,13 +13,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Media.MongoDb;
 
-public sealed class MongoDbMediaRepository : MongoDbStore<MongoDbMedia>, IMediaRepository
+public sealed class MongoDbMediaRepository(IMongoDatabase database) : MongoDbStore<MongoDbMedia>(database), IMediaRepository
 {
-    public MongoDbMediaRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Media";

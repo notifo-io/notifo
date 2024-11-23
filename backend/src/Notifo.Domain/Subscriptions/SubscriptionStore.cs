@@ -10,18 +10,11 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Subscriptions;
 
-public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<SubscriptionCommand, Subscription?>
+public sealed class SubscriptionStore(
+    ISubscriptionRepository repository,
+    IServiceProvider serviceProvider)
+    :  ISubscriptionStore, IRequestHandler<SubscriptionCommand, Subscription?>
 {
-    private readonly ISubscriptionRepository repository;
-    private readonly IServiceProvider serviceProvider;
-
-    public SubscriptionStore(ISubscriptionRepository repository,
-        IServiceProvider serviceProvider)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-    }
-
     public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
         CancellationToken ct = default)
     {

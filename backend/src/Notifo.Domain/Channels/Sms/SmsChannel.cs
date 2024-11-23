@@ -17,21 +17,13 @@ using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<N
 
 namespace Notifo.Domain.Channels.Sms;
 
-public sealed class SmsChannel : SchedulingChannelBase<SmsJob, SmsChannel>, ICallback<ISmsSender>
+public sealed class SmsChannel(
+    IServiceProvider serviceProvider,
+    ISmsFormatter smsFormatter,
+    ISmsTemplateStore smsTemplateStore)
+    :  SchedulingChannelBase<SmsJob, SmsChannel>(serviceProvider), ICallback<ISmsSender>
 {
-    private readonly ISmsFormatter smsFormatter;
-    private readonly ISmsTemplateStore smsTemplateStore;
-
     public override string Name => Providers.Sms;
-
-    public SmsChannel(IServiceProvider serviceProvider,
-        ISmsFormatter smsFormatter,
-        ISmsTemplateStore smsTemplateStore)
-        : base(serviceProvider)
-    {
-        this.smsFormatter = smsFormatter;
-        this.smsTemplateStore = smsTemplateStore;
-    }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {

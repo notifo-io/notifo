@@ -13,22 +13,14 @@ using Squidex.Messaging;
 
 namespace Notifo.Domain.Events.Pipeline;
 
-public sealed class EventPublisher : IEventPublisher
+public sealed class EventPublisher(
+    IMessageBus messageBus,
+    ILogStore logStore,
+    ILogger<EventPublisher> log,
+    IClock clock)
+    :  IEventPublisher
 {
     private static readonly Duration MaxAge = Duration.FromHours(1);
-    private readonly IMessageBus messageBus;
-    private readonly ILogStore logStore;
-    private readonly ILogger<EventPublisher> log;
-    private readonly IClock clock;
-
-    public EventPublisher(IMessageBus messageBus, ILogStore logStore,
-        ILogger<EventPublisher> log, IClock clock)
-    {
-        this.messageBus = messageBus;
-        this.logStore = logStore;
-        this.log = log;
-        this.clock = clock;
-    }
 
     public async Task PublishAsync(EventMessage message,
         CancellationToken ct = default)

@@ -7,15 +7,8 @@
 
 namespace Notifo.Infrastructure.Mediator;
 
-internal sealed class TypedRequestHandlerWrapper<TRequest, TResponse> : IMessageMiddleware where TRequest : IRequest<TResponse>
+internal sealed class TypedRequestHandlerWrapper<TRequest, TResponse>(IRequestHandler<TRequest, TResponse> inner) : IMessageMiddleware where TRequest : IRequest<TResponse>
 {
-    private readonly IRequestHandler<TRequest, TResponse> inner;
-
-    public TypedRequestHandlerWrapper(IRequestHandler<TRequest, TResponse> inner)
-    {
-        this.inner = inner;
-    }
-
     public async ValueTask<object?> HandleAsync(object request, NextDelegate next,
         CancellationToken ct)
     {

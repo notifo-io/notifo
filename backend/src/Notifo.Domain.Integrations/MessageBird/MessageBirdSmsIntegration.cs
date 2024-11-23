@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
-public sealed partial class MessageBirdSmsIntegration : IIntegration
+public sealed partial class MessageBirdSmsIntegration(MessageBirdClientPool clientPool) : IIntegration
 {
-    private readonly MessageBirdClientPool clientPool;
-
     public static readonly IntegrationProperty AccessKeyProperty = new IntegrationProperty("accessKey", PropertyType.Text)
     {
         EditorLabel = Texts.MessageBird_AccessKeyLabel,
@@ -89,9 +87,4 @@ public sealed partial class MessageBirdSmsIntegration : IIntegration
         {
             Description = Texts.MessageBird_Description
         };
-
-    public MessageBirdSmsIntegration(MessageBirdClientPool clientPool)
-    {
-        this.clientPool = clientPool;
-    }
 }

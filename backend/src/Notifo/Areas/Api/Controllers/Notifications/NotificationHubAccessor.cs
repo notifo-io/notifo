@@ -13,15 +13,8 @@ using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
-public sealed class NotificationHubAccessor : IStreamClient
+public sealed class NotificationHubAccessor(IHubContext<NotificationHub> hubContext) : IStreamClient
 {
-    private readonly IHubContext<NotificationHub> hubContext;
-
-    public NotificationHubAccessor(IHubContext<NotificationHub> hubContext)
-    {
-        this.hubContext = hubContext;
-    }
-
     public Task SendAsync(UserNotification userNotification)
     {
         var dto = UserNotificationDto.FromDomainObject(userNotification, Providers.Web);

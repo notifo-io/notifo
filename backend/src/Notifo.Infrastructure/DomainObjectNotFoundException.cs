@@ -8,14 +8,9 @@
 namespace Notifo.Infrastructure;
 
 [Serializable]
-public class DomainObjectNotFoundException : DomainObjectException
+public class DomainObjectNotFoundException(string id, Exception? inner = null) : DomainObjectException(FormatMessage(id), id, ValidationError, inner)
 {
     private const string ValidationError = "OBJECT_NOTFOUND";
-
-    public DomainObjectNotFoundException(string id, Exception? inner = null)
-        : base(FormatMessage(id), id, ValidationError, inner)
-    {
-    }
 
     private static string FormatMessage(string id)
     {

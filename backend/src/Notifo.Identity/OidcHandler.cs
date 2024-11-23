@@ -16,15 +16,8 @@ public class OidcOptions
     public string? SignoutRedirectUrl { get; set; }
 }
 
-public sealed class OidcHandler : OpenIdConnectEvents
+public sealed class OidcHandler(OidcOptions options) : OpenIdConnectEvents
 {
-    private readonly OidcOptions options;
-
-    public OidcHandler(OidcOptions options)
-    {
-        this.options = options;
-    }
-
     public override Task RedirectToIdentityProviderForSignOut(RedirectContext context)
     {
         if (!string.IsNullOrEmpty(options.SignoutRedirectUrl))

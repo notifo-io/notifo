@@ -13,23 +13,15 @@ using Squidex.Caching;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICounterTarget, IDisposable
+public sealed class AppStore(
+    IAppRepository repository,
+    IServiceProvider serviceProvider,
+    IReplicatedCache cache,
+    ILogger<AppStore> log) 
+    : IAppStore, IRequestHandler<AppCommand, App?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
-    private readonly CounterCollector<string> collector;
-    private readonly IAppRepository repository;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IReplicatedCache cache;
-
-    public AppStore(IAppRepository repository,
-        IServiceProvider serviceProvider, IReplicatedCache cache, ILogger<AppStore> log)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-        this.cache = cache;
-
-        collector = new CounterCollector<string>(repository, log, 5000);
-    }
+    private readonly CounterCollector<string> collector = new CounterCollector<string>(repository, log, 5000);
 
     public void Dispose()
     {

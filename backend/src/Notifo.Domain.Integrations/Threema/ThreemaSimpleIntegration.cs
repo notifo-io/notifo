@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Threema;
 
-public sealed partial class ThreemaSimpleIntegration : IIntegration
+public sealed partial class ThreemaSimpleIntegration(IHttpClientFactory httpClientFactory) : IIntegration
 {
-    private readonly IHttpClientFactory httpClientFactory;
-
     public static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", PropertyType.Text)
     {
         EditorLabel = Texts.ThreemaSimple_ApiIdentityLabel,
@@ -45,9 +43,4 @@ public sealed partial class ThreemaSimpleIntegration : IIntegration
         {
             Description = Texts.ThreemaSimple_Description
         };
-
-    public ThreemaSimpleIntegration(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
 }

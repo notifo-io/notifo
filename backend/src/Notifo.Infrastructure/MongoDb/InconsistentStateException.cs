@@ -8,19 +8,11 @@
 namespace Notifo.Infrastructure.MongoDb;
 
 [Serializable]
-public class InconsistentStateException : Exception
+public class InconsistentStateException(string currentEtag, string expectedEtag, Exception? inner = null) : Exception(FormatMessage(currentEtag, expectedEtag), inner)
 {
-    public string CurrentEtag { get; }
+    public string CurrentEtag { get; } = currentEtag;
 
-    public string ExpectedEtag { get; }
-
-    public InconsistentStateException(string currentEtag, string expectedEtag, Exception? inner = null)
-        : base(FormatMessage(currentEtag, expectedEtag), inner)
-    {
-        CurrentEtag = currentEtag;
-
-        ExpectedEtag = expectedEtag;
-    }
+    public string ExpectedEtag { get; } = expectedEtag;
 
     private static string FormatMessage(string currentEtag, string expectedEtag)
     {

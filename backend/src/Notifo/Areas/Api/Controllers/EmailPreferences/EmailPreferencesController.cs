@@ -18,19 +18,9 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.EmailPreferences;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class EmailPreferencesController : BaseController
+public sealed class EmailPreferencesController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IUserStore userStore) : BaseController
 {
     private static readonly TopicQuery TopicQuery = new TopicQuery { Scope = TopicQueryScope.Explicit };
-    private readonly ISubscriptionStore subscriptionStore;
-    private readonly ITopicStore topicStore;
-    private readonly IUserStore userStore;
-
-    public EmailPreferencesController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IUserStore userStore)
-    {
-        this.subscriptionStore = subscriptionStore;
-        this.topicStore = topicStore;
-        this.userStore = userStore;
-    }
 
     [HttpGet("api/email-preferences")]
     [AppPermission(NotifoRoles.AppUser)]

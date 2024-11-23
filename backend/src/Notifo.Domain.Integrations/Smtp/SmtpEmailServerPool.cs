@@ -9,13 +9,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Smtp;
 
-public sealed class SmtpEmailServerPool : CachePool<SmtpEmailServer>
+public sealed class SmtpEmailServerPool(IMemoryCache memoryCache) : CachePool<SmtpEmailServer>(memoryCache)
 {
-    public SmtpEmailServerPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public SmtpEmailServer GetServer(SmtpOptions options)
     {
         var cacheKey = $"SMTPServer_{options.HostName}_{options.Username}_{options.Password}_{options.HostName}";

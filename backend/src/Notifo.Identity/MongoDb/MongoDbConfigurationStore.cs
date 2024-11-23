@@ -11,13 +11,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Identity.MongoDb;
 
-public sealed class MongoDbConfigurationStore<T> : MongoDbRepository<MongoDbConfiguration<T>>, IConfigurationStore<T> where T : class
+public sealed class MongoDbConfigurationStore<T>(IMongoDatabase database) : MongoDbRepository<MongoDbConfiguration<T>>(database), IConfigurationStore<T> where T : class
 {
-    public MongoDbConfigurationStore(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Identity_Configuration";

@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Telekom;
 
-public sealed partial class TelekomSmsIntegration : IIntegration
+public sealed partial class TelekomSmsIntegration(IHttpClientFactory httpClientFactory) : IIntegration
 {
-    private readonly IHttpClientFactory httpClientFactory;
-
     public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Text)
     {
         EditorLabel = Texts.Telekom_ApiKeyLabel,
@@ -54,9 +52,4 @@ public sealed partial class TelekomSmsIntegration : IIntegration
         {
             Description = Texts.Telekom_Description
         };
-
-    public TelekomSmsIntegration(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
 }

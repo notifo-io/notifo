@@ -7,15 +7,8 @@
 
 namespace Notifo.Domain.Counters;
 
-public sealed class CounterService : ICounterService
+public sealed class CounterService(IEnumerable<ICounterTarget> targets) : ICounterService
 {
-    private readonly IEnumerable<ICounterTarget> targets;
-
-    public CounterService(IEnumerable<ICounterTarget> targets)
-    {
-        this.targets = targets;
-    }
-
     public Task CollectAsync(TrackingKey key, CounterMap counters,
         CancellationToken ct = default)
     {

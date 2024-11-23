@@ -12,19 +12,11 @@ using Squidex.Hosting;
 
 namespace Notifo.Identity;
 
-public sealed class UserCreator : IInitializable
+public sealed class UserCreator(IServiceProvider serviceProvider, IOptions<NotifoIdentityOptions> options) : IInitializable
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly NotifoIdentityUser[]? users;
+    private readonly NotifoIdentityUser[]? users = options.Value.Users;
 
     public int Order => 1000;
-
-    public UserCreator(IServiceProvider serviceProvider, IOptions<NotifoIdentityOptions> options)
-    {
-        this.serviceProvider = serviceProvider;
-
-        users = options.Value.Users;
-    }
 
     public async Task InitializeAsync(
         CancellationToken ct)

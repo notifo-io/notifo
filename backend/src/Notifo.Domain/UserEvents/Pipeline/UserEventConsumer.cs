@@ -12,15 +12,8 @@ using Squidex.Messaging;
 
 namespace Notifo.Domain.UserEvents.Pipeline;
 
-public sealed class UserEventConsumer : IMessageHandler<UserEventMessage>
+public sealed class UserEventConsumer(IUserNotificationService userNotificationService) : IMessageHandler<UserEventMessage>
 {
-    private readonly IUserNotificationService userNotificationService;
-
-    public UserEventConsumer(IUserNotificationService userNotificationService)
-    {
-        this.userNotificationService = userNotificationService;
-    }
-
     public async Task HandleAsync(UserEventMessage message,
         CancellationToken ct)
     {

@@ -10,13 +10,8 @@ using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
 
-public sealed class TelegramBotClientPool : CachePool<ITelegramBotClient>
+public sealed class TelegramBotClientPool(IMemoryCache memoryCache) : CachePool<ITelegramBotClient>(memoryCache)
 {
-    public TelegramBotClientPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public ITelegramBotClient GetBotClient(string accessToken)
     {
         var cacheKey = $"{nameof(TelegramBotClient)}_{accessToken}";

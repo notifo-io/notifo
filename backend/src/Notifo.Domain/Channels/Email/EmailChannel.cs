@@ -18,22 +18,15 @@ using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore
 
 namespace Notifo.Domain.Channels.Email;
 
-public sealed class EmailChannel : SchedulingChannelBase<EmailJob, EmailChannel>
+public sealed class EmailChannel(
+    IServiceProvider serviceProvider,
+    IEmailFormatter emailFormatter,
+    IEmailTemplateStore emailTemplateStore)
+    :  SchedulingChannelBase<EmailJob, EmailChannel>(serviceProvider)
 {
     private const string EmailAddress = nameof(EmailAddress);
-    private readonly IEmailFormatter emailFormatter;
-    private readonly IEmailTemplateStore emailTemplateStore;
 
     public override string Name => Providers.Email;
-
-    public EmailChannel(IServiceProvider serviceProvider,
-        IEmailFormatter emailFormatter,
-        IEmailTemplateStore emailTemplateStore)
-        : base(serviceProvider)
-    {
-        this.emailFormatter = emailFormatter;
-        this.emailTemplateStore = emailTemplateStore;
-    }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {

@@ -15,13 +15,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Topics.MongoDb;
 
-public sealed class MongoDbTopicRepository : MongoDbStore<MongoDbTopic>, ITopicRepository
+public sealed class MongoDbTopicRepository(IMongoDatabase database) : MongoDbStore<MongoDbTopic>(database), ITopicRepository
 {
-    public MongoDbTopicRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Topics";

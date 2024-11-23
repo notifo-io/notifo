@@ -11,13 +11,8 @@ using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrationBase, ISmsSender, IIntegrationHook
+public sealed class OpenNotificationsSmsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client) : OpenNotificationsIntegrationBase(fullName, providerName, providerInfo, client), ISmsSender, IIntegrationHook
 {
-    public OpenNotificationsSmsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
-        : base(fullName, providerName, providerInfo, client)
-    {
-    }
-
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message, CancellationToken ct)
     {
         try

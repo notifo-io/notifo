@@ -14,15 +14,8 @@ using OpenIddict.Server;
 
 namespace Notifo.Identity.MongoDb;
 
-public sealed class MongoDbKeyOptions : IConfigureOptions<OpenIddictServerOptions>
+public sealed class MongoDbKeyOptions(IMongoDatabase database) : IConfigureOptions<OpenIddictServerOptions>
 {
-    private readonly IMongoDatabase database;
-
-    public MongoDbKeyOptions(IMongoDatabase database)
-    {
-        this.database = database;
-    }
-
     public void Configure(OpenIddictServerOptions options)
     {
         var collection = database.GetCollection<MongoDbKey>("Identity_Key6");

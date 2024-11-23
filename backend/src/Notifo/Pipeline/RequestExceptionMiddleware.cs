@@ -14,16 +14,10 @@ using Notifo.Areas.Api;
 
 namespace Notifo.Pipeline;
 
-public sealed class RequestExceptionMiddleware
+public sealed class RequestExceptionMiddleware(RequestDelegate next)
 {
     private static readonly ActionDescriptor EmptyActionDescriptor = new ActionDescriptor();
     private static readonly RouteData EmptyRouteData = new RouteData();
-    private readonly RequestDelegate next;
-
-    public RequestExceptionMiddleware(RequestDelegate next)
-    {
-        this.next = next;
-    }
 
     public async Task InvokeAsync(HttpContext context, IActionResultExecutor<ObjectResult> writer,
         ILogger<RequestExceptionMiddleware> log)

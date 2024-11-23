@@ -12,15 +12,8 @@ using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Utils;
 
-public sealed class UrlBuilder : IEmailUrl, IIntegrationUrl, IUserNotificationUrl
+public sealed class UrlBuilder(IUrlGenerator urlGenerator) : IEmailUrl, IIntegrationUrl, IUserNotificationUrl
 {
-    private readonly IUrlGenerator urlGenerator;
-
-    public UrlBuilder(IUrlGenerator urlGenerator)
-    {
-        this.urlGenerator = urlGenerator;
-    }
-
     public string EmailPreferences(string apiKey, string language)
     {
         return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&amp;culture={language}");

@@ -13,13 +13,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Templates.MongoDb;
 
-public sealed class MongoDbTemplateRepository : MongoDbStore<MongoDbTemplate>, ITemplateRepository
+public sealed class MongoDbTemplateRepository(IMongoDatabase database) : MongoDbStore<MongoDbTemplate>(database), ITemplateRepository
 {
-    public MongoDbTemplateRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Templates";

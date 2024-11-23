@@ -15,13 +15,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Users.MongoDb;
 
-public sealed class MongoDbUserRepository : MongoDbStore<MongoDbUser>, IUserRepository
+public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStore<MongoDbUser>(database), IUserRepository
 {
-    public MongoDbUserRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Users";

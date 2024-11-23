@@ -9,13 +9,8 @@ using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-public sealed class OpenNotificationsEmailIntegration : OpenNotificationsIntegrationBase, IEmailSender
+public sealed class OpenNotificationsEmailIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client) : OpenNotificationsIntegrationBase(fullName, providerName, providerInfo, client), IEmailSender
 {
-    public OpenNotificationsEmailIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
-        : base(fullName, providerName, providerInfo, client)
-    {
-    }
-
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {

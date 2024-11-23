@@ -14,15 +14,9 @@ using Notifo.Infrastructure.Scheduling;
 
 namespace Notifo.Domain.Channels;
 
-public abstract class SchedulingChannelBase<TJob, T> : ChannelBase<T>, IScheduleHandler<TJob> where TJob : ChannelJob
+public abstract class SchedulingChannelBase<TJob, T>(IServiceProvider serviceProvider) : ChannelBase<T>(serviceProvider), IScheduleHandler<TJob> where TJob : ChannelJob
 {
-    protected IScheduler<TJob> Scheduler { get; }
-
-    protected SchedulingChannelBase(IServiceProvider serviceProvider)
-        : base(serviceProvider)
-    {
-        Scheduler = serviceProvider.GetRequiredService<IScheduler<TJob>>();
-    }
+    protected IScheduler<TJob> Scheduler { get; } = serviceProvider.GetRequiredService<IScheduler<TJob>>();
 
     protected async Task SkipAsync(List<TJob> jobs, LogMessage message)
     {

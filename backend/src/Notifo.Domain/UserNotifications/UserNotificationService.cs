@@ -21,42 +21,20 @@ using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domai
 
 namespace Notifo.Domain.UserNotifications;
 
-public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
+public sealed class UserNotificationService(
+    IEnumerable<ICommunicationChannel> channels,
+    IAppStore appStore,
+    ILogger<UserNotificationService> log,
+    ILogStore logStore,
+    IMessageBus messageBus,
+    IUserEventQueue userEventQueue,
+    IUserNotificationFactory userNotificationFactory,
+    IUserNotificationStore userNotificationsStore,
+    IUserStore userStore,
+    IClock clock)
+    :  IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
 {
-    private readonly Dictionary<string, ICommunicationChannel> channels;
-    private readonly IAppStore appStore;
-    private readonly ILogger<UserNotificationService> log;
-    private readonly ILogStore logStore;
-    private readonly IMessageBus messageBus;
-    private readonly IUserEventQueue userEventQueue;
-    private readonly IUserNotificationFactory userNotificationFactory;
-    private readonly IUserNotificationStore userNotificationsStore;
-    private readonly IUserStore userStore;
-    private readonly IClock clock;
-
-    public UserNotificationService(
-        IEnumerable<ICommunicationChannel> channels,
-        IAppStore appStore,
-        ILogger<UserNotificationService> log,
-        ILogStore logStore,
-        IMessageBus messageBus,
-        IUserEventQueue userEventQueue,
-        IUserNotificationFactory userNotificationFactory,
-        IUserNotificationStore userNotificationsStore,
-        IUserStore userStore,
-        IClock clock)
-    {
-        this.appStore = appStore;
-        this.channels = channels.ToDictionary(x => x.Name);
-        this.log = log;
-        this.logStore = logStore;
-        this.messageBus = messageBus;
-        this.userEventQueue = userEventQueue;
-        this.userNotificationFactory = userNotificationFactory;
-        this.userNotificationsStore = userNotificationsStore;
-        this.userStore = userStore;
-        this.clock = clock;
-    }
+    private readonly Dictionary<string, ICommunicationChannel> channels = channels.ToDictionary(x => x.Name);
 
     public Task HandleExceptionAsync(List<UserEventMessage> jobs, Exception exception)
     {

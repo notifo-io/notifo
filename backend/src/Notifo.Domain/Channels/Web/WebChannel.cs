@@ -12,20 +12,14 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Web;
 
-public sealed class WebChannel : ChannelBase<WebChannel>
+public sealed class WebChannel(
+    IServiceProvider serviceProvider,
+    IStreamClient streamClient)
+    :  ChannelBase<WebChannel>(serviceProvider)
 {
-    private readonly IStreamClient streamClient;
-
     public override string Name => Providers.Web;
 
     public override bool IsSystem => true;
-
-    public WebChannel(IServiceProvider serviceProvider,
-        IStreamClient streamClient)
-        : base(serviceProvider)
-    {
-        this.streamClient = streamClient;
-    }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {

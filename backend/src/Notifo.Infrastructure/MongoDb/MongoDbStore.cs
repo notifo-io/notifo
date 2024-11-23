@@ -9,13 +9,8 @@ using MongoDB.Driver;
 
 namespace Notifo.Infrastructure.MongoDb;
 
-public class MongoDbStore<T> : MongoDbRepository<T> where T : MongoDbEntity
+public class MongoDbStore<T>(IMongoDatabase database) : MongoDbRepository<T>(database) where T : MongoDbEntity
 {
-    public MongoDbStore(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected async Task<T?> GetDocumentAsync(string id,
         CancellationToken ct)
     {

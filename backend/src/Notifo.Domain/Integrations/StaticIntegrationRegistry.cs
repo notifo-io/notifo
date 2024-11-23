@@ -9,14 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Notifo.Domain.Integrations;
 
-public sealed class StaticIntegrationRegistry : IIntegrationRegistry
+public sealed class StaticIntegrationRegistry(IEnumerable<IIntegration> integrations) : IIntegrationRegistry
 {
-    public IEnumerable<IIntegration> Integrations { get; }
-
-    public StaticIntegrationRegistry(IEnumerable<IIntegration> integrations)
-    {
-        Integrations = integrations;
-    }
+    public IEnumerable<IIntegration> Integrations { get; } = integrations;
 
     public bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration)
     {

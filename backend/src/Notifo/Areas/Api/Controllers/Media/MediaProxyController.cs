@@ -17,7 +17,11 @@ using Squidex.Assets;
 namespace Notifo.Areas.Api.Controllers.Media;
 
 [ApiExplorerSettings(GroupName = "Media")]
-public sealed class MediaProxyController : MediaBaseController
+public sealed class MediaProxyController(
+    IAssetStore assetStore,
+    IAssetThumbnailGenerator assetThumbnailGenerator,
+    IHttpClientFactory httpClientFactory)
+    : MediaBaseController(assetStore, assetThumbnailGenerator)
 {
     private static readonly HashSet<string> SafeHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -27,15 +31,6 @@ public sealed class MediaProxyController : MediaBaseController
         HeaderNames.AcceptLanguage,
         HeaderNames.CacheControl
     };
-
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public MediaProxyController(IAssetStore assetStore, IAssetThumbnailGenerator assetThumbnailGenerator,
-        IHttpClientFactory httpClientFactory)
-        : base(assetStore, assetThumbnailGenerator)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
 
     /// <summary>
     /// Download a media object.

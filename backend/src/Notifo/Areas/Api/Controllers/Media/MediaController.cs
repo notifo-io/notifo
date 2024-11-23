@@ -18,25 +18,14 @@ using Squidex.Hosting;
 namespace Notifo.Areas.Api.Controllers.Media;
 
 [ApiExplorerSettings(GroupName = "Media")]
-public sealed class MediaController : MediaBaseController
+public sealed class MediaController(
+    IAssetStore assetStore,
+    IAssetThumbnailGenerator assetThumbnailGenerator,
+    IMediaStore mediaStore,
+    IMediaFileStore mediaFileStore,
+    IUrlGenerator urlGenerator)
+    :  MediaBaseController(assetStore, assetThumbnailGenerator)
 {
-    private readonly IMediaStore mediaStore;
-    private readonly IMediaFileStore mediaFileStore;
-    private readonly IUrlGenerator urlGenerator;
-
-    public MediaController(
-        IAssetStore assetStore,
-        IAssetThumbnailGenerator assetThumbnailGenerator,
-        IMediaStore mediaStore,
-        IMediaFileStore mediaFileStore,
-        IUrlGenerator urlGenerator)
-        : base(assetStore, assetThumbnailGenerator)
-    {
-        this.mediaStore = mediaStore;
-        this.mediaFileStore = mediaFileStore;
-        this.urlGenerator = urlGenerator;
-    }
-
     /// <summary>
     /// Query media items.
     /// </summary>

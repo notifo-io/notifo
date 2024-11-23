@@ -10,13 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Discord;
 
-public class DiscordBotClientPool : CachePool<IDiscordClient>
+public class DiscordBotClientPool(IMemoryCache memoryCache) : CachePool<IDiscordClient>(memoryCache)
 {
-    public DiscordBotClientPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public async Task<IDiscordClient> GetDiscordClient(string botToken)
     {
         var cacheKey = $"{nameof(IDiscordClient)}_{botToken}";

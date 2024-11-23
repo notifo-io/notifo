@@ -12,16 +12,11 @@ using NodaTime;
 namespace Notifo.Infrastructure.MongoDb.Scheduling;
 
 [Trait("Category", "Dependencies")]
-public class MongoDbSchedulerStoreTests : IClassFixture<MongoDbSchedulerStoreFixture>
+public class MongoDbSchedulerStoreTests(MongoDbSchedulerStoreFixture fixture) : IClassFixture<MongoDbSchedulerStoreFixture>
 {
     private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
 
-    public MongoDbSchedulerStoreFixture _ { get; }
-
-    public MongoDbSchedulerStoreTests(MongoDbSchedulerStoreFixture fixture)
-    {
-        _ = fixture;
-    }
+    public MongoDbSchedulerStoreFixture _ { get; } = fixture;
 
     [Fact]
     public async Task Should_schedule_with_due_time()

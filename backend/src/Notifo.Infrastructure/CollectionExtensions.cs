@@ -369,17 +369,9 @@ public static class CollectionExtensions
         return result;
     }
 
-    public sealed class KeyValuePairComparer<TKey, TValue> : IEqualityComparer<KeyValuePair<TKey, TValue>> where TKey : notnull
+    public sealed class KeyValuePairComparer<TKey, TValue>(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+    :  IEqualityComparer<KeyValuePair<TKey, TValue>> where TKey : notnull
     {
-        private readonly IEqualityComparer<TKey> keyComparer;
-        private readonly IEqualityComparer<TValue> valueComparer;
-
-        public KeyValuePairComparer(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-        {
-            this.keyComparer = keyComparer;
-            this.valueComparer = valueComparer;
-        }
-
         public bool Equals(KeyValuePair<TKey, TValue> x, KeyValuePair<TKey, TValue> y)
         {
             return keyComparer.Equals(x.Key, y.Key) && valueComparer.Equals(x.Value, y.Value);

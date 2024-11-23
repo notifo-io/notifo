@@ -19,10 +19,8 @@ using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationExc
 
 namespace Notifo.Areas.Account.Pages;
 
-public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
+public sealed class ExternalLoginModel(DynamicSchemeProvider schemes) : PageModelBase<ExternalLoginModel>
 {
-    private readonly DynamicSchemeProvider schemes;
-
     public string LoginProvider { get; set; }
 
     public string TermsOfServiceUrl { get; set; }
@@ -35,11 +33,6 @@ public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 
     [BindProperty]
     public ConfirmationForm Model { get; set; } = new ConfirmationForm();
-
-    public ExternalLoginModel(DynamicSchemeProvider schemes)
-    {
-        this.schemes = schemes;
-    }
 
     public IActionResult OnGet()
     {

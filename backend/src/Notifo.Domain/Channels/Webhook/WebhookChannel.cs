@@ -14,18 +14,13 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Webhook;
 
-public sealed class WebhookChannel : SchedulingChannelBase<WebhookJob, WebhookChannel>
+public sealed class WebhookChannel(IServiceProvider serviceProvider) : SchedulingChannelBase<WebhookJob, WebhookChannel>(serviceProvider)
 {
     private const string IntegrationId = nameof(IntegrationId);
 
     public override string Name => Providers.Webhook;
 
     public override bool IsSystem => true;
-
-    public WebhookChannel(IServiceProvider serviceProvider)
-        : base(serviceProvider)
-    {
-    }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {

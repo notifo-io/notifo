@@ -18,8 +18,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Identity.MongoDb;
 
-public sealed class MongoDbUserStore :
-    MongoDbRepository<MongoDbUser>,
+public sealed class MongoDbUserStore(IMongoDatabase database) :
+    MongoDbRepository<MongoDbUser>(database),
     IUserAuthenticationTokenStore<IdentityUser>,
     IUserAuthenticatorKeyStore<IdentityUser>,
     IUserClaimStore<IdentityUser>,
@@ -126,11 +126,6 @@ public sealed class MongoDbUserStore :
         });
     }
 
-    public MongoDbUserStore(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Identity_Users";
@@ -139,8 +134,8 @@ public sealed class MongoDbUserStore :
     protected override Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection,
         CancellationToken ct = default)
     {
-        return collection.Indexes.CreateManyAsync(new[]
-        {
+        return collection.Indexes.CreateManyAsync(
+        [
             new CreateIndexModel<MongoDbUser>(
                 IndexKeys
                     .Ascending("Logins.LoginProvider")
@@ -159,7 +154,7 @@ public sealed class MongoDbUserStore :
                 {
                     Unique = true
                 })
-        }, ct);
+        ], ct);
     }
 
     protected override MongoCollectionSettings CollectionSettings()

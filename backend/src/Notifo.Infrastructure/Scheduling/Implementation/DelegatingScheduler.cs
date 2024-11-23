@@ -9,15 +9,8 @@ using NodaTime;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation;
 
-public sealed class DelegatingScheduler<T> : IScheduler<T>
+public sealed class DelegatingScheduler<T>(IScheduling<T> scheduling) : IScheduler<T>
 {
-    private readonly IScheduling<T> scheduling;
-
-    public DelegatingScheduler(IScheduling<T> scheduling)
-    {
-        this.scheduling = scheduling;
-    }
-
     public Task<bool> CompleteAsync(string key,
         CancellationToken ct = default)
     {

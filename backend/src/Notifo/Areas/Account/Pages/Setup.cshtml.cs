@@ -19,10 +19,8 @@ using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationExc
 
 namespace Notifo.Areas.Account.Pages;
 
-public sealed class SetupModel : PageModelBase<SetupModel>
+public sealed class SetupModel(IAssetStore assetStore) : PageModelBase<SetupModel>
 {
-    private readonly IAssetStore assetStore;
-
     public string Email { get; set; }
 
     public string BaseUrlCurrent { get; set; }
@@ -36,11 +34,6 @@ public sealed class SetupModel : PageModelBase<SetupModel>
     public bool IsAssetStoreFile { get; set; }
 
     public bool HasExternalLogin { get; set; }
-
-    public SetupModel(IAssetStore assetStore)
-    {
-        this.assetStore = assetStore;
-    }
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {

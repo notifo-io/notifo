@@ -16,22 +16,14 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.UserNotifications;
 
-public sealed class UserNotificationFactory : IUserNotificationFactory
+public sealed class UserNotificationFactory(
+    ILogStore logstore,
+    IUserNotificationUrl notificationUrl,
+    IImageFormatter imageFormatter,
+    IClock clock)
+    : IUserNotificationFactory
 {
     private const string DefaultConfirmText = "Confirm";
-    private readonly IUserNotificationUrl notificationUrl;
-    private readonly IImageFormatter imageFormatter;
-    private readonly IClock clock;
-    private readonly ILogStore logstore;
-
-    public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl notificationUrl, IImageFormatter imageFormatter,
-        IClock clock)
-    {
-        this.notificationUrl = notificationUrl;
-        this.imageFormatter = imageFormatter;
-        this.logstore = logstore;
-        this.clock = clock;
-    }
 
     public UserNotification? Create(App app, User user, UserEventMessage userEvent, IEnumerable<UserEventMessage> childUserEvents)
     {

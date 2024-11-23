@@ -55,7 +55,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(1100, $"Cannot find channel template '{templateName}'.", system)
         {
             FormatText = "Cannot find channel template '{templateName}'.",
-            FormatArgs = new[] { templateName },
+            FormatArgs = [templateName],
             Reason = $"Cannot find channel template '{templateName}'."
         };
     }
@@ -67,7 +67,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(1101, "Cannot find language {language} in channel template '{templateName}'.", system)
         {
             FormatText = "Cannot find language {language} in channel template '{templateName}'.",
-            FormatArgs = new[] { language, templateName },
+            FormatArgs = [language, templateName],
             Reason = "Cannot find language {language} in channel template '{templateName}'.",
         };
     }
@@ -79,7 +79,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(1102, $"Cannot find named channel template '{templateName}', falling back to primary.", system)
         {
             FormatText = "Cannot find named template '{templateName}', falling back to primary.",
-            FormatArgs = new[] { templateName },
+            FormatArgs = [templateName],
             Reason = $"Cannot find named channel template '{templateName}', falling back to primary."
         };
     }
@@ -89,7 +89,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(1103, "Formatting error in template.", system)
         {
             FormatText = "Cannot find named template with errors {errors}.",
-            FormatArgs = new[] { string.Join(Environment.NewLine, errors) },
+            FormatArgs = [string.Join(Environment.NewLine, errors)],
             Reason = "Formatting error in template."
         };
     }
@@ -120,7 +120,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(1202, $"Template '{templateName}' has no subject.", system)
         {
             FormatText = "Template '{templateName}' has no subject.",
-            FormatArgs = new[] { templateName },
+            FormatArgs = [templateName],
             Reason = null
         };
     }
@@ -213,7 +213,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(2000, "User has been deleted", system)
         {
             FormatText = "User '{userId}' has been deleted.",
-            FormatArgs = new[] { userId },
+            FormatArgs = [userId],
             Reason = null,
         };
     }
@@ -223,7 +223,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(2001, "User has removed the email address.", system)
         {
             FormatText = "User '{userId}' has removed the email address.",
-            FormatArgs = new[] { userId },
+            FormatArgs = [userId],
             Reason = "Email address removed.",
         };
     }
@@ -233,7 +233,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(2002, $"User has unsupported language '{language}', using '{fallback}' instead.", system)
         {
             FormatText = "User '{userId}' has unsupported language '{language}', using '{fallback}' instead.",
-            FormatArgs = new[] { userId, language, fallback },
+            FormatArgs = [userId, language, fallback],
             Reason = "Email address removed.",
         };
     }
@@ -246,7 +246,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3100, "Mobile Token became invalid.", system)
         {
             FormatText = "Mobile Token '{token}' became invalid for user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = "Mobile Token removed."
         };
     }
@@ -256,7 +256,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3101, $"Mobile Token '{token}' has been removed.", system)
         {
             FormatText = "Mobile Token '{token}' has been removed from user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = null
         };
     }
@@ -266,7 +266,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3102, $"Mobile Token '{token}' has been added.", system)
         {
             FormatText = "Mobile Token '{token}' has been added to user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = null
         };
     }
@@ -277,7 +277,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3200, "Web Token became invalid.", system)
         {
             FormatText = "Web Token '{token}' became invalid for user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = "Web Token removed."
         };
     }
@@ -287,7 +287,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3201, $"Web Token '{token}' has been removed.", system)
         {
             FormatText = "Web Token '{token}' has been removed from user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = null
         };
     }
@@ -297,7 +297,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3203, $"Web Token '{token}' has been added.", system)
         {
             FormatText = "Web Token '{token}' has been added to user '{userId}'.",
-            FormatArgs = new[] { token, userId },
+            FormatArgs = [token, userId],
             Reason = null
         };
     }
@@ -310,7 +310,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3300, $"Callback failed with '{details}'.", system)
         {
             FormatText = "Callback failed with '{details}'.",
-            FormatArgs = new[] { details },
+            FormatArgs = [details],
             Reason = "Callback failed."
         };
     }
@@ -323,7 +323,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         return new LogMessage(3400, $"Callback failed with '{details}'.", system)
         {
             FormatText = "Callback failed with '{details}'.",
-            FormatArgs = new[] { details },
+            FormatArgs = [details],
             Reason = "Callback failed."
         };
     }

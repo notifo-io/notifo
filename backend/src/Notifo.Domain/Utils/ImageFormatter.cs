@@ -10,15 +10,8 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Utils;
 
-public sealed class ImageFormatter : IImageFormatter
+public sealed class ImageFormatter(IUrlGenerator urlGenerator) : IImageFormatter
 {
-    private readonly IUrlGenerator urlGenerator;
-
-    public ImageFormatter(IUrlGenerator urlGenerator)
-    {
-        this.urlGenerator = urlGenerator;
-    }
-
     public string? AddProxy(string? url)
     {
         if (url == null || !IsValidUrl(url))

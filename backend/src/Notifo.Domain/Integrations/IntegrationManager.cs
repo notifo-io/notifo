@@ -20,51 +20,30 @@ using IIntegrationRegistries = System.Collections.Generic.IEnumerable<Notifo.Dom
 
 namespace Notifo.Domain.Integrations;
 
-public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
+public sealed class IntegrationManager(
+    IAppStore appStore,
+    IIntegrationAdapter integrationAdapter,
+    IIntegrationRegistries integrationRegistries,
+    IIntegrationUrl integrationUrl,
+    IServiceProvider serviceProvider,
+    IMediator mediator,
+    ILogger<IntegrationManager> log)
+    :  IIntegrationManager, IBackgroundProcess
 {
-    private readonly IAppStore appStore;
-    private readonly IIntegrationAdapter integrationAdapter;
-    private readonly IIntegrationRegistries integrationRegistries;
-    private readonly IIntegrationUrl integrationUrl;
-    private readonly ILogger<IntegrationManager> log;
-    private readonly IMediator mediator;
-    private readonly Lazy<ICallback<ISmsSender>> callbackSms;
-    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging;
-    private readonly ConditionEvaluator conditionEvaluator;
+    private readonly Lazy<ICallback<ISmsSender>> callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<ISmsSender>>();
+        });
+    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging = new Lazy<ICallback<IMessagingSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<IMessagingSender>>();
+        });
+    private readonly ConditionEvaluator conditionEvaluator = new ConditionEvaluator(log);
     private CompletionTimer? timer;
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
         get => integrationRegistries.SelectMany(x => x.Integrations).Select(x => x.Definition).OrderBy(x => x.Title);
-    }
-
-    public IntegrationManager(
-        IAppStore appStore,
-        IIntegrationAdapter integrationAdapter,
-        IIntegrationRegistries integrationRegistries,
-        IIntegrationUrl integrationUrl,
-        IServiceProvider serviceProvider,
-        IMediator mediator,
-        ILogger<IntegrationManager> log)
-    {
-        this.appStore = appStore;
-        this.integrationAdapter = integrationAdapter;
-        this.mediator = mediator;
-        this.integrationRegistries = integrationRegistries;
-        this.integrationUrl = integrationUrl;
-        this.log = log;
-
-        callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
-        {
-            return serviceProvider.GetRequiredService<ICallback<ISmsSender>>();
-        });
-
-        callbackMessaging = new Lazy<ICallback<IMessagingSender>>(() =>
-        {
-            return serviceProvider.GetRequiredService<ICallback<IMessagingSender>>();
-        });
-
-        conditionEvaluator = new ConditionEvaluator(log);
     }
 
     public Task StartAsync(

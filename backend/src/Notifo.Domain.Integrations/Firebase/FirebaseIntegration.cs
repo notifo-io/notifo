@@ -10,10 +10,8 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
-public sealed partial class FirebaseIntegration : IIntegration
+public sealed partial class FirebaseIntegration(FirebaseMessagingPool messagingPool) : IIntegration
 {
-    private readonly FirebaseMessagingPool messagingPool;
-
     public static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
     {
         EditorLabel = Texts.Firebase_ProjectIdLabel,
@@ -67,11 +65,6 @@ public sealed partial class FirebaseIntegration : IIntegration
         {
             Description = Texts.Firebase_Description
         };
-
-    public FirebaseIntegration(FirebaseMessagingPool messagingPool)
-    {
-        this.messagingPool = messagingPool;
-    }
 
     public Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)

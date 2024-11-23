@@ -10,10 +10,8 @@ using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
 
-public sealed partial class TelegramIntegration : IIntegration
+public sealed partial class TelegramIntegration(TelegramBotClientPool clientPool) : IIntegration
 {
-    private readonly TelegramBotClientPool clientPool;
-
     public static readonly IntegrationProperty UserUsername = new IntegrationProperty("telegramUserId", PropertyType.Text)
     {
         EditorLabel = Texts.Telegram_UsernameLabel,
@@ -52,11 +50,6 @@ public sealed partial class TelegramIntegration : IIntegration
         {
             Description = Texts.Telegram_Description
         };
-
-    public TelegramIntegration(TelegramBotClientPool clientPool)
-    {
-        this.clientPool = clientPool;
-    }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)

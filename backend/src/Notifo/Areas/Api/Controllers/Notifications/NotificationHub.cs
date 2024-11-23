@@ -17,23 +17,16 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
 [AppPermission(NotifoRoles.AppUser)]
-public sealed class NotificationHub : Hub
+public sealed class NotificationHub(
+    IUserNotificationStore userNotificationsStore,
+    IUserNotificationService userNotificationService)
+    :  Hub
 {
     private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
-    private readonly IUserNotificationStore userNotificationsStore;
-    private readonly IUserNotificationService userNotificationService;
 
     private string AppId => Context.User!.AppId()!;
 
     private string UserId => Context.User!.UserId()!;
-
-    public NotificationHub(
-        IUserNotificationStore userNotificationsStore,
-        IUserNotificationService userNotificationService)
-    {
-        this.userNotificationsStore = userNotificationsStore;
-        this.userNotificationService = userNotificationService;
-    }
 
     public override async Task OnConnectedAsync()
     {

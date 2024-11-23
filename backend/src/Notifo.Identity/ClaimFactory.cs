@@ -12,13 +12,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Notifo.Identity;
 
-internal sealed class ClaimFactory : UserClaimsPrincipalFactory<IdentityUser>
+internal sealed class ClaimFactory(UserManager<IdentityUser> userManager, IOptions<IdentityOptions> optionsAccessor) : UserClaimsPrincipalFactory<IdentityUser>(userManager, optionsAccessor)
 {
-    public ClaimFactory(UserManager<IdentityUser> userManager, IOptions<IdentityOptions> optionsAccessor)
-        : base(userManager, optionsAccessor)
-    {
-    }
-
     public override async Task<ClaimsPrincipal> CreateAsync(IdentityUser user)
     {
         var principal = await base.CreateAsync(user);

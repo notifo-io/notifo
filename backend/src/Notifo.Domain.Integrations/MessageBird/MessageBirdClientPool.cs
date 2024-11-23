@@ -11,16 +11,8 @@ using Notifo.Domain.Integrations.MessageBird.Implementation;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
-public sealed class MessageBirdClientPool : CachePool<IMessageBirdClient>
+public sealed class MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory) : CachePool<IMessageBirdClient>(memoryCache)
 {
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory)
-        : base(memoryCache)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     public IMessageBirdClient GetClient(string accessKey)
     {
         var cacheKey = $"MessageBirdSmsSender_{accessKey}";

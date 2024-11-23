@@ -20,23 +20,14 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Web;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class WebController : BaseController
+public sealed class WebController(
+    IUserNotificationService userNotificationService,
+    IUserNotificationStore userNotificationStore,
+    IOptions<SignalROptions> signalROptions)
+    : BaseController
 {
     private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
-
-    private readonly IUserNotificationService userNotificationService;
-    private readonly IUserNotificationStore userNotificationStore;
-    private readonly SignalROptions signalROptions;
-
-    public WebController(
-        IUserNotificationService userNotificationService,
-        IUserNotificationStore userNotificationStore,
-        IOptions<SignalROptions> signalROptions)
-    {
-        this.userNotificationService = userNotificationService;
-        this.userNotificationStore = userNotificationStore;
-        this.signalROptions = signalROptions.Value;
-    }
+    private readonly SignalROptions signalROptions = signalROptions.Value;
 
     [HttpPost("api/me/web/connect")]
     [AppPermission(NotifoRoles.AppUser)]

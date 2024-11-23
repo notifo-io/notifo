@@ -12,15 +12,9 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
-public sealed class TrackingBatch
+public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 {
     private readonly Dictionary<Guid, TrackingChange> pendingChanges = [];
-    private readonly IMongoCollection<UserNotification> collection;
-
-    public TrackingBatch(IMongoCollection<UserNotification> collection)
-    {
-        this.collection = collection;
-    }
 
     private async Task ResolveNotificationsAsync(IEnumerable<TrackingToken> tokens,
         CancellationToken ct)

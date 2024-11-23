@@ -89,13 +89,9 @@ public static class InMemoryConfiguration
         }
     }
 
-    public sealed class Applications : InMemoryApplicationStore
+    public sealed class Applications(IUrlGenerator urlGenerator, IOptions<NotifoIdentityOptions> options)
+    :  InMemoryApplicationStore(BuildClients(urlGenerator, options.Value))
     {
-        public Applications(IUrlGenerator urlGenerator, IOptions<NotifoIdentityOptions> options)
-            : base(BuildClients(urlGenerator, options.Value))
-        {
-        }
-
         private static IEnumerable<(string, OpenIddictApplicationDescriptor)> BuildClients(IUrlGenerator urlGenerator, NotifoIdentityOptions identityOptions)
         {
             yield return (BuildId(Constants.FrontendClient), new OpenIddictApplicationDescriptor

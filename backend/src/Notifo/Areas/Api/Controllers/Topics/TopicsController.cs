@@ -17,15 +17,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Topics;
 
 [ApiExplorerSettings(GroupName = "Topics")]
-public sealed class TopicsController : BaseController
+public sealed class TopicsController(ITopicStore topicStore) : BaseController
 {
-    private readonly ITopicStore topicStore;
-
-    public TopicsController(ITopicStore topicStore)
-    {
-        this.topicStore = topicStore;
-    }
-
     /// <summary>
     /// Query topics.
     /// </summary>

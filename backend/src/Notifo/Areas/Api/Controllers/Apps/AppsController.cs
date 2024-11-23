@@ -18,19 +18,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Apps;
 
 [ApiExplorerSettings(GroupName = "Apps")]
-public sealed class AppsController : BaseController
+public sealed class AppsController(IAppStore appStore, IUserResolver userResolver, IIntegrationManager integrationManager) : BaseController
 {
-    private readonly IAppStore appStore;
-    private readonly IUserResolver userResolver;
-    private readonly IIntegrationManager integrationManager;
-
-    public AppsController(IAppStore appStore, IUserResolver userResolver, IIntegrationManager integrationManager)
-    {
-        this.appStore = appStore;
-        this.userResolver = userResolver;
-        this.integrationManager = integrationManager;
-    }
-
     /// <summary>
     /// Get the user apps.
     /// </summary>

@@ -13,17 +13,9 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Smtp;
 
-public class SmtpEmailServer : IDisposable
+public class SmtpEmailServer(SmtpOptions options) : IDisposable
 {
-    private readonly ObjectPool<SmtpClient> clientPool;
-    private readonly SmtpOptions options;
-
-    public SmtpEmailServer(SmtpOptions options)
-    {
-        this.options = options;
-
-        clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
-    }
+    private readonly ObjectPool<SmtpClient> clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
 
     public void Dispose()
     {

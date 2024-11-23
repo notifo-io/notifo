@@ -10,13 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
-public sealed class MailjetEmailServerPool : CachePool<MailjetEmailServer>
+public sealed class MailjetEmailServerPool(IMemoryCache memoryCache) : CachePool<MailjetEmailServer>(memoryCache)
 {
-    public MailjetEmailServerPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public MailjetEmailServer GetServer(string apiKey, string apiSecret)
     {
         var cacheKey = $"MailjetEmailServer_{apiKey}_{apiSecret}";

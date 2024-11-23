@@ -9,14 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Infrastructure.Mediator;
 
-public sealed class DefaultMediator : IMediator
+public sealed class DefaultMediator(IServiceProvider services) : IMediator
 {
-    private readonly Lazy<NextDelegate> pipeline;
-
-    public DefaultMediator(IServiceProvider services)
-    {
-        // Initialize the pipeline with the service provider so that request handlers can inject the mediator.
-        pipeline = new Lazy<NextDelegate>(() =>
+    private readonly Lazy<NextDelegate> pipeline = new Lazy<NextDelegate>(() =>
         {
             // Resolves the circular dependencies.
             var reverseMiddlewares = services.GetRequiredService<IEnumerable<IMessageMiddleware>>().Reverse().ToList();
@@ -30,7 +25,6 @@ public sealed class DefaultMediator : IMediator
 
             return next;
         });
-    }
 
     private static NextDelegate Create(NextDelegate next, IMessageMiddleware middleware)
     {

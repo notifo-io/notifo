@@ -19,15 +19,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Registration;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class RegistrationController : BaseController
+public sealed class RegistrationController(IWebPushService webPushService) : BaseController
 {
-    private readonly IWebPushService webPushService;
-
-    public RegistrationController(IWebPushService webPushService)
-    {
-        this.webPushService = webPushService;
-    }
-
     [HttpPost("api/web/register")]
     [AppPermission(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto request)

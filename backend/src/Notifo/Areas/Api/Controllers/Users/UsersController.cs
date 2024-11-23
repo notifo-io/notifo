@@ -23,25 +23,13 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Users;
 
 [ApiExplorerSettings(GroupName = "Users")]
-public sealed class UsersController : BaseController
+public sealed class UsersController(
+    IIntegrationManager integrationManager,
+    IUserStore userStore,
+    IUserNotificationStore userNotificationStore,
+    ISubscriptionStore subscriptionStore)
+    :  BaseController
 {
-    private readonly IIntegrationManager integrationManager;
-    private readonly IUserStore userStore;
-    private readonly IUserNotificationStore userNotificationStore;
-    private readonly ISubscriptionStore subscriptionStore;
-
-    public UsersController(
-        IIntegrationManager integrationManager,
-        IUserStore userStore,
-        IUserNotificationStore userNotificationStore,
-        ISubscriptionStore subscriptionStore)
-    {
-        this.integrationManager = integrationManager;
-        this.userStore = userStore;
-        this.userNotificationStore = userNotificationStore;
-        this.subscriptionStore = subscriptionStore;
-    }
-
     /// <summary>
     /// Query users.
     /// </summary>

@@ -14,7 +14,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Identity.MongoDb;
 
-public sealed class MongoDbRoleStore : MongoDbRepository<IdentityRole>, IRoleStore<IdentityRole>
+public sealed class MongoDbRoleStore(IMongoDatabase database) : MongoDbRepository<IdentityRole>(database), IRoleStore<IdentityRole>
 {
     static MongoDbRoleStore()
     {
@@ -27,11 +27,6 @@ public sealed class MongoDbRoleStore : MongoDbRepository<IdentityRole>, IRoleSto
 
             cm.UnmapMember(x => x.ConcurrencyStamp);
         });
-    }
-
-    public MongoDbRoleStore(IMongoDatabase database)
-        : base(database)
-    {
     }
 
     protected override string CollectionName()

@@ -10,15 +10,9 @@ using System.Text;
 namespace Notifo.Domain.Channels.Email;
 
 [Serializable]
-public class EmailFormattingException : Exception
+public class EmailFormattingException(IEnumerable<EmailFormattingError> errors) : Exception(BuildErrorMessage(errors))
 {
-    public IReadOnlyList<EmailFormattingError> Errors { get; }
-
-    public EmailFormattingException(IEnumerable<EmailFormattingError> errors)
-        : base(BuildErrorMessage(errors))
-    {
-        Errors = errors.ToList();
-    }
+    public IReadOnlyList<EmailFormattingError> Errors { get; } = errors.ToList();
 
     private static string BuildErrorMessage(IEnumerable<EmailFormattingError> errors)
     {

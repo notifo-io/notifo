@@ -14,15 +14,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.MobilePush;
 
 [ApiExplorerSettings(GroupName = "MobilePush")]
-public sealed class MobilePushController : BaseController
+public sealed class MobilePushController(IUserStore userStore) : BaseController
 {
-    private readonly IUserStore userStore;
-
-    public MobilePushController(IUserStore userStore)
-    {
-        this.userStore = userStore;
-    }
-
     /// <summary>
     /// Returns the mobile push tokens.
     /// </summary>

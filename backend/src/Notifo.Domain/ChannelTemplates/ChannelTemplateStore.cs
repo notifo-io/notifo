@@ -11,21 +11,12 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?> where T : class
+public sealed class ChannelTemplateStore<T>(
+    IChannelTemplateRepository<T> repository,
+    IServiceProvider serviceProvider,
+    IClock clock)
+    :  IChannelTemplateStore<T>, IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?> where T : class
 {
-    private readonly IChannelTemplateRepository<T> repository;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IClock clock;
-
-    public ChannelTemplateStore(IChannelTemplateRepository<T> repository,
-        IServiceProvider serviceProvider, IClock clock)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-
-        this.clock = clock;
-    }
-
     public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
         CancellationToken ct = default)
     {

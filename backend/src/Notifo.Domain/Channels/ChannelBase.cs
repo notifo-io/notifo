@@ -16,36 +16,25 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Channels;
 
-public abstract class ChannelBase<T> : ICommunicationChannel
+public abstract class ChannelBase<T>(IServiceProvider serviceProvider) : ICommunicationChannel
 {
     public abstract string Name { get; }
 
-    protected IAppStore AppStore { get; }
+    protected IAppStore AppStore { get; } = serviceProvider.GetRequiredService<IAppStore>();
 
-    protected IIntegrationManager IntegrationManager { get; }
+    protected IIntegrationManager IntegrationManager { get; } = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-    protected IMediator Mediator { get; }
+    protected IMediator Mediator { get; } = serviceProvider.GetRequiredService<IMediator>();
 
-    protected ILogger<T> Log { get; }
+    protected ILogger<T> Log { get; } = serviceProvider.GetRequiredService<ILogger<T>>();
 
-    protected ILogStore LogStore { get; }
+    protected ILogStore LogStore { get; } = serviceProvider.GetRequiredService<ILogStore>();
 
-    protected IUserNotificationStore UserNotificationStore { get; }
+    protected IUserNotificationStore UserNotificationStore { get; } = serviceProvider.GetRequiredService<IUserNotificationStore>();
 
-    protected IUserStore UserStore { get; }
+    protected IUserStore UserStore { get; } = serviceProvider.GetRequiredService<IUserStore>();
 
     public virtual bool IsSystem => false;
-
-    protected ChannelBase(IServiceProvider serviceProvider)
-    {
-        AppStore = serviceProvider.GetRequiredService<IAppStore>();
-        Log = serviceProvider.GetRequiredService<ILogger<T>>();
-        LogStore = serviceProvider.GetRequiredService<ILogStore>();
-        Mediator = serviceProvider.GetRequiredService<IMediator>();
-        UserNotificationStore = serviceProvider.GetRequiredService<IUserNotificationStore>();
-        UserStore = serviceProvider.GetRequiredService<IUserStore>();
-        IntegrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
-    }
 
     public abstract Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct);

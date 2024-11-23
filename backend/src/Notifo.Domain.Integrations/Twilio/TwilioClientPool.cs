@@ -10,13 +10,8 @@ using Twilio.Clients;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
-public sealed class TwilioClientPool : CachePool<ITwilioRestClient>
+public sealed class TwilioClientPool(IMemoryCache memoryCache) : CachePool<ITwilioRestClient>(memoryCache)
 {
-    public TwilioClientPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public ITwilioRestClient GetServer(string username, string password)
     {
         var cacheKey = $"TwilioRestClient_{username}_{password}";

@@ -13,7 +13,7 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroundProcess
+public sealed class OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients, ILogger<OpenNotificationsRegistry> log) : IIntegrationRegistry, IBackgroundProcess
 {
     private static readonly HashSet<string> ProvidersToIgnore =
     [
@@ -24,19 +24,10 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroun
         "smtp",
         "twilio-sms",
     ];
-
-    private readonly IEnumerable<IOpenNotificationsClient> clients;
-    private readonly ILogger<OpenNotificationsRegistry> log;
     private Dictionary<string, IIntegration> integrations = [];
     private CompletionTimer timer;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;
-
-    public OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients, ILogger<OpenNotificationsRegistry> log)
-    {
-        this.clients = clients;
-        this.log = log;
-    }
 
     public Task StartAsync(
         CancellationToken ct)

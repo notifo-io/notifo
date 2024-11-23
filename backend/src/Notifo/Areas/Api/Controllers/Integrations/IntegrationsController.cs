@@ -11,15 +11,8 @@ using Notifo.Domain.Integrations;
 
 namespace Notifo.Areas.Api.Controllers.Integrations;
 
-public class IntegrationsController : Controller
+public class IntegrationsController(IIntegrationManager integrationManager) : Controller
 {
-    private readonly IIntegrationManager integrationManager;
-
-    public IntegrationsController(IIntegrationManager integrationManager)
-    {
-        this.integrationManager = integrationManager;
-    }
-
     [HttpGet("api/integrations/image/{type}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetImageAsync(string type)

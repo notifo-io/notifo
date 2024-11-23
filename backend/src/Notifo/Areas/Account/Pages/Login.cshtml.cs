@@ -16,10 +16,8 @@ using Notifo.Identity.Dynamic;
 
 namespace Notifo.Areas.Account.Pages;
 
-public sealed class LoginModel : PageModelBase<LoginModel>
+public sealed class LoginModel(DynamicSchemeProvider schemes) : PageModelBase<LoginModel>
 {
-    private readonly DynamicSchemeProvider schemes;
-
     public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
     public LoginEmailForm LoginEmailForm { get; set; } = new LoginEmailForm();
@@ -28,11 +26,6 @@ public sealed class LoginModel : PageModelBase<LoginModel>
 
     [BindProperty(SupportsGet = true)]
     public bool Signup { get; set; }
-
-    public LoginModel(DynamicSchemeProvider schemes)
-    {
-        this.schemes = schemes;
-    }
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {

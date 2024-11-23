@@ -9,15 +9,8 @@ using System.Text.Json;
 
 namespace Notifo.Infrastructure.Json;
 
-public sealed class SystemTextJsonSerializer : IJsonSerializer
+public sealed class SystemTextJsonSerializer(JsonSerializerOptions options) : IJsonSerializer
 {
-    private readonly JsonSerializerOptions options;
-
-    public SystemTextJsonSerializer(JsonSerializerOptions options)
-    {
-        this.options = options;
-    }
-
     public T Deserialize<T>(ReadOnlySpan<byte> data)
     {
         return JsonSerializer.Deserialize<T>(data, options)!;

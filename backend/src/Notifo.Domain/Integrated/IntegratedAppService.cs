@@ -20,7 +20,15 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrated;
 
-public sealed partial class IntegratedAppService :
+public sealed partial class IntegratedAppService(
+    IAppStore appStore,
+    IEventPublisher eventPublisher,
+    IMediator mediator,
+    IUrlGenerator urlGenerator,
+    IUserStore userStore,
+    IUserResolver userResolver,
+    ILogger<IntegratedAppService> log)
+    : 
     IIntegratedAppService,
     IMessageMiddleware<AddContributor>,
     IMessageMiddleware<DeleteTemplate>,
@@ -30,32 +38,6 @@ public sealed partial class IntegratedAppService :
     IMessageMiddleware<UserRegistered>,
     IMessageMiddleware<UserUpdated>
 {
-    private readonly IAppStore appStore;
-    private readonly IMediator mediator;
-    private readonly IUrlGenerator urlGenerator;
-    private readonly IEventPublisher eventPublisher;
-    private readonly IUserStore userStore;
-    private readonly IUserResolver userResolver;
-    private readonly ILogger<IntegratedAppService> log;
-
-    public IntegratedAppService(
-        IAppStore appStore,
-        IEventPublisher eventPublisher,
-        IMediator mediator,
-        IUrlGenerator urlGenerator,
-        IUserStore userStore,
-        IUserResolver userResolver,
-        ILogger<IntegratedAppService> log)
-    {
-        this.appStore = appStore;
-        this.mediator = mediator;
-        this.urlGenerator = urlGenerator;
-        this.eventPublisher = eventPublisher;
-        this.userStore = userStore;
-        this.userResolver = userResolver;
-        this.log = log;
-    }
-
     public async Task<string?> GetTokenAsync(string userId,
         CancellationToken ct = default)
     {

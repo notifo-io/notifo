@@ -20,17 +20,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace Notifo.Areas.Account.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public class AuthorizationController : ControllerBase<AuthorizationController>
+public class AuthorizationController(IOpenIddictScopeManager scopeManager, IOpenIddictApplicationManager applicationManager) : ControllerBase<AuthorizationController>
 {
-    private readonly IOpenIddictScopeManager scopeManager;
-    private readonly IOpenIddictApplicationManager applicationManager;
-
-    public AuthorizationController(IOpenIddictScopeManager scopeManager, IOpenIddictApplicationManager applicationManager)
-    {
-        this.applicationManager = applicationManager;
-        this.scopeManager = scopeManager;
-    }
-
     [HttpPost("connect/token")]
     public async Task<IActionResult> Exchange()
     {

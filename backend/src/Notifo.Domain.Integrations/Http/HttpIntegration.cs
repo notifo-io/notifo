@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Http;
 
-public sealed partial class HttpIntegration : IIntegration
+public sealed partial class HttpIntegration(IHttpClientFactory httpClientFactory) : IIntegration
 {
-    private readonly IHttpClientFactory httpClientFactory;
-
     private static readonly IntegrationProperty HttpUrlProperty = new IntegrationProperty("Url", PropertyType.Text)
     {
         EditorLabel = Texts.Webhook_URLLabel,
@@ -64,9 +62,4 @@ public sealed partial class HttpIntegration : IIntegration
         {
             Description = Texts.Webhook_Description
         };
-
-    public HttpIntegration(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
 }

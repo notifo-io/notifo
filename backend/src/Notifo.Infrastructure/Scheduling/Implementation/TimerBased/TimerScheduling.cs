@@ -7,32 +7,22 @@
 
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using Notifo.Infrastructure.Tasks;
 using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased;
 
-public sealed class TimerScheduling<T> : IScheduling<T>
+public sealed class TimerScheduling<T>(
+    ISchedulerStore<T> schedulerStore,
+    SchedulerOptions schedulerOptions,
+    ILogger<TimerScheduling<T>> log,
+    IClock clock)
+    :  IScheduling<T>
 {
-    private readonly ISchedulerStore<T> schedulerStore;
-    private readonly SchedulerOptions schedulerOptions;
-    private readonly IClock clock;
-    private readonly ILogger<TimerScheduling<T>> log;
     private TimerConsumer<T>? consumer;
 
     public int Order => 1000;
 
     public string Name => $"TimerScheduler({schedulerOptions.QueueName})";
-
-    public TimerScheduling(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
-        ILogger<TimerScheduling<T>> log, IClock clock)
-    {
-        this.schedulerStore = schedulerStore;
-        this.schedulerOptions = schedulerOptions;
-        this.clock = clock;
-
-        this.log = log;
-    }
 
     public async Task InitializeAsync(
         CancellationToken ct)

@@ -16,9 +16,9 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Events.MongoDb;
 
-public sealed class MongoDbEventRepository : MongoDbStore<MongoDbEvent>, IEventRepository
+public sealed class MongoDbEventRepository(IMongoDatabase database, IOptions<EventsOptions> options) : MongoDbStore<MongoDbEvent>(database), IEventRepository
 {
-    private readonly TimeSpan retentionTime;
+    private readonly TimeSpan retentionTime = options.Value.RetentionTime;
 
     static MongoDbEventRepository()
     {
@@ -28,12 +28,6 @@ public sealed class MongoDbEventRepository : MongoDbStore<MongoDbEvent>, IEventR
 
             cm.SetIdMember(null);
         });
-    }
-
-    public MongoDbEventRepository(IMongoDatabase database, IOptions<EventsOptions> options)
-        : base(database)
-    {
-        retentionTime = options.Value.RetentionTime;
     }
 
     protected override string CollectionName()

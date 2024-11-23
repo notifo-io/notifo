@@ -16,17 +16,10 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Areas.Account.Pages;
 
-public sealed class LoginTestModel : PageModelBase<ExternalLoginModel>
+public sealed class LoginTestModel(DynamicSchemeProvider schemes) : PageModelBase<ExternalLoginModel>
 {
-    private readonly DynamicSchemeProvider schemes;
-
     [BindProperty]
     public ConfirmationForm Model { get; set; } = new ConfirmationForm();
-
-    public LoginTestModel(DynamicSchemeProvider schemes)
-    {
-        this.schemes = schemes;
-    }
 
     public async Task<IActionResult> OnGet(
         [FromQuery] AppAuthScheme scheme)

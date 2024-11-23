@@ -15,22 +15,13 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications;
 
-public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
+public sealed class UserNotificationStore(
+    IUserNotificationRepository repository,
+    ICounterService counters,
+    IClock clock)
+    : IUserNotificationStore, IDisposable
 {
-    private readonly StatisticsCollector collector;
-    private readonly IUserNotificationRepository repository;
-    private readonly ICounterService counters;
-    private readonly IClock clock;
-
-    public UserNotificationStore(IUserNotificationRepository repository, ICounterService counters,
-        IClock clock)
-    {
-        this.repository = repository;
-        this.counters = counters;
-        this.clock = clock;
-
-        collector = new StatisticsCollector(repository, clock, 5000);
-    }
+    private readonly StatisticsCollector collector = new StatisticsCollector(repository, clock, 5000);
 
     public void Dispose()
     {

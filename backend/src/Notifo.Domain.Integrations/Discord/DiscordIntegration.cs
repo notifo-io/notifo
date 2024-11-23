@@ -11,10 +11,8 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Integrations.Discord;
 
-public sealed partial class DiscordIntegration : IIntegration
+public sealed partial class DiscordIntegration(DiscordBotClientPool discordBotClientPool) : IIntegration
 {
-    private readonly DiscordBotClientPool discordBotClientPool;
-
     public static readonly IntegrationProperty UserId = new IntegrationProperty("discordUserId", PropertyType.Text)
     {
         EditorLabel = Texts.Discord_UserIdLabel,
@@ -46,11 +44,6 @@ public sealed partial class DiscordIntegration : IIntegration
     {
         Description = Texts.Discord_Description
     };
-
-    public DiscordIntegration(DiscordBotClientPool discordBotClientPool)
-    {
-        this.discordBotClientPool = discordBotClientPool;
-    }
 
     public Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
           CancellationToken ct)

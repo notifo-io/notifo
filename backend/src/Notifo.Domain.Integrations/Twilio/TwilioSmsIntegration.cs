@@ -13,9 +13,9 @@ using Twilio.Types;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
-public sealed partial class TwilioSmsIntegration : IIntegration
+public sealed partial class TwilioSmsIntegration(IMemoryCache cache) : IIntegration
 {
-    private readonly TwilioClientPool clientPool;
+    private readonly TwilioClientPool clientPool = new TwilioClientPool(cache);
 
     public static readonly IntegrationProperty AccountSidProperty = new IntegrationProperty("accountSid", PropertyType.Text)
     {
@@ -57,11 +57,6 @@ public sealed partial class TwilioSmsIntegration : IIntegration
         {
             Description = Texts.Twilio_Description
         };
-
-    public TwilioSmsIntegration(IMemoryCache cache)
-    {
-        clientPool = new TwilioClientPool(cache);
-    }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)

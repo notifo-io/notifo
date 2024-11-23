@@ -16,19 +16,12 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
 [ApiExplorerSettings(GroupName = "Notifications")]
-public sealed class NotificationsController : BaseController
+public sealed class NotificationsController(
+    IUserNotificationStore userNotificationsStore,
+    IUserNotificationService userNotificationService)
+    :  BaseController
 {
     private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
-    private readonly IUserNotificationStore userNotificationsStore;
-    private readonly IUserNotificationService userNotificationService;
-
-    public NotificationsController(
-        IUserNotificationStore userNotificationsStore,
-        IUserNotificationService userNotificationService)
-    {
-        this.userNotificationsStore = userNotificationsStore;
-        this.userNotificationService = userNotificationService;
-    }
 
     /// <summary>
     /// Query notifications.

@@ -12,20 +12,13 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Topics;
 
-public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topic?>, ICounterTarget, IDisposable
+public sealed class TopicStore(
+    ITopicRepository repository,
+    IServiceProvider serviceProvider, 
+    ILogger<TopicStore> log)
+    :  ITopicStore, IRequestHandler<TopicCommand, Topic?>, ICounterTarget, IDisposable
 {
-    private readonly ITopicRepository repository;
-    private readonly IServiceProvider serviceProvider;
-    private readonly CounterCollector<(string AppId, string Path)> collector;
-
-    public TopicStore(ITopicRepository repository,
-        IServiceProvider serviceProvider, ILogger<TopicStore> log)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-
-        collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
-    }
+    private readonly CounterCollector<(string AppId, string Path)> collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
 
     public void Dispose()
     {

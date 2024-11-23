@@ -9,13 +9,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
-public sealed class FirebaseMessagingPool : CachePool<FirebaseMessagingWrapper>
+public sealed class FirebaseMessagingPool(IMemoryCache memoryCache) : CachePool<FirebaseMessagingWrapper>(memoryCache)
 {
-    public FirebaseMessagingPool(IMemoryCache memoryCache)
-        : base(memoryCache)
-    {
-    }
-
     public FirebaseMessagingWrapper GetMessaging(string projectId, string credentials)
     {
         var cacheKey = $"FirebaseSender_{projectId}_{credentials}";

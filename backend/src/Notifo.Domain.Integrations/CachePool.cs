@@ -9,17 +9,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations;
 
-public abstract class CachePool<TItem>
+public abstract class CachePool<TItem>(IMemoryCache memoryCache)
 {
 #pragma warning disable RECS0108 // Warns about static fields in generic types
     private static readonly TimeSpan DefaultExpiration = TimeSpan.FromMinutes(5);
-#pragma warning restore RECS0108 // Warns about static fields in generic types
-    private readonly IMemoryCache memoryCache;
 
-    protected CachePool(IMemoryCache memoryCache)
-    {
-        this.memoryCache = memoryCache;
-    }
+#pragma warning restore RECS0108 // Warns about static fields in generic types
 
     protected TItem GetOrCreate(object key, Func<TItem> factory)
     {

@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
-public sealed partial class MailjetIntegration : IIntegration
+public sealed partial class MailjetIntegration(MailjetEmailServerPool serverPool) : IIntegration
 {
-    private readonly MailjetEmailServerPool serverPool;
-
     public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
     {
         EditorLabel = Texts.Mailjet_ApiKeyLabel,
@@ -62,9 +60,4 @@ public sealed partial class MailjetIntegration : IIntegration
         {
             Description = Texts.Mailjet_Description
         };
-
-    public MailjetIntegration(MailjetEmailServerPool serverPool)
-    {
-        this.serverPool = serverPool;
-    }
 }

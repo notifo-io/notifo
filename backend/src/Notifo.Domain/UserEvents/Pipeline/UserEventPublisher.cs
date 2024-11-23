@@ -21,7 +21,17 @@ using IUserEventBus = Squidex.Messaging.IMessageBus;
 
 namespace Notifo.Domain.UserEvents.Pipeline;
 
-public sealed class UserEventPublisher : IUserEventPublisher
+public sealed class UserEventPublisher(
+    ICounterService counters,
+    ILogStore logStore,
+    IEventStore eventStore,
+    ISubscriptionStore subscriptionStore,
+    ITemplateStore templateStore,
+    IUserStore userStore,
+    IUserEventBus userEventProducer,
+    ILogger<UserEventPublisher> log,
+    Randomizer randomizer)
+    : IUserEventPublisher
 {
     private static readonly HashSet<string> UserAllTopics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -36,36 +46,6 @@ public sealed class UserEventPublisher : IUserEventPublisher
         "users/",
         "user/"
     ];
-
-    private readonly ICounterService counters;
-    private readonly IEventStore eventStore;
-    private readonly ILogger<UserEventPublisher> log;
-    private readonly Randomizer randomizer;
-    private readonly ILogStore logStore;
-    private readonly ISubscriptionStore subscriptionStore;
-    private readonly ITemplateStore templateStore;
-    private readonly IUserEventBus userEventProducer;
-    private readonly IUserStore userStore;
-
-    public UserEventPublisher(ICounterService counters, ILogStore logStore,
-        IEventStore eventStore,
-        ISubscriptionStore subscriptionStore,
-        ITemplateStore templateStore,
-        IUserStore userStore,
-        IUserEventBus userEventProducer,
-        ILogger<UserEventPublisher> log,
-        Randomizer randomizer)
-    {
-        this.counters = counters;
-        this.eventStore = eventStore;
-        this.log = log;
-        this.logStore = logStore;
-        this.subscriptionStore = subscriptionStore;
-        this.templateStore = templateStore;
-        this.userEventProducer = userEventProducer;
-        this.userStore = userStore;
-        this.randomizer = randomizer;
-    }
 
     public async Task PublishAsync(EventMessage @event,
         CancellationToken ct)

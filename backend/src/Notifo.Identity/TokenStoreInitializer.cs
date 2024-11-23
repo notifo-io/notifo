@@ -16,19 +16,13 @@ using Squidex.Hosting;
 
 namespace Notifo.Identity;
 
-public sealed class TokenStoreInitializer : IInitializable
+public sealed class TokenStoreInitializer(
+    IOptions<OpenIddictMongoDbOptions> options,
+    IServiceProvider serviceProvider)
+    :  IInitializable
 {
-    private readonly OpenIddictMongoDbOptions options;
-    private readonly IServiceProvider serviceProvider;
+    private readonly OpenIddictMongoDbOptions options = options.Value;
     private CompletionTimer timer;
-
-    public TokenStoreInitializer(IOptions<OpenIddictMongoDbOptions> options,
-        IServiceProvider serviceProvider)
-    {
-        this.options = options.Value;
-
-        this.serviceProvider = serviceProvider;
-    }
 
     public async Task InitializeAsync(
         CancellationToken ct)

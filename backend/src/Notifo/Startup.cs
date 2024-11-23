@@ -20,15 +20,8 @@ using Notifo.Pipeline;
 
 namespace Notifo;
 
-public class Startup
+public class Startup(IConfiguration config)
 {
-    private readonly IConfiguration config;
-
-    public Startup(IConfiguration config)
-    {
-        this.config = config;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         var signalROptions = config.GetSection("web:signalR").Get<SignalROptions>() ?? new SignalROptions();

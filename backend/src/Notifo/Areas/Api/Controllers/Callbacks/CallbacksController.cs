@@ -13,15 +13,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Callbacks;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class CallbacksController : BaseController
+public sealed class CallbacksController(IAppStore appStore) : BaseController
 {
-    private readonly IAppStore appStore;
-
-    public CallbacksController(IAppStore appStore)
-    {
-        this.appStore = appStore;
-    }
-
     [AllowSynchronousIO]
     [HttpGet]
     [HttpPost]

@@ -13,13 +13,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.ChannelTemplates.MongoDb;
 
-public sealed class MongoDbChannelTemplateRepository<T> : MongoDbStore<MongoDbChannelTemplate<T>>, IChannelTemplateRepository<T> where T : class
+public sealed class MongoDbChannelTemplateRepository<T>(IMongoDatabase database) : MongoDbStore<MongoDbChannelTemplate<T>>(database), IChannelTemplateRepository<T> where T : class
 {
-    public MongoDbChannelTemplateRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return $"ChannelTemplates_{typeof(T).Name}";

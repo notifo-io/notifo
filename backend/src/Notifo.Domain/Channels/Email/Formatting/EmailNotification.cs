@@ -11,11 +11,8 @@ using Notifo.Domain.Utils;
 
 namespace Notifo.Domain.Channels.Email.Formatting;
 
-public sealed class EmailNotification
+public sealed class EmailNotification(BaseUserNotification notification, Guid configurationId, IImageFormatter imageFormatter)
 {
-    private readonly BaseUserNotification notification;
-    private readonly Guid configurationId;
-    private readonly IImageFormatter imageFormatter;
     private string? confirmUrl;
     private string? imageLarge;
     private string? imageSmall;
@@ -55,13 +52,6 @@ public sealed class EmailNotification
     public string? ImageLarge
     {
         get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
-    }
-
-    public EmailNotification(BaseUserNotification notification, Guid configurationId, IImageFormatter imageFormatter)
-    {
-        this.notification = notification;
-        this.configurationId = configurationId;
-        this.imageFormatter = imageFormatter;
     }
 
     private static string? OrNull(string? value)

@@ -9,15 +9,8 @@ using Squidex.Assets;
 
 namespace Notifo.Domain.Media;
 
-public sealed class DefaultMediaFileStore : IMediaFileStore
+public sealed class DefaultMediaFileStore(IAssetStore assetStore) : IMediaFileStore
 {
-    private readonly IAssetStore assetStore;
-
-    public DefaultMediaFileStore(IAssetStore assetStore)
-    {
-        this.assetStore = assetStore;
-    }
-
     public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range,
         CancellationToken ct = default)
     {

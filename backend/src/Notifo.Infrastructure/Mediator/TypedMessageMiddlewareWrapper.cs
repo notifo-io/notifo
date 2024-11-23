@@ -7,15 +7,8 @@
 
 namespace Notifo.Infrastructure.Mediator;
 
-internal sealed class TypedMessageMiddlewareWrapper<T> : IMessageMiddleware
+internal sealed class TypedMessageMiddlewareWrapper<T>(IMessageMiddleware<T> inner) : IMessageMiddleware
 {
-    private readonly IMessageMiddleware<T> inner;
-
-    public TypedMessageMiddlewareWrapper(IMessageMiddleware<T> inner)
-    {
-        this.inner = inner;
-    }
-
     public ValueTask<object?> HandleAsync(object request, NextDelegate next,
         CancellationToken ct)
     {

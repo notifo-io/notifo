@@ -19,10 +19,13 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
-public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNotification>, IUserNotificationRepository
+public sealed class MongoDbUserNotificationRepository(
+    IMongoDatabase database,
+    IOptions<UserNotificationsOptions> options,
+    ILogger<MongoDbUserNotificationRepository> log)
+    : MongoDbRepository<UserNotification>(database), IUserNotificationRepository
 {
-    private readonly UserNotificationsOptions options;
-    private readonly ILogger<MongoDbUserNotificationRepository> log;
+    private readonly UserNotificationsOptions options = options.Value;
 
     static MongoDbUserNotificationRepository()
     {
@@ -78,15 +81,6 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
             cm.MapProperty(x => x.Status)
                 .SetSerializer(new StatusDictionarySerializer());
         });
-    }
-
-    public MongoDbUserNotificationRepository(IMongoDatabase database, IOptions<UserNotificationsOptions> options,
-        ILogger<MongoDbUserNotificationRepository> log)
-        : base(database)
-    {
-        this.options = options.Value;
-
-        this.log = log;
     }
 
     protected override string CollectionName()

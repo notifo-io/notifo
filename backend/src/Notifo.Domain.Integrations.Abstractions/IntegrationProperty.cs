@@ -17,7 +17,7 @@ namespace Notifo.Domain.Integrations;
 
 public sealed record IntegrationProperty(string Name, PropertyType Type)
 {
-    private static readonly string[] AllowedHttpUrlSchemes = { "http", "https" };
+    private static readonly string[] AllowedHttpUrlSchemes = ["http", "https"];
 
     public string? DefaultValue { get; init; }
 

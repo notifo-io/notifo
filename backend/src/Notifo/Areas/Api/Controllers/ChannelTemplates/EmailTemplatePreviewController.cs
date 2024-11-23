@@ -18,23 +18,13 @@ using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
 [ApiExplorerSettings(GroupName = "EmailTemplates")]
-public class EmailTemplatePreviewController : BaseController
+public class EmailTemplatePreviewController(
+    IEmailFormatter emailFormatter,
+    IEmailTemplateStore emailTemplateStore,
+    MjmlSchema mjmlSchema)
+    :  BaseController
 {
-    private readonly IEmailFormatter emailFormatter;
-    private readonly IEmailTemplateStore emailTemplateStore;
-    private readonly MjmlSchema mjmlSchema;
-
     public object PreviewType { get; private set; }
-
-    public EmailTemplatePreviewController(
-        IEmailFormatter emailFormatter,
-        IEmailTemplateStore emailTemplateStore,
-        MjmlSchema mjmlSchema)
-    {
-        this.emailFormatter = emailFormatter;
-        this.emailTemplateStore = emailTemplateStore;
-        this.mjmlSchema = mjmlSchema;
-    }
 
     /// <summary>
     /// Gets the mjml schema.

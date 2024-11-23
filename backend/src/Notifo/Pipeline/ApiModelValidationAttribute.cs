@@ -13,15 +13,8 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Pipeline;
 
-public sealed class ApiModelValidationAttribute : ActionFilterAttribute
+public sealed class ApiModelValidationAttribute(bool allErrors) : ActionFilterAttribute
 {
-    private readonly bool allErrors;
-
-    public ApiModelValidationAttribute(bool allErrors)
-    {
-        this.allErrors = allErrors;
-    }
-
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (!context.ModelState.IsValid)

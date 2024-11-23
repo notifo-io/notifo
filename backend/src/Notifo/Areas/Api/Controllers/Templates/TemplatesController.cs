@@ -17,15 +17,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Templates;
 
 [ApiExplorerSettings(GroupName = "Templates")]
-public sealed class TemplatesController : BaseController
+public sealed class TemplatesController(ITemplateStore templateStore) : BaseController
 {
-    private readonly ITemplateStore templateStore;
-
-    public TemplatesController(ITemplateStore templateStore)
-    {
-        this.templateStore = templateStore;
-    }
-
     /// <summary>
     /// Query templates.
     /// </summary>

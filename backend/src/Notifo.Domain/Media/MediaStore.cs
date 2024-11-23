@@ -11,25 +11,13 @@ using Squidex.Assets;
 
 namespace Notifo.Domain.Media;
 
-public sealed class MediaStore : IMediaStore
+public sealed class MediaStore(
+    IMediaFileStore mediaFileStore,
+    IMediaRepository mediaRepository,
+    IEnumerable<IMediaMetadataSource> mediaMetadataSources,
+    IClock clock)
+    :  IMediaStore
 {
-    private readonly IMediaFileStore mediaFileStore;
-    private readonly IMediaRepository mediaRepository;
-    private readonly IEnumerable<IMediaMetadataSource> mediaMetadataSources;
-    private readonly IClock clock;
-
-    public MediaStore(
-        IMediaFileStore mediaFileStore,
-        IMediaRepository mediaRepository,
-        IEnumerable<IMediaMetadataSource> mediaMetadataSources,
-        IClock clock)
-    {
-        this.mediaFileStore = mediaFileStore;
-        this.mediaMetadataSources = mediaMetadataSources;
-        this.mediaRepository = mediaRepository;
-        this.clock = clock;
-    }
-
     public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
         CancellationToken ct = default)
     {

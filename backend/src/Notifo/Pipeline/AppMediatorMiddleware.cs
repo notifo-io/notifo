@@ -13,15 +13,8 @@ using Notifo.Infrastructure.Security;
 
 namespace Notifo.Pipeline;
 
-public sealed class AppMediatorMiddleware : IMessageMiddleware<AppCommandBase>
+public sealed class AppMediatorMiddleware(IHttpContextAccessor httpContextAccessor) : IMessageMiddleware<AppCommandBase>
 {
-    private readonly IHttpContextAccessor httpContextAccessor;
-
-    public AppMediatorMiddleware(IHttpContextAccessor httpContextAccessor)
-    {
-        this.httpContextAccessor = httpContextAccessor;
-    }
-
     public ValueTask<object?> HandleAsync(AppCommandBase request, NextDelegate next,
         CancellationToken ct)
     {

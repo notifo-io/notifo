@@ -19,12 +19,10 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.AmazonSES;
 
-public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable, IEmailSender
+public sealed class IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> emailOptions, SmtpIntegration emailSender) : IIntegration, IInitializable, IEmailSender
 {
     private static readonly char[] EmailSeparators = ['\n', ',', ';'];
-    private readonly IKeyValueStore keyValueStore;
-    private readonly SmtpIntegration emailSender;
-    private readonly AmazonSESOptions emailOptions;
+    private readonly AmazonSESOptions emailOptions = emailOptions.Value;
     private AmazonSimpleEmailServiceClient amazonSES;
 
     public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
@@ -68,13 +66,6 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         {
             Description = Texts.AmazonSES_Description
         };
-
-    public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> emailOptions, SmtpIntegration emailSender)
-    {
-        this.emailOptions = emailOptions.Value;
-        this.emailSender = emailSender;
-        this.keyValueStore = keyValueStore;
-    }
 
     public async Task InitializeAsync(
         CancellationToken ct)

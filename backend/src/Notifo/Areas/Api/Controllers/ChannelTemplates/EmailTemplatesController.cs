@@ -15,10 +15,6 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
 [Route("api/apps/{appId:notEmpty}/email-templates")]
 [ApiExplorerSettings(GroupName = "EmailTemplates")]
-public sealed class EmailTemplatesController : ChannelTemplatesController<EmailTemplate, EmailTemplateDto>
+public sealed class EmailTemplatesController(IChannelTemplateStore<EmailTemplate> channelTemplateStore, LiquidPropertiesProvider propertiesProvider) : ChannelTemplatesController<EmailTemplate, EmailTemplateDto>(channelTemplateStore, propertiesProvider)
 {
-    public EmailTemplatesController(IChannelTemplateStore<EmailTemplate> channelTemplateStore, LiquidPropertiesProvider propertiesProvider)
-        : base(channelTemplateStore, propertiesProvider)
-    {
-    }
 }

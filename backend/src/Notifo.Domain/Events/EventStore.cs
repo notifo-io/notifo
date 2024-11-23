@@ -12,18 +12,12 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Events;
 
-public sealed class EventStore : IEventStore, ICounterTarget, IDisposable
+public sealed class EventStore(
+    IEventRepository eventRepository,
+    ILogger<EventStore> log)
+    :  IEventStore, ICounterTarget, IDisposable
 {
-    private readonly CounterCollector<(string, string)> collector;
-    private readonly IEventRepository eventRepository;
-
-    public EventStore(IEventRepository eventRepository,
-        ILogger<EventStore> log)
-    {
-        this.eventRepository = eventRepository;
-
-        collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
-    }
+    private readonly CounterCollector<(string, string)> collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
 
     public void Dispose()
     {

@@ -11,18 +11,11 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Templates;
 
-public sealed class TemplateStore : ITemplateStore, IRequestHandler<TemplateCommand, Template?>
+public sealed class TemplateStore(
+    ITemplateRepository repository,
+    IServiceProvider serviceProvider)
+    :  ITemplateStore, IRequestHandler<TemplateCommand, Template?>
 {
-    private readonly ITemplateRepository repository;
-    private readonly IServiceProvider serviceProvider;
-
-    public TemplateStore(ITemplateRepository repository,
-        IServiceProvider serviceProvider)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-    }
-
     public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
         CancellationToken ct = default)
     {

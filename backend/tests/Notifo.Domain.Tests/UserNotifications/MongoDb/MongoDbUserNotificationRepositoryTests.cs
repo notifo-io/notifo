@@ -16,7 +16,7 @@ using Notifo.Infrastructure;
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
 [Trait("Category", "Dependencies")]
-public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserNotificationRepositoryFixture>
+public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepositoryFixture fixture) : IClassFixture<MongoDbUserNotificationRepositoryFixture>
 {
     private readonly Guid configurationId1 = Guid.NewGuid();
     private readonly Guid configurationId2 = Guid.NewGuid();
@@ -28,12 +28,7 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
     private readonly string userId1 = Guid.NewGuid().ToString();
     private readonly string userId2 = Guid.NewGuid().ToString();
 
-    public MongoDbUserNotificationRepositoryFixture _ { get; }
-
-    public MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepositoryFixture fixture)
-    {
-        _ = fixture;
-    }
+    public MongoDbUserNotificationRepositoryFixture _ { get; } = fixture;
 
     [Fact]
     public async Task Should_store_notification()

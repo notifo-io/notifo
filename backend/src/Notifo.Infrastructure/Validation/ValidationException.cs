@@ -10,11 +10,11 @@ using System.Text;
 namespace Notifo.Infrastructure.Validation;
 
 [Serializable]
-public class ValidationException : DomainException
+public class ValidationException(IReadOnlyList<ValidationError> errors, Exception? inner = null) : DomainException(FormatMessage(errors), ValidationError, inner)
 {
     private const string ValidationError = "VALIDATION_ERROR";
 
-    public IReadOnlyList<ValidationError> Errors { get; }
+    public IReadOnlyList<ValidationError> Errors { get; } = errors;
 
     public ValidationException(string error, Exception? inner = null)
         : this(new ValidationError(error), inner)
@@ -24,12 +24,6 @@ public class ValidationException : DomainException
     public ValidationException(ValidationError error, Exception? inner = null)
         : this(new List<ValidationError> { error }, inner)
     {
-    }
-
-    public ValidationException(IReadOnlyList<ValidationError> errors, Exception? inner = null)
-        : base(FormatMessage(errors), ValidationError, inner)
-    {
-        Errors = errors;
     }
 
     private static string FormatMessage(IReadOnlyList<ValidationError> errors)

@@ -15,22 +15,12 @@ using Notifo.Infrastructure;
 namespace Notifo.Areas.Api.Controllers.Tracking;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class TrackingController : Controller
+public sealed class TrackingController(
+    IAppStore appStore,
+    IUserNotificationService userNotificationService,
+    IUserNotificationStore userNotificationStore)
+    : Controller
 {
-    private readonly IAppStore appStore;
-    private readonly IUserNotificationService userNotificationService;
-    private readonly IUserNotificationStore userNotificationStore;
-
-    public TrackingController(
-        IAppStore appStore,
-        IUserNotificationService userNotificationService,
-        IUserNotificationStore userNotificationStore)
-    {
-        this.appStore = appStore;
-        this.userNotificationService = userNotificationService;
-        this.userNotificationStore = userNotificationStore;
-    }
-
     [HttpGet]
     [HttpPut]
     [HttpPost]

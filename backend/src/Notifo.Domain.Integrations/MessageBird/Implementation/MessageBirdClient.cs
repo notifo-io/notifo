@@ -16,13 +16,9 @@ using PhoneNumbers;
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation;
 
-public sealed class MessageBirdClient : IMessageBirdClient
+public sealed class MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options) : IMessageBirdClient
 {
-    private readonly Func<HttpClient> httpClientFactory;
-
-    public MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options)
-    {
-        this.httpClientFactory = () =>
+    private readonly Func<HttpClient> httpClientFactory = () =>
         {
             var httpClient = httpClientFactory.CreateClient();
 
@@ -30,7 +26,6 @@ public sealed class MessageBirdClient : IMessageBirdClient
 
             return httpClient;
         };
-    }
 
     public async Task<ConversationResponse> GetMessageAsync(string id,
         CancellationToken ct)

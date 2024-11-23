@@ -77,10 +77,9 @@ public static class OpenNotificationsExtensions
         {
             var errors =
                 typed.Result?.Details?.Select(x => new ValidationError(x.Message, GetPropertyNames(x)))?.ToArray() ??
-                new[]
-                {
+                [
                     new ValidationError(typed.Message)
-                };
+                ];
 
             return new ValidationException(errors);
         }
@@ -89,7 +88,7 @@ public static class OpenNotificationsExtensions
 
         static string[] GetPropertyNames(ErrorDto x)
         {
-            return x.Field != null ? new[] { x.Field } : [];
+            return x.Field != null ? [x.Field] : [];
         }
     }
 }

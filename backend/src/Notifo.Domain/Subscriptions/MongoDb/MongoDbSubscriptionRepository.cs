@@ -14,13 +14,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
-public sealed class MongoDbSubscriptionRepository : MongoDbStore<MongoDbSubscription>, ISubscriptionRepository
+public sealed class MongoDbSubscriptionRepository(IMongoDatabase database) : MongoDbStore<MongoDbSubscription>(database), ISubscriptionRepository
 {
-    public MongoDbSubscriptionRepository(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "Subscriptions";

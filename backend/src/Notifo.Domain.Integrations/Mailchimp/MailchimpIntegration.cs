@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Mailchimp;
 
-public sealed partial class MailchimpIntegration : IIntegration
+public sealed partial class MailchimpIntegration(IHttpClientFactory httpClientFactory) : IIntegration
 {
-    private readonly IHttpClientFactory httpClientFactory;
-
     public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
     {
         EditorLabel = Texts.Mailchimp_ApiKeyLabel,
@@ -54,9 +52,4 @@ public sealed partial class MailchimpIntegration : IIntegration
         {
             Description = Texts.Mailchimp_Description
         };
-
-    public MailchimpIntegration(IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-    }
 }

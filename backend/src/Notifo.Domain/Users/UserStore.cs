@@ -13,23 +13,15 @@ using Squidex.Caching;
 
 namespace Notifo.Domain.Users;
 
-public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>, ICounterTarget, IDisposable
+public sealed class UserStore(
+    IUserRepository repository,
+    IServiceProvider serviceProvider,
+    IReplicatedCache cache,
+    ILogger<UserStore> log)
+    :  IUserStore, IRequestHandler<UserCommand, User?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
-    private readonly IUserRepository repository;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IReplicatedCache cache;
-    private readonly CounterCollector<(string, string)> collector;
-
-    public UserStore(IUserRepository repository,
-        IServiceProvider serviceProvider, IReplicatedCache cache, ILogger<UserStore> log)
-    {
-        this.repository = repository;
-        this.serviceProvider = serviceProvider;
-        this.cache = cache;
-
-        collector = new CounterCollector<(string, string)>(repository, log, 5000);
-    }
+    private readonly CounterCollector<(string, string)> collector = new CounterCollector<(string, string)>(repository, log, 5000);
 
     public void Dispose()
     {

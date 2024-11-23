@@ -10,15 +10,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Notifo.Domain.Integrations;
 
-public sealed class ConditionEvaluator
+public sealed class ConditionEvaluator(ILogger log)
 {
-    private readonly ILogger log;
-
-    public ConditionEvaluator(ILogger log)
-    {
-        this.log = log;
-    }
-
     public bool Evaluate(string? script, IIntegrationTarget target)
     {
         if (string.IsNullOrEmpty(script))

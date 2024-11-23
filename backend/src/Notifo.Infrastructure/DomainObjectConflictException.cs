@@ -8,14 +8,9 @@
 namespace Notifo.Infrastructure;
 
 [Serializable]
-public class DomainObjectConflictException : DomainObjectException
+public class DomainObjectConflictException(string id, Exception? inner = null) : DomainObjectException(FormatMessage(id), id, ValidationError, inner)
 {
     private const string ValidationError = "OBJECT_CONFLICT";
-
-    public DomainObjectConflictException(string id, Exception? inner = null)
-        : base(FormatMessage(id), id, ValidationError, inner)
-    {
-    }
 
     private static string FormatMessage(string id)
     {

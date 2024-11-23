@@ -13,15 +13,8 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
-public sealed class MailjetEmailServer
+public sealed class MailjetEmailServer(MailjetClient mailjetClient)
 {
-    private readonly MailjetClient mailjetClient;
-
-    public MailjetEmailServer(MailjetClient mailjetClient)
-    {
-        this.mailjetClient = mailjetClient;
-    }
-
     public async Task SendAsync(EmailMessage message)
     {
         var email = new TransactionalEmailBuilder()

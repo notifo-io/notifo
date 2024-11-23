@@ -16,7 +16,8 @@ internal sealed class UserWithClaims(
     IdentityUser user,
     IReadOnlyList<Claim> claims,
     IReadOnlySet<string> roles,
-    bool hasLoginOrPassword) : IUser
+    bool hasLoginOrPassword)
+    :  IUser
 {
     private readonly IdentityUser snapshot = SimpleMapper.Map(user, new IdentityUser());
 

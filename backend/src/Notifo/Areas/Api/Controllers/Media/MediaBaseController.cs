@@ -14,11 +14,11 @@ using Squidex.Assets;
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
-public abstract class MediaBaseController : BaseController
+public abstract class MediaBaseController(
+    IAssetStore assetStore,
+    IAssetThumbnailGenerator assetThumbnailGenerator)
+    :  BaseController
 {
-    private readonly IAssetStore assetStore;
-    private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
-
     public sealed class ResizeSource
     {
         required public string FileId { get; init; }
@@ -30,14 +30,6 @@ public abstract class MediaBaseController : BaseController
         required public long? FileSize { get; init; }
 
         required public Func<Stream, HttpContext, CancellationToken, Task> OpenRead { get; init; }
-    }
-
-    protected MediaBaseController(
-        IAssetStore assetStore,
-        IAssetThumbnailGenerator assetThumbnailGenerator)
-    {
-        this.assetStore = assetStore;
-        this.assetThumbnailGenerator = assetThumbnailGenerator;
     }
 
     protected IActionResult DeliverAssetAsync(ResizeSource source, MediaFileQueryDto? query)

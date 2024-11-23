@@ -9,10 +9,8 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Smtp;
 
-public sealed partial class SmtpIntegration : IIntegration
+public sealed partial class SmtpIntegration(SmtpEmailServerPool serverPool) : IIntegration
 {
-    private readonly SmtpEmailServerPool serverPool;
-
     public static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", PropertyType.Text)
     {
         EditorLabel = Texts.SMTP_HostLabel,
@@ -77,9 +75,4 @@ public sealed partial class SmtpIntegration : IIntegration
         {
             Description = Texts.SMTP_Description
         };
-
-    public SmtpIntegration(SmtpEmailServerPool serverPool)
-    {
-        this.serverPool = serverPool;
-    }
 }

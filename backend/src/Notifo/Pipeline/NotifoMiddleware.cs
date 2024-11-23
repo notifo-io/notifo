@@ -10,15 +10,8 @@ using Squidex.Hosting;
 
 namespace Notifo.Pipeline;
 
-public class NotifoMiddleware
+public class NotifoMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate next;
-
-    public NotifoMiddleware(RequestDelegate next)
-    {
-        this.next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         if (!context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))

@@ -14,15 +14,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Logs;
 
 [ApiExplorerSettings(GroupName = "Logs")]
-public class LogsController : BaseController
+public class LogsController(ILogStore logStore) : BaseController
 {
-    private readonly ILogStore logStore;
-
-    public LogsController(ILogStore logStore)
-    {
-        this.logStore = logStore;
-    }
-
     /// <summary>
     /// Query log entries.
     /// </summary>

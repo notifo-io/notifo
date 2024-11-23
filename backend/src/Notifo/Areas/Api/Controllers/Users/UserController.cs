@@ -18,21 +18,8 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Users;
 
 [ApiExplorerSettings(GroupName = "User")]
-public class UserController : BaseController
+public class UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IIntegratedAppService integratedApp, IUserStore userStore) : BaseController
 {
-    private readonly ISubscriptionStore subscriptionStore;
-    private readonly ITopicStore topicStore;
-    private readonly IIntegratedAppService integratedApp;
-    private readonly IUserStore userStore;
-
-    public UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IIntegratedAppService integratedApp, IUserStore userStore)
-    {
-        this.subscriptionStore = subscriptionStore;
-        this.topicStore = topicStore;
-        this.integratedApp = integratedApp;
-        this.userStore = userStore;
-    }
-
     /// <summary>
     /// Get the current user.
     /// </summary>

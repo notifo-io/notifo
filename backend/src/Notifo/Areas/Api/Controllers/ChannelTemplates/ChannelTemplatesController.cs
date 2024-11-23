@@ -18,17 +18,8 @@ using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
-public abstract class ChannelTemplatesController<T, TDto> : BaseController where T : class, new() where TDto : class, new()
+public abstract class ChannelTemplatesController<T, TDto>(IChannelTemplateStore<T> channelTemplateStore, LiquidPropertiesProvider propertiesProvider) : BaseController where T : class, new() where TDto : class, new()
 {
-    private readonly IChannelTemplateStore<T> channelTemplateStore;
-    private readonly LiquidPropertiesProvider propertiesProvider;
-
-    protected ChannelTemplatesController(IChannelTemplateStore<T> channelTemplateStore, LiquidPropertiesProvider propertiesProvider)
-    {
-        this.channelTemplateStore = channelTemplateStore;
-        this.propertiesProvider = propertiesProvider;
-    }
-
     /// <summary>
     /// Get the channel templates.
     /// </summary>

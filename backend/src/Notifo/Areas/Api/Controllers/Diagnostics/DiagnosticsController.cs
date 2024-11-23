@@ -16,15 +16,8 @@ namespace Notifo.Areas.Api.Controllers.Diagnostics;
 /// Makes a diagnostics request.
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(Diagnostics))]
-public sealed class DiagnosticsController : BaseController
+public sealed class DiagnosticsController(Diagnoser dumper) : BaseController
 {
-    private readonly Diagnoser dumper;
-
-    public DiagnosticsController(Diagnoser dumper)
-    {
-        this.dumper = dumper;
-    }
-
     /// <summary>
     /// Creates a dump and writes it into storage..
     /// </summary>

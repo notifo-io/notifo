@@ -12,10 +12,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
 
-public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<SchedulerBatch<T>>, ISchedulerStore<T>
+public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerOptions options) : MongoDbRepository<SchedulerBatch<T>>(database), ISchedulerStore<T>
 {
-    private readonly SchedulerOptions options;
-
     static MongoDbSchedulerStore()
     {
         BsonClassMap.RegisterClassMap<SchedulerBatch<T>>(cm =>
@@ -25,12 +23,6 @@ public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<SchedulerBatch<
             cm.MapProperty(x => x.GroupKey)
                 .SetElementName("Key");
         });
-    }
-
-    public MongoDbSchedulerStore(IMongoDatabase database, SchedulerOptions options)
-        : base(database)
-    {
-        this.options = options;
     }
 
     protected override string CollectionName()

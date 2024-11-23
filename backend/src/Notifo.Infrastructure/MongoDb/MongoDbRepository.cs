@@ -14,7 +14,7 @@ using Squidex.Hosting.Configuration;
 
 namespace Notifo.Infrastructure.MongoDb;
 
-public abstract class MongoDbRepository<TEntity> : IInitializable
+public abstract class MongoDbRepository<TEntity>(IMongoDatabase database) : IInitializable
 {
     private const string CollectionFormat = "{0}Set";
 
@@ -25,8 +25,6 @@ public abstract class MongoDbRepository<TEntity> : IInitializable
     protected static readonly FilterDefinitionBuilder<TEntity> Filter = Builders<TEntity>.Filter;
     protected static readonly IndexKeysDefinitionBuilder<TEntity> IndexKeys = Builders<TEntity>.IndexKeys;
     protected static readonly ProjectionDefinitionBuilder<TEntity> Projection = Builders<TEntity>.Projection;
-
-    private readonly IMongoDatabase mongoDatabase;
     private IMongoCollection<TEntity> mongoCollection;
 
     public IMongoCollection<TEntity> Collection
@@ -45,12 +43,7 @@ public abstract class MongoDbRepository<TEntity> : IInitializable
 
     protected IMongoDatabase Database
     {
-        get => mongoDatabase;
-    }
-
-    protected MongoDbRepository(IMongoDatabase database)
-    {
-        mongoDatabase = database;
+        get => database;
     }
 
     protected virtual MongoCollectionSettings CollectionSettings()
@@ -105,7 +98,7 @@ public abstract class MongoDbRepository<TEntity> : IInitializable
 
     private void CreateCollection()
     {
-        mongoCollection = mongoDatabase.GetCollection<TEntity>(
+        mongoCollection = database.GetCollection<TEntity>(
             CollectionName(),
             CollectionSettings() ?? new MongoCollectionSettings());
     }

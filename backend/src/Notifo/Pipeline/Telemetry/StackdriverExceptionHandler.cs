@@ -12,10 +12,9 @@ using Squidex.Log;
 
 namespace Notifo.Pipeline.Telemetry;
 
-internal sealed class StackdriverExceptionHandler : ILogAppender
+internal sealed class StackdriverExceptionHandler(IContextExceptionLogger logger, IHttpContextAccessor httpContextAccessor) : ILogAppender
 {
-    private readonly IContextExceptionLogger logger;
-    private readonly HttpContextWrapper httpContextWrapper;
+    private readonly HttpContextWrapper httpContextWrapper = new HttpContextWrapper(httpContextAccessor);
 
     public sealed class HttpContextWrapper : IContextWrapper
     {
@@ -40,13 +39,6 @@ internal sealed class StackdriverExceptionHandler : ILogAppender
         {
             return httpContextAccessor.HttpContext?.Request?.Headers.UserAgent.ToString() ?? string.Empty;
         }
-    }
-
-    public StackdriverExceptionHandler(IContextExceptionLogger logger, IHttpContextAccessor httpContextAccessor)
-    {
-        this.logger = logger;
-
-        httpContextWrapper = new HttpContextWrapper(httpContextAccessor);
     }
 
     public void Append(IObjectWriter writer, SemanticLogLevel logLevel, Exception? exception)

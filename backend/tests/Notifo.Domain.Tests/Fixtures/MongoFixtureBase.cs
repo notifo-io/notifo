@@ -68,18 +68,14 @@ public static class MongoRunnerProvider
         }
     }
 
-    private sealed class MongoRunnerWrapper : IMongoRunner
+    private sealed class MongoRunnerWrapper(IMongoRunner underlyingMongoRunner)
+    :  IMongoRunner
     {
-        private IMongoRunner? underlyingMongoRunner;
+        private IMongoRunner? underlyingMongoRunner = underlyingMongoRunner;
 
         public string ConnectionString
         {
             get => GetRunner().ConnectionString;
-        }
-
-        public MongoRunnerWrapper(IMongoRunner underlyingMongoRunner)
-        {
-            this.underlyingMongoRunner = underlyingMongoRunner;
         }
 
         public void Import(string database, string collection, string inputFilePath, string? additionalArguments = null, bool drop = false)

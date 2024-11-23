@@ -16,23 +16,13 @@ using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Identity;
 
-public sealed class DefaultUserService : IUserService
+public sealed class DefaultUserService(
+    UserManager<IdentityUser> userManager,
+    IUserFactory userFactory,
+    IMediator mediator,
+    ILogger<DefaultUserService> log)
+    : IUserService
 {
-    private readonly UserManager<IdentityUser> userManager;
-    private readonly IUserFactory userFactory;
-    private readonly IMediator mediator;
-    private readonly ILogger<DefaultUserService> log;
-
-    public DefaultUserService(UserManager<IdentityUser> userManager, IUserFactory userFactory,
-        IMediator mediator, ILogger<DefaultUserService> log)
-    {
-        this.userManager = userManager;
-        this.userFactory = userFactory;
-        this.mediator = mediator;
-
-        this.log = log;
-    }
-
     public async Task<bool> IsEmptyAsync(
         CancellationToken ct = default)
     {

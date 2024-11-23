@@ -15,7 +15,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.MobilePush;
 
-public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, MobilePushChannel>
+public sealed class MobilePushChannel(IServiceProvider serviceProvider) : SchedulingChannelBase<MobilePushJob, MobilePushChannel>(serviceProvider)
 {
     private const string Token = nameof(Token);
     private const string DeviceType = nameof(DeviceType);
@@ -24,11 +24,6 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
     public IClock Clock { get; } = SystemClock.Instance;
 
     public override string Name => Providers.MobilePush;
-
-    public MobilePushChannel(IServiceProvider serviceProvider)
-        : base(serviceProvider)
-    {
-    }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {

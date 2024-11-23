@@ -15,7 +15,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb;
 
-internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepository
+internal sealed class MongoDbAppRepository(IMongoDatabase database) : MongoDbStore<MongoDbApp>(database), IAppRepository
 {
     static MongoDbAppRepository()
     {
@@ -26,11 +26,6 @@ internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepos
             cm.MapProperty(x => x.Counters)
                 .SetIgnoreIfNull(true);
         });
-    }
-
-    public MongoDbAppRepository(IMongoDatabase database)
-        : base(database)
-    {
     }
 
     protected override string CollectionName()

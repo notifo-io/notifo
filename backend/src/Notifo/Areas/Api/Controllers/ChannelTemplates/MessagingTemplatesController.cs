@@ -15,10 +15,6 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
 [Route("api/apps/{appId:notEmpty}/messaging-templates")]
 [ApiExplorerSettings(GroupName = "MessagingTemplates")]
-public sealed class MessagingTemplatesController : ChannelTemplatesController<MessagingTemplate, MessagingTemplateDto>
+public sealed class MessagingTemplatesController(IChannelTemplateStore<MessagingTemplate> channelTemplateStore, LiquidPropertiesProvider propertiesProvider) : ChannelTemplatesController<MessagingTemplate, MessagingTemplateDto>(channelTemplateStore, propertiesProvider)
 {
-    public MessagingTemplatesController(IChannelTemplateStore<MessagingTemplate> channelTemplateStore, LiquidPropertiesProvider propertiesProvider)
-        : base(channelTemplateStore, propertiesProvider)
-    {
-    }
 }

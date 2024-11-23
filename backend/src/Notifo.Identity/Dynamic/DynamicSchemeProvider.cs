@@ -16,32 +16,19 @@ using Notifo.Domain.Apps;
 
 namespace Notifo.Identity.Dynamic;
 
-public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptionsMonitor<DynamicOpenIdConnectOptions>
+public sealed class DynamicSchemeProvider(
+    IAppStore appStore,
+    IHttpContextAccessor httpContextAccessor,
+    IConfigurationStore<AppAuthScheme> temporarySchemes,
+    OpenIdConnectPostConfigureOptions configure,
+    IOptions<AuthenticationOptions> options)
+    :  AuthenticationSchemeProvider(options), IOptionsMonitor<DynamicOpenIdConnectOptions>
 {
     private static readonly string[] UrlPrefixes = ["signin-", "signout-callback-", "signout-"];
-
-    private readonly IAppStore appStore;
-    private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly IConfigurationStore<AppAuthScheme> temporarySchemes;
-    private readonly OpenIdConnectPostConfigureOptions configure;
 
     public DynamicOpenIdConnectOptions CurrentValue => null!;
 
     private sealed record SchemeResult(AuthenticationScheme Scheme, DynamicOpenIdConnectOptions Options);
-
-    public DynamicSchemeProvider(
-        IAppStore appStore,
-        IHttpContextAccessor httpContextAccessor,
-        IConfigurationStore<AppAuthScheme> temporarySchemes,
-        OpenIdConnectPostConfigureOptions configure,
-        IOptions<AuthenticationOptions> options)
-        : base(options)
-    {
-        this.appStore = appStore;
-        this.httpContextAccessor = httpContextAccessor;
-        this.temporarySchemes = temporarySchemes;
-        this.configure = configure;
-    }
 
     public async Task<string> AddTemporarySchemeAsync(AppAuthScheme scheme,
         CancellationToken ct = default)
@@ -188,7 +175,7 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
     {
         var scheme = new AuthenticationScheme(name, config.DisplayName, typeof(DynamicOpenIdConnectHandler));
 
-        var options = new DynamicOpenIdConnectOptions
+        var openIdOptions = new DynamicOpenIdConnectOptions
         {
             Events = new OidcHandler(new OidcOptions
             {
@@ -204,9 +191,9 @@ public sealed class DynamicSchemeProvider : AuthenticationSchemeProvider, IOptio
             SignedOutRedirectUri = new PathString($"/signout-callback-{name}")
         };
 
-        configure.PostConfigure(name, options);
+        configure.PostConfigure(name, openIdOptions);
 
-        return new SchemeResult(scheme, options);
+        return new SchemeResult(scheme, openIdOptions);
     }
 
     public IDisposable? OnChange(Action<DynamicOpenIdConnectOptions, string?> listener)

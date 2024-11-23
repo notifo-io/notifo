@@ -10,17 +10,8 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Integrations;
 
-internal sealed class IntegrationAdapter : IIntegrationAdapter
+internal sealed class IntegrationAdapter(IUserStore userStore, IMediator mediator) : IIntegrationAdapter
 {
-    private readonly IUserStore userStore;
-    private readonly IMediator mediator;
-
-    public IntegrationAdapter(IUserStore userStore, IMediator mediator)
-    {
-        this.userStore = userStore;
-        this.mediator = mediator;
-    }
-
     public async Task<UserInfo?> FindUserAsync(string appId, string id,
         CancellationToken ct)
     {

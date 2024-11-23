@@ -17,22 +17,12 @@ using Notifo.Pipeline;
 namespace Notifo.Areas.Api.Controllers.Events;
 
 [ApiExplorerSettings(GroupName = "Events")]
-public sealed class EventsController : BaseController
+public sealed class EventsController(
+    IEventStore eventStore,
+    IEventPublisher eventPublisher,
+    IUserNotificationService userNotificationService)
+    :  BaseController
 {
-    private readonly IEventStore eventStore;
-    private readonly IEventPublisher eventPublisher;
-    private readonly IUserNotificationService userNotificationService;
-
-    public EventsController(
-        IEventStore eventStore,
-        IEventPublisher eventPublisher,
-        IUserNotificationService userNotificationService)
-    {
-        this.eventStore = eventStore;
-        this.eventPublisher = eventPublisher;
-        this.userNotificationService = userNotificationService;
-    }
-
     /// <summary>
     /// Query events.
     /// </summary>

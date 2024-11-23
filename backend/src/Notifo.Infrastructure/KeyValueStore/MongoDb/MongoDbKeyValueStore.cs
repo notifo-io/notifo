@@ -10,13 +10,8 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Infrastructure.KeyValueStore.MongoDb;
 
-public sealed class MongoDbKeyValueStore : MongoDbRepository<MongoDbKeyValue>, IKeyValueStore
+public sealed class MongoDbKeyValueStore(IMongoDatabase database) : MongoDbRepository<MongoDbKeyValue>(database), IKeyValueStore
 {
-    public MongoDbKeyValueStore(IMongoDatabase database)
-        : base(database)
-    {
-    }
-
     protected override string CollectionName()
     {
         return "KeyValueStore";
