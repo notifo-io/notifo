@@ -65,7 +65,7 @@ public class EventsTests : IClassFixture<CreatedAppFixture>
                     },
                     Scheduling = new SchedulingDto
                     {
-                        Date = DateTime.Now.AddDays(20),
+                        Date = DateTimeOffset.UtcNow.AddDays(20),
                         Time = new TimeSpan(12, 0, 0),
                     },
                     Id = eventId,
@@ -90,7 +90,7 @@ public class EventsTests : IClassFixture<CreatedAppFixture>
         {
             while (!cts.IsCancellationRequested)
             {
-                var result = await _.Client.Events.CancelEventAsync(_.AppId, request);
+                var result = await _.Client.Events.CancelEventAsync(_.AppId, request, default);
 
                 if (result.HasCancelled)
                 {
