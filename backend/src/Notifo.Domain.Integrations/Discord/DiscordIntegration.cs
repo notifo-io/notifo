@@ -49,7 +49,6 @@ public sealed partial class DiscordIntegration(DiscordBotClientPool discordBotCl
           CancellationToken ct)
     {
         var botToken = BotToken.GetString(context.Properties);
-
         try
         {
             TokenUtils.ValidateToken(TokenType.Bot, botToken);

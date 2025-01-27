@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure.Validation;
 using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
@@ -54,7 +55,14 @@ public sealed partial class TelegramIntegration(TelegramBotClientPool clientPool
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
-        await GetBotClient(context).SetWebhookAsync(context.WebhookUrl, cancellationToken: ct);
+        try
+        {
+            await GetBotClient(context).SetWebhookAsync(context.WebhookUrl, cancellationToken: ct);
+        }
+        catch (Exception ex)
+        {
+            throw new ValidationException($"Failed to configure telegram: {ex.Message}.");
+        }
 
         return IntegrationStatus.Verified;
     }
