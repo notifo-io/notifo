@@ -155,7 +155,7 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
             await webPushClient.SendNotificationAsync(pushSubscription, json, cancellationToken: ct);
             return DeliveryResult.Handled;
         }
-        catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
+        catch (WebPushException ex) when (ex.StatusCode is HttpStatusCode.Gone or HttpStatusCode.NotFound)
         {
             // Use the same log message for the delivery result later.
             var logMessage = LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint);
