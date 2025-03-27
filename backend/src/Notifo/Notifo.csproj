@@ -33,7 +33,7 @@
     <PackageReference Include="Squidex.Messaging.All" Version="6.19.0" />
     <PackageReference Include="Squidex.OpenTelemetry.Exporter.Stackdriver" Version="0.0.0-alpha.0.97" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,7 +21,7 @@ public sealed class EventsController(
     IEventStore eventStore,
     IEventPublisher eventPublisher,
     IUserNotificationService userNotificationService)
-    :  BaseController
+    : BaseController
 {
     /// <summary>
     /// Query events.

@@ -114,7 +114,7 @@ public static class MongoDbExtensions
     }
 
     private sealed class RawFilterDefinition<T>(BsonDocument document)
-    :  FilterDefinition<T>
+    : FilterDefinition<T>
     {
         public override BsonDocument Render(IBsonSerializer<T> documentSerializer, IBsonSerializerRegistry serializerRegistry, LinqProvider linqProvider)
         {

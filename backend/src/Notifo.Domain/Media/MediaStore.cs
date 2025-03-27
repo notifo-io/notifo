@@ -16,7 +16,7 @@ public sealed class MediaStore(
     IMediaRepository mediaRepository,
     IEnumerable<IMediaMetadataSource> mediaMetadataSources,
     IClock clock)
-    :  IMediaStore
+    : IMediaStore
 {
     public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
         CancellationToken ct = default)

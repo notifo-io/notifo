@@ -28,7 +28,7 @@ public sealed class IntegrationManager(
     IServiceProvider serviceProvider,
     IMediator mediator,
     ILogger<IntegrationManager> log)
-    :  IIntegrationManager, IBackgroundProcess
+    : IIntegrationManager, IBackgroundProcess
 {
     private readonly Lazy<ICallback<ISmsSender>> callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
         {
@@ -117,7 +117,7 @@ public sealed class IntegrationManager(
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
 
-        if (!app.Integrations.TryGetValue(id, out var _))
+        if (!app.Integrations.ContainsKey(id))
         {
             return Task.CompletedTask;
         }
@@ -315,7 +315,7 @@ public sealed class IntegrationManager(
         return conditionEvaluator.Evaluate(configured.Condition, target);
     }
 
-    private IntegrationContext BuildContext(App app, string id,  IIntegration integration, ConfiguredIntegration configured)
+    private IntegrationContext BuildContext(App app, string id, IIntegration integration, ConfiguredIntegration configured)
     {
         var updateStatus = new UpdateStatus((trackingToken, result) =>
         {

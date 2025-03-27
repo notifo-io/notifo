@@ -95,7 +95,7 @@ public sealed class WebController(
         var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, DefaultQuery with { After = requestToken }, HttpContext.RequestAborted);
 
         // Calculate the continuation token from the hightest update value.
-        var continuationToken = notifications.Select(x => x.Updated).OrderBy(x => x).LastOrDefault();
+        var continuationToken = notifications.Select(x => x.Updated).Order().LastOrDefault();
 
         if (continuationToken == default)
         {

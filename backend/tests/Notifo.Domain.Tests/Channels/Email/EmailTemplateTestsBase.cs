@@ -82,18 +82,18 @@ public abstract class EmailTemplateTestsBase
     {
         var jobs = ToJobs(
                 new UserNotification
-            {
-                UserLanguage = "en",
-                Formatting = new NotificationFormatting<string>
                 {
-                    Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
-                    Subject = "subject1",
-                    ImageSmall = string.Empty,
-                    ImageLarge = string.Empty,
-                    LinkUrl = "https://app.notifo.io/custom/link",
-                    LinkText = "Go to link"
-                }
-            });
+                    UserLanguage = "en",
+                    Formatting = new NotificationFormatting<string>
+                    {
+                        Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
+                        Subject = "subject1",
+                        ImageSmall = string.Empty,
+                        ImageLarge = string.Empty,
+                        LinkUrl = "https://app.notifo.io/custom/link",
+                        LinkText = "Go to link"
+                    }
+                });
 
         var (html, text) = await FormatAsync(jobs);
 

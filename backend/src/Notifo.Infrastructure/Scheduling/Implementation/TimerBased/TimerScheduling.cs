@@ -16,7 +16,7 @@ public sealed class TimerScheduling<T>(
     SchedulerOptions schedulerOptions,
     ILogger<TimerScheduling<T>> log,
     IClock clock)
-    :  IScheduling<T>
+    : IScheduling<T>
 {
     private TimerConsumer<T>? consumer;
 

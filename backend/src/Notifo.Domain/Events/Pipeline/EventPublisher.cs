@@ -18,7 +18,7 @@ public sealed class EventPublisher(
     ILogStore logStore,
     ILogger<EventPublisher> log,
     IClock clock)
-    :  IEventPublisher
+    : IEventPublisher
 {
     private static readonly Duration MaxAge = Duration.FromHours(1);
 

@@ -14,7 +14,7 @@ namespace Notifo.Domain.Templates;
 public sealed class TemplateStore(
     ITemplateRepository repository,
     IServiceProvider serviceProvider)
-    :  ITemplateStore, IRequestHandler<TemplateCommand, Template?>
+    : ITemplateStore, IRequestHandler<TemplateCommand, Template?>
 {
     public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
         CancellationToken ct = default)

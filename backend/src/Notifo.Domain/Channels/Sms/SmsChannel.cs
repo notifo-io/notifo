@@ -21,7 +21,7 @@ public sealed class SmsChannel(
     IServiceProvider serviceProvider,
     ISmsFormatter smsFormatter,
     ISmsTemplateStore smsTemplateStore)
-    :  SchedulingChannelBase<SmsJob, SmsChannel>(serviceProvider), ICallback<ISmsSender>
+    : SchedulingChannelBase<SmsJob, SmsChannel>(serviceProvider), ICallback<ISmsSender>
 {
     public override string Name => Providers.Sms;
 

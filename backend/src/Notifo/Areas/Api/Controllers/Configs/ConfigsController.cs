@@ -35,7 +35,7 @@ public class ConfigsController : BaseController
     [Produces(typeof(string[]))]
     public IActionResult GetLanguages()
     {
-        var response = Language.AllLanguages.Select(x => x.Iso2Code).OrderBy(x => x);
+        var response = Language.AllLanguages.Select(x => x.Iso2Code).Order();
 
         return Ok(response);
     }

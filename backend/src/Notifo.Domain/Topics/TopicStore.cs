@@ -14,9 +14,9 @@ namespace Notifo.Domain.Topics;
 
 public sealed class TopicStore(
     ITopicRepository repository,
-    IServiceProvider serviceProvider, 
+    IServiceProvider serviceProvider,
     ILogger<TopicStore> log)
-    :  ITopicStore, IRequestHandler<TopicCommand, Topic?>, ICounterTarget, IDisposable
+    : ITopicStore, IRequestHandler<TopicCommand, Topic?>, ICounterTarget, IDisposable
 {
     private readonly CounterCollector<(string AppId, string Path)> collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
 

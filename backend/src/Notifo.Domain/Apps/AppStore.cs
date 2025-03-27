@@ -17,7 +17,7 @@ public sealed class AppStore(
     IAppRepository repository,
     IServiceProvider serviceProvider,
     IReplicatedCache cache,
-    ILogger<AppStore> log) 
+    ILogger<AppStore> log)
     : IAppStore, IRequestHandler<AppCommand, App?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);

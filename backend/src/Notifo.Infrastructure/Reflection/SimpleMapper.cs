@@ -51,7 +51,7 @@ public static class SimpleMapper
     }
 
     private sealed class SimplePropertyMapper<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
-        :  IPropertyMapper<TSource, TTarget>
+        : IPropertyMapper<TSource, TTarget>
     {
         private readonly PropertyAccessor.Getter<TSource, TValue> getter = PropertyAccessor.CreateGetter<TSource, TValue>(sourceProperty);
         private readonly PropertyAccessor.Setter<TTarget, TValue> setter = PropertyAccessor.CreateSetter<TTarget, TValue>(targetProperty);
@@ -86,7 +86,7 @@ public static class SimpleMapper
     }
 
     private sealed class StringConversionPropertyMapper<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
-        :  IPropertyMapper<TSource, TTarget>
+        : IPropertyMapper<TSource, TTarget>
     {
         private readonly PropertyAccessor.Getter<TSource, TValue> getter = PropertyAccessor.CreateGetter<TSource, TValue>(sourceProperty);
         private readonly PropertyAccessor.Setter<TTarget, string> setter = PropertyAccessor.CreateSetter<TTarget, string>(targetProperty);
@@ -121,7 +121,7 @@ public static class SimpleMapper
     }
 
     private sealed class NullablePropertyMapper<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
-        :  IPropertyMapper<TSource, TTarget> where TValue : struct
+        : IPropertyMapper<TSource, TTarget> where TValue : struct
     {
         private readonly PropertyAccessor.Getter<TSource, TValue?> getter = PropertyAccessor.CreateGetter<TSource, TValue?>(sourceProperty);
         private readonly PropertyAccessor.Setter<TTarget, TValue> setter = PropertyAccessor.CreateSetter<TTarget, TValue>(targetProperty);
@@ -168,7 +168,7 @@ public static class SimpleMapper
     }
 
     private sealed class ConversionPropertyMapper<TSource, TTarget, TSourceValue, TTargetValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
-        :  IPropertyMapper<TSource, TTarget>
+        : IPropertyMapper<TSource, TTarget>
     {
         private readonly PropertyAccessor.Getter<TSource, TSourceValue> getter = PropertyAccessor.CreateGetter<TSource, TSourceValue>(sourceProperty);
         private readonly PropertyAccessor.Setter<TTarget, TTargetValue> setter = PropertyAccessor.CreateSetter<TTarget, TTargetValue>(targetProperty);
@@ -217,7 +217,7 @@ public static class SimpleMapper
     }
 
     private sealed class TypeConverterPropertyMapper<TSource, TTarget, TSourceType, TTargetType>(PropertyInfo sourceProperty, PropertyInfo targetProperty, TypeConverter typeConverter)
-        :  IPropertyMapper<TSource, TTarget>
+        : IPropertyMapper<TSource, TTarget>
     {
         private readonly PropertyAccessor.Getter<TSource, TSourceType> getter = PropertyAccessor.CreateGetter<TSource, TSourceType>(sourceProperty);
         private readonly PropertyAccessor.Setter<TTarget, TTargetType> setter = PropertyAccessor.CreateSetter<TTarget, TTargetType>(targetProperty);

@@ -41,7 +41,7 @@ public class AddUserMobileTokenTests
             token1,
             token2,
             token3
-        }, updatedUser!.MobilePushTokens.Select(x => x.Token).OrderBy(x => x).ToArray());
+        }, updatedUser!.MobilePushTokens.Select(x => x.Token).Order().ToArray());
     }
 
     [Fact]

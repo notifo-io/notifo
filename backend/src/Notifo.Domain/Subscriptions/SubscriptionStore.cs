@@ -13,7 +13,7 @@ namespace Notifo.Domain.Subscriptions;
 public sealed class SubscriptionStore(
     ISubscriptionRepository repository,
     IServiceProvider serviceProvider)
-    :  ISubscriptionStore, IRequestHandler<SubscriptionCommand, Subscription?>
+    : ISubscriptionStore, IRequestHandler<SubscriptionCommand, Subscription?>
 {
     public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
         CancellationToken ct = default)

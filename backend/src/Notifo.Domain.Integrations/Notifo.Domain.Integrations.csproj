@@ -32,6 +32,7 @@
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
     <PackageReference Include="Twilio" Version="7.3.1" />
   </ItemGroup>

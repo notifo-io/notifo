@@ -69,7 +69,7 @@ public static class MongoRunnerProvider
     }
 
     private sealed class MongoRunnerWrapper(IMongoRunner underlyingMongoRunner)
-    :  IMongoRunner
+    : IMongoRunner
     {
         private IMongoRunner? underlyingMongoRunner = underlyingMongoRunner;
 

@@ -20,7 +20,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications;
 public sealed class NotificationHub(
     IUserNotificationStore userNotificationsStore,
     IUserNotificationService userNotificationService)
-    :  Hub
+    : Hub
 {
     private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
 

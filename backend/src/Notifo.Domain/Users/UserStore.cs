@@ -18,7 +18,7 @@ public sealed class UserStore(
     IServiceProvider serviceProvider,
     IReplicatedCache cache,
     ILogger<UserStore> log)
-    :  IUserStore, IRequestHandler<UserCommand, User?>, ICounterTarget, IDisposable
+    : IUserStore, IRequestHandler<UserCommand, User?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly CounterCollector<(string, string)> collector = new CounterCollector<(string, string)>(repository, log, 5000);

@@ -22,7 +22,7 @@ public class EmailTemplatePreviewController(
     IEmailFormatter emailFormatter,
     IEmailTemplateStore emailTemplateStore,
     MjmlSchema mjmlSchema)
-    :  BaseController
+    : BaseController
 {
     public object PreviewType { get; private set; }
 

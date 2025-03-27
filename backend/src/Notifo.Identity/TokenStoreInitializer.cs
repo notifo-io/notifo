@@ -19,7 +19,7 @@ namespace Notifo.Identity;
 public sealed class TokenStoreInitializer(
     IOptions<OpenIddictMongoDbOptions> options,
     IServiceProvider serviceProvider)
-    :  IInitializable
+    : IInitializable
 {
     private readonly OpenIddictMongoDbOptions options = options.Value;
     private CompletionTimer timer;

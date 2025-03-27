@@ -28,7 +28,7 @@ public sealed class UsersController(
     IUserStore userStore,
     IUserNotificationStore userNotificationStore,
     ISubscriptionStore subscriptionStore)
-    :  BaseController
+    : BaseController
 {
     /// <summary>
     /// Query users.

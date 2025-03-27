@@ -44,6 +44,7 @@
     <PackageReference Include="Squidex.Messaging" Version="6.19.0" />
     <PackageReference Include="Squidex.Text" Version="6.19.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
   </ItemGroup>
 

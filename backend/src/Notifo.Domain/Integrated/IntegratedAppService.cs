@@ -28,7 +28,7 @@ public sealed partial class IntegratedAppService(
     IUserStore userStore,
     IUserResolver userResolver,
     ILogger<IntegratedAppService> log)
-    : 
+    :
     IIntegratedAppService,
     IMessageMiddleware<AddContributor>,
     IMessageMiddleware<DeleteTemplate>,

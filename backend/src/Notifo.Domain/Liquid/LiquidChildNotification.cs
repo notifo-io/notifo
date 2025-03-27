@@ -14,6 +14,6 @@ public sealed class LiquidChildNotification(
     string imagePresetSmall,
     string imagePresetLarge,
     IImageFormatter imageFormatter)
-    :  LiquidNotificationBase(childNotification.Formatting, childNotification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
+    : LiquidNotificationBase(childNotification.Formatting, childNotification.Properties, imagePresetSmall, imagePresetLarge, imageFormatter)
 {
 }

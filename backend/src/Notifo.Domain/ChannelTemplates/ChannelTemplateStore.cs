@@ -15,7 +15,7 @@ public sealed class ChannelTemplateStore<T>(
     IChannelTemplateRepository<T> repository,
     IServiceProvider serviceProvider,
     IClock clock)
-    :  IChannelTemplateStore<T>, IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?> where T : class
+    : IChannelTemplateStore<T>, IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?> where T : class
 {
     public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
         CancellationToken ct = default)

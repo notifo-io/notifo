@@ -22,7 +22,7 @@ public sealed class DynamicSchemeProvider(
     IConfigurationStore<AppAuthScheme> temporarySchemes,
     OpenIdConnectPostConfigureOptions configure,
     IOptions<AuthenticationOptions> options)
-    :  AuthenticationSchemeProvider(options), IOptionsMonitor<DynamicOpenIdConnectOptions>
+    : AuthenticationSchemeProvider(options), IOptionsMonitor<DynamicOpenIdConnectOptions>
 {
     private static readonly string[] UrlPrefixes = ["signin-", "signout-callback-", "signout-"];
 

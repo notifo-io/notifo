@@ -90,7 +90,7 @@ public static class InMemoryConfiguration
     }
 
     public sealed class Applications(IUrlGenerator urlGenerator, IOptions<NotifoIdentityOptions> options)
-    :  InMemoryApplicationStore(BuildClients(urlGenerator, options.Value))
+    : InMemoryApplicationStore(BuildClients(urlGenerator, options.Value))
     {
         private static IEnumerable<(string, OpenIddictApplicationDescriptor)> BuildClients(IUrlGenerator urlGenerator, NotifoIdentityOptions identityOptions)
         {

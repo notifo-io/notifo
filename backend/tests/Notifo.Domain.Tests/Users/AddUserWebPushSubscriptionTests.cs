@@ -41,7 +41,7 @@ public class AddUserWebPushSubscriptionTests
             endpoint1,
             endpoint2,
             endpoint3
-        }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).OrderBy(x => x).ToArray());
+        }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).Order().ToArray());
     }
 
     [Fact]

@@ -24,7 +24,7 @@ public sealed class MediaController(
     IMediaStore mediaStore,
     IMediaFileStore mediaFileStore,
     IUrlGenerator urlGenerator)
-    :  MediaBaseController(assetStore, assetThumbnailGenerator)
+    : MediaBaseController(assetStore, assetThumbnailGenerator)
 {
     /// <summary>
     /// Query media items.

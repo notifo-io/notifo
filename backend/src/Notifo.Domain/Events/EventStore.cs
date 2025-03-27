@@ -15,7 +15,7 @@ namespace Notifo.Domain.Events;
 public sealed class EventStore(
     IEventRepository eventRepository,
     ILogger<EventStore> log)
-    :  IEventStore, ICounterTarget, IDisposable
+    : IEventStore, ICounterTarget, IDisposable
 {
     private readonly CounterCollector<(string, string)> collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
 

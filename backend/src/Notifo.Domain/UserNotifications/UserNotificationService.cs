@@ -32,7 +32,7 @@ public sealed class UserNotificationService(
     IUserNotificationStore userNotificationsStore,
     IUserStore userStore,
     IClock clock)
-    :  IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
+    : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
 {
     private readonly Dictionary<string, ICommunicationChannel> channels = channels.ToDictionary(x => x.Name);
 

@@ -22,7 +22,7 @@ public sealed class EmailChannel(
     IServiceProvider serviceProvider,
     IEmailFormatter emailFormatter,
     IEmailTemplateStore emailTemplateStore)
-    :  SchedulingChannelBase<EmailJob, EmailChannel>(serviceProvider)
+    : SchedulingChannelBase<EmailJob, EmailChannel>(serviceProvider)
 {
     private const string EmailAddress = nameof(EmailAddress);
 

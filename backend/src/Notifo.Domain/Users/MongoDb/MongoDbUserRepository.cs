@@ -99,7 +99,7 @@ public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStor
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByPropertyAsync"))
         {
-            var document = await Collection.Find(Filter.And(Filter.Eq(x => x.Doc.AppId, appId), Filter.Eq($"d.properties.{key}",  value))).FirstOrDefaultAsync(ct);
+            var document = await Collection.Find(Filter.And(Filter.Eq(x => x.Doc.AppId, appId), Filter.Eq($"d.properties.{key}", value))).FirstOrDefaultAsync(ct);
 
             return (document?.ToUser(), document?.Etag);
         }

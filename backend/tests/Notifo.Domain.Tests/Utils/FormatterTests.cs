@@ -108,7 +108,8 @@ public class FormatterTests
 
         var properties = new Dictionary<string, string?>
         {
-            ["user"] = "Sebastian", ["app"] = "Notifo"
+            ["user"] = "Sebastian",
+            ["app"] = "Notifo"
         };
 
         var result = input.Format(properties);

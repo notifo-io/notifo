@@ -182,7 +182,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
     {
         var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
 
-        return subscriptions.Select(x => x.TopicPrefix.ToString()).OrderBy(x => x).ToArray();
+        return subscriptions.Select(x => x.TopicPrefix.ToString()).Order().ToArray();
     }
 
     private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)

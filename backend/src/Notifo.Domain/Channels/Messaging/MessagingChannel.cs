@@ -21,7 +21,7 @@ public sealed class MessagingChannel(
     IServiceProvider serviceProvider,
     IMessagingFormatter messagingFormatter,
     IMessagingTemplateStore messagingTemplateStore)
-    :  SchedulingChannelBase<MessagingJob, MessagingChannel>(serviceProvider), ICallback<IMessagingSender>
+    : SchedulingChannelBase<MessagingJob, MessagingChannel>(serviceProvider), ICallback<IMessagingSender>
 {
     private const string IntegrationIds = nameof(IntegrationIds);
 

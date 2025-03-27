@@ -19,7 +19,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications;
 public sealed class NotificationsController(
     IUserNotificationStore userNotificationsStore,
     IUserNotificationService userNotificationService)
-    :  BaseController
+    : BaseController
 {
     private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
 

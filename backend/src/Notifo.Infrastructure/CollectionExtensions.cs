@@ -209,7 +209,7 @@ public static class CollectionExtensions
     {
         Guard.NotNull(comparer);
 
-        var hashCodes = collection.Where(x => !Equals(x, null)).Select(x => x.GetHashCode()).OrderBy(x => x).ToArray();
+        var hashCodes = collection.Where(x => !Equals(x, null)).Select(x => x.GetHashCode()).Order().ToArray();
 
         var hashCode = 17;
 
@@ -370,7 +370,7 @@ public static class CollectionExtensions
     }
 
     public sealed class KeyValuePairComparer<TKey, TValue>(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-    :  IEqualityComparer<KeyValuePair<TKey, TValue>> where TKey : notnull
+        : IEqualityComparer<KeyValuePair<TKey, TValue>> where TKey : notnull
     {
         public bool Equals(KeyValuePair<TKey, TValue> x, KeyValuePair<TKey, TValue> y)
         {

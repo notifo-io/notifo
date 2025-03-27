@@ -11,7 +11,7 @@ public sealed record Subscription
 {
     public string AppId { get; init; }
 
-    public string UserId { get; init;  }
+    public string UserId { get; init; }
 
     public TopicId TopicPrefix { get; init; }
 

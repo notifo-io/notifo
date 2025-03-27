@@ -17,7 +17,7 @@ namespace Notifo.Areas.Api.Controllers.Media;
 public abstract class MediaBaseController(
     IAssetStore assetStore,
     IAssetThumbnailGenerator assetThumbnailGenerator)
-    :  BaseController
+    : BaseController
 {
     public sealed class ResizeSource
     {

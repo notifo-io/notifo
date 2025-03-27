@@ -15,7 +15,7 @@ namespace Notifo.Domain.Channels.Web;
 public sealed class WebChannel(
     IServiceProvider serviceProvider,
     IStreamClient streamClient)
-    :  ChannelBase<WebChannel>(serviceProvider)
+    : ChannelBase<WebChannel>(serviceProvider)
 {
     public override string Name => Providers.Web;
 

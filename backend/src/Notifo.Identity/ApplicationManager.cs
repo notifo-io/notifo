@@ -17,7 +17,7 @@ public sealed class ApplicationManager<T>(
     IOpenIddictApplicationCache<T> cache,
     IOpenIddictApplicationStoreResolver resolver,
     ILogger<OpenIddictApplicationManager<T>> logger)
-    :  OpenIddictApplicationManager<T>(cache, logger, options, resolver) where T : class
+    : OpenIddictApplicationManager<T>(cache, logger, options, resolver) where T : class
 {
     protected override ValueTask<bool> ValidateClientSecretAsync(string secret, string comparand,
         CancellationToken cancellationToken = default)
