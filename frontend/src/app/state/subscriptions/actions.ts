@@ -54,6 +54,7 @@ const initialState: SubscriptionsState = {
 };
 
 const operations = [
+    loadSubscriptions,
     upsertSubscription,
     deleteSubscription,
 ];
