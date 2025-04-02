@@ -353,7 +353,7 @@ const InputPassword = ({ name, placeholder }: FormEditorProps) => {
 
     return (
         <>
-            <PasswordInput id={name} {...field} invalid={isInvalid(fieldState, formState)} autoFocus={autoFocus}
+            <PasswordInput id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </>
