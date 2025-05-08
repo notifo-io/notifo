@@ -30,14 +30,11 @@ public sealed class IntegrationManager(
     ILogger<IntegrationManager> log)
     : IIntegrationManager, IBackgroundProcess
 {
-    private readonly Lazy<ICallback<ISmsSender>> callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
-        {
-            return serviceProvider.GetRequiredService<ICallback<ISmsSender>>();
-        });
-    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging = new Lazy<ICallback<IMessagingSender>>(() =>
-        {
-            return serviceProvider.GetRequiredService<ICallback<IMessagingSender>>();
-        });
+    private readonly Lazy<ICallback<ISmsSender>> callbackSms =
+        new Lazy<ICallback<ISmsSender>>(serviceProvider.GetRequiredService<ICallback<ISmsSender>>);
+    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging =
+        new Lazy<ICallback<IMessagingSender>>(serviceProvider.GetRequiredService<ICallback<IMessagingSender>>);
+
     private readonly ConditionEvaluator conditionEvaluator = new ConditionEvaluator(log);
     private CompletionTimer? timer;
 
