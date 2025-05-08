@@ -124,12 +124,12 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     propertyType = propertyType.max(property.maxLength, texts.validation.maxLengthFn);
                 }
 
-                if (property.format && property.format !== "None") {
+                if (property.format && property.format !== 'None') {
                     switch (property.format) {
-                        case "Email":
+                        case 'Email':
                             propertyType = propertyType.emailI18n();
                             break;
-                        case "HttpUrl":
+                        case 'HttpUrl':
                             propertyType = propertyType.httpUrlI18n();
                             break;
                     }

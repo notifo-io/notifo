@@ -30,7 +30,6 @@ import { UserPage } from './../user/UserPage';
 import { UsersPage } from './../users/UsersPage';
 import { AppDashboardPage } from './AppDashboardPage';
 import { AppSettingsPage } from './AppSettingsPage';
-import { DemoPage } from '../user/DemoPage';
 
 const NavDesign = () => {
     const [isOpen, setIsOpen] = useBoolean();

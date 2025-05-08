@@ -261,7 +261,9 @@ public sealed class IntegrationManager(
 
                 if (updates.Count > 0)
                 {
-                    var command = new UpdateAppIntegrationStatus { AppId = app.Id, Status = updates };
+                    var command =
+                        new UpdateAppIntegrationStatus { Status = updates }
+                            .With(app.Id, app.Id);
 
                     await mediator.SendAsync(command, ct);
                 }

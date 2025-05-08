@@ -10,18 +10,9 @@ import { fileURLToPath } from 'url';
 import preact from '@preact/preset-vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { ViteFaviconsPlugin } from 'vite-plugin-favicon';
 import mkcert from 'vite-plugin-mkcert';
 
 const dirName = fileURLToPath(new URL('.', import.meta.url));
-
-const fullReloadAlways = {
-    name: 'full-reload-always',
-    handleHotUpdate({ server }) {
-        server.ws.send({ type: 'full-reload' });
-        return [];
-    },
-};
   
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,24 +24,6 @@ export default defineConfig({
     },
 
     plugins: [
-        ...
-        (process.env.NODE_ENV === 'production' ?
-            [
-                ViteFaviconsPlugin({
-                    logo: 'src/images/logo-square.png',
-                    favicons: {
-                        appName: 'Notifo',
-                        appDescription: 'Notifo',
-                        developerName: 'Squidex UG',
-                        developerUrl: 'https://notifo.io',
-                        start_url: '/',
-                        theme_color: '#8c84fa',
-                    },
-                }),
-                VitePWA({
-                    injectRegister: null,
-                }),
-            ] : []),
         react({
             include: 'src/**/*.tsx',
         }),
@@ -58,7 +31,13 @@ export default defineConfig({
             include: 'sdk/**/*.tsx',
         }),
         mkcert(),
-        fullReloadAlways,
+        {
+            name: 'full-reload-always',
+            handleHotUpdate({ server }) {
+                server.ws.send({ type: 'full-reload' });
+                return [];
+            },
+        },
     ],
 
     test: {

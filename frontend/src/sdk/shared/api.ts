@@ -297,7 +297,7 @@ export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<No
 }
 
 export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<TopicDto>> {
-    const url = combineUrl(config.apiUrl, 'api/me/topics');
+    const url = combineUrl(config.apiUrl, 'api/me/topics?pageSize=100');
 
     const response = await fetch(url, {
         method: 'GET',

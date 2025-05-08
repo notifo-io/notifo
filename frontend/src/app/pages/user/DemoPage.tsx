@@ -8,9 +8,9 @@
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useParams } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardBody, Col, Container, Row } from 'reactstrap';
 import { texts } from '@app/texts';
-import { useSearchParams } from 'react-router-dom';
 
 export const DemoPage = () => {
     const userToken = useParams().userId!;
@@ -30,7 +30,7 @@ export const DemoPage = () => {
             onConfirm: (notification: any) => {
                 console.log(`Confirmed: ${JSON.stringify(notification, undefined, 2)}`);
             },
-        }
+        };
 
         notifo.push(['init', args]);
 
@@ -42,7 +42,7 @@ export const DemoPage = () => {
         notifo.push(['show-topic', 'topic4', 'updates/games', { style: 'star' }]);
 
         notifo.push(['subscribe']);
-    }, [userToken]);
+    }, [params, userToken]);
 
     return (
         <Container className='demo-container'>

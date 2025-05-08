@@ -205,7 +205,6 @@ public sealed class IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore,
         };
 
         var response = await amazonSES.GetIdentityVerificationAttributesAsync(request, ct);
-
         var statuses = new List<IntegrationStatus>();
 
         foreach (var emailAddress in fromEmails)
@@ -242,7 +241,6 @@ public sealed class IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore,
         };
 
         var response = await amazonSES.GetIdentityVerificationAttributesAsync(request, ct);
-
         var result = new List<string>();
 
         foreach (var emailAddress in fromEmails)
