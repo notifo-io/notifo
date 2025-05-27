@@ -10,6 +10,8 @@ using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
+using MimeKit;
+using MimeKit.Text;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
 using Notifo.Infrastructure;
@@ -78,20 +80,88 @@ public sealed class IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore,
         await amazonSES.GetSendQuotaAsync(ct);
     }
 
-    public Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {
-        FillContext(context);
+        try
+        {
+            var r = Convert(context, request);
+            var response = await amazonSES.SendRawEmailAsync(r, ct);
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            {
+                var error = string.Format(CultureInfo.InvariantCulture, Texts.SMTP_Exception);
+                throw new DomainException(error);
+            }
+        }
+        catch (Exception ex)
+        {
+            var error = string.Format(CultureInfo.InvariantCulture, Texts.SMTP_Exception, ex.Message);
+            throw new DomainException(error, ex);
+        }
 
-        return emailSender.SendAsync(context, request, ct);
+        return DeliveryResult.Sent;
     }
 
-    private void FillContext(IntegrationContext context)
+    private static SendRawEmailRequest Convert(IntegrationContext context, EmailMessage request)
     {
-        context.Properties[SmtpIntegration.HostProperty.Name] = emailOptions.HostName;
-        context.Properties[SmtpIntegration.HostPortProperty.Name] = emailOptions.HostPort.ToString(CultureInfo.InvariantCulture);
-        context.Properties[SmtpIntegration.UsernameProperty.Name] = emailOptions.Username;
-        context.Properties[SmtpIntegration.PasswordProperty.Name] = emailOptions.Password;
+        if (string.IsNullOrWhiteSpace(request.FromEmail))
+        {
+            request = request with { FromEmail = FromEmailProperty.GetString(context.Properties) };
+        }
+
+        if (string.IsNullOrWhiteSpace(request.FromName))
+        {
+            request = request with { FromName = FromNameProperty.GetString(context.Properties) };
+        }
+
+        var smtpMessage = new MimeMessage();
+
+        smtpMessage.From.Add(new MailboxAddress(
+            request.FromName,
+            request.FromEmail));
+
+        smtpMessage.To.Add(new MailboxAddress(
+            request.ToName,
+            request.ToEmail));
+
+        var hasHtml = !string.IsNullOrWhiteSpace(request.BodyHtml);
+        var hasText = !string.IsNullOrWhiteSpace(request.BodyText);
+
+        if (hasHtml && hasText)
+        {
+            smtpMessage.Body = new MultipartAlternative
+            {
+                new TextPart(TextFormat.Plain) { Text = request.BodyText },
+                new TextPart(TextFormat.Html) { Text = request.BodyHtml }
+            };
+        }
+        else if (hasHtml)
+        {
+            smtpMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = request.BodyHtml
+            };
+        }
+        else if (hasText)
+        {
+            smtpMessage.Body = new TextPart(TextFormat.Plain)
+            {
+                Text = request.BodyText
+            };
+        }
+        else
+        {
+            throw new InvalidOperationException("Cannot send email without text body or html body");
+        }
+
+        smtpMessage.Subject = request.Subject;
+
+        using (var messageStream = new MemoryStream())
+        {
+            smtpMessage.WriteTo(messageStream);
+            messageStream.Position = 0;
+            return new SendRawEmailRequest(new RawMessage(messageStream));
+        }
     }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
