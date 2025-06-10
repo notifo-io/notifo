@@ -33,7 +33,6 @@
     <PackageReference Include="Squidex.Assets.Azure" Version="7.22.0" />
     <PackageReference Include="Squidex.Assets.FTP" Version="7.22.0" />
     <PackageReference Include="Squidex.Assets.GoogleCloud" Version="7.22.0" />
-    <PackageReference Include="Squidex.Assets.ImageMagick" Version="7.22.0" />
     <PackageReference Include="Squidex.Assets.ImageSharp" Version="7.22.0" />
     <PackageReference Include="Squidex.Assets.Mongo" Version="7.22.0" />
     <PackageReference Include="Squidex.Assets.S3" Version="7.22.0" />
@@ -48,6 +47,10 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IncludeMagick)' == 'true'">
+    <PackageReference Include="Squidex.Assets.ImageMagick" Version="7.22.0" />
+  </ItemGroup>
+  
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
