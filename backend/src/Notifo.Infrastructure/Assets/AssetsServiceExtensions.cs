@@ -9,7 +9,9 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Squidex.Assets;
+#if INCLUDE_MAGICK
 using Squidex.Assets.ImageMagick;
+#endif
 using Squidex.Assets.ImageSharp;
 using Squidex.Assets.Remote;
 
