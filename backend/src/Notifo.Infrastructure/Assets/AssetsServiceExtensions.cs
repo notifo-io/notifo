@@ -34,7 +34,7 @@ public static class AssetsServiceExtensions
                 [
                     c.GetRequiredService<ImageSharpThumbnailGenerator>(),
 #if INCLUDE_MAGICK
-                c.GetRequiredService<ImageMagickThumbnailGenerator>(),
+                    c.GetRequiredService<ImageMagickThumbnailGenerator>(),
 #endif
                 ]))
             .AsSelf();
