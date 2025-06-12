@@ -35,10 +35,6 @@
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
     <PackageReference Include="Twilio" Version="7.3.1" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(INCLUDE_KAFKA)' == 'true'">
-    <PackageReference Include="Confluent.Kafka" Version="2.5.3" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj" />

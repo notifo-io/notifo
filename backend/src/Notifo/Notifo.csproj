@@ -43,6 +43,10 @@
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IncludeKafka)' == 'true'">
+    <PackageReference Include="Squidex.Messaging.Kafka" Version="7.23.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Areas\Api\Controllers\TrackingPixel.png" />
   </ItemGroup>
