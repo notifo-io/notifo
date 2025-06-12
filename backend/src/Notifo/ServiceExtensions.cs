@@ -59,10 +59,21 @@ public static class ServiceExtensions
 
     public static void AddMyMessaging(this IServiceCollection services, IConfiguration config)
     {
-        services.AddMessaging()
-            .AddTransport(config)
+        var builder = services.AddMessaging()
             .AddMyUserEvents(config)
             .AddMyUserNotifications(config);
+
+#if INCLUDE_KAFKA
+        var type = config.GetValue<string>("messaging:type");
+
+        if (string.Equals(type, "Kafka", StringComparison.OrdinalIgnoreCase))
+        {
+            builder.AddKafkaTransport(config);
+            return;
+        }
+#endif
+
+        builder.AddTransport(config);
     }
 
     public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)

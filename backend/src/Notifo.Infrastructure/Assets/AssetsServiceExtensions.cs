@@ -9,6 +9,10 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Squidex.Assets;
+#if INCLUDE_MAGICK
+using Squidex.Assets.ImageMagick;
+#endif
+using Squidex.Assets.ImageSharp;
 using Squidex.Assets.Remote;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -17,11 +21,23 @@ public static class AssetsServiceExtensions
 {
     public static void AddMyAssets(this IServiceCollection services, IConfiguration config)
     {
-        var thumbnailGenerator = new CompositeThumbnailGenerator(
-            [
-                new ImageSharpThumbnailGenerator(),
-                new ImageMagickThumbnailGenerator()
-            ]);
+        services.AddSingletonAs<ImageSharpThumbnailGenerator>()
+            .AsSelf();
+
+#if INCLUDE_MAGICK
+        services.AddSingletonAs<ImageMagickThumbnailGenerator>()
+            .AsSelf();
+#endif
+
+        services.AddSingletonAs(c =>
+                new CompositeThumbnailGenerator(
+                [
+                    c.GetRequiredService<ImageSharpThumbnailGenerator>(),
+#if INCLUDE_MAGICK
+                    c.GetRequiredService<ImageMagickThumbnailGenerator>(),
+#endif
+                ]))
+            .AsSelf();
 
         var resizerUrl = config.GetValue<string>("assets:resizerUrl");
 
@@ -32,13 +48,15 @@ public static class AssetsServiceExtensions
                 options.BaseAddress = new Uri(resizerUrl);
             });
 
-            services.AddSingletonAs(c => new RemoteThumbnailGenerator(c.GetRequiredService<IHttpClientFactory>(), thumbnailGenerator))
-                .As<IAssetThumbnailGenerator>();
+            services.AddSingletonAs<IAssetThumbnailGenerator>(c => new RemoteThumbnailGenerator(
+                    c.GetRequiredService<IHttpClientFactory>(),
+                    c.GetRequiredService<CompositeThumbnailGenerator>()))
+                .AsSelf();
         }
         else
         {
-            services.AddSingletonAs(c => thumbnailGenerator)
-                .As<IAssetThumbnailGenerator>();
+            services.AddSingletonAs<IAssetThumbnailGenerator>(c => c.GetRequiredService<CompositeThumbnailGenerator>())
+                .AsSelf();
         }
 
         config.ConfigureByOption("assetStore:type", new Alternatives

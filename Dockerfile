@@ -25,7 +25,7 @@ RUN dotnet restore
 COPY backend .
  
 # Test Backend
-RUN dotnet test --no-restore --filter Category!=Dependencies
+RUN dotnet test --no-restore --filter Category!=Dependencies --configuration Release
 
 # Publish
 RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__BUILD__VERSION
