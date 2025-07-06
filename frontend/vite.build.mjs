@@ -37,15 +37,13 @@ const inputs = {
     // Build the worker separately to prevent exports.
     ['notifo-sdk']: {
         entry: path.resolve(dirName, 'src/sdk/sdk.ts'),
-        plugins: [
-        ],
+        plugins: [],
         format: 'iife',
     },
     // Build the worker separately so that it does not get any file.
     ['notifo-sdk-worker']: {
         entry: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
-        plugins: [
-        ],
+        plugins: [],
         format: 'iife',
     },
 };
@@ -96,7 +94,6 @@ async function buildPackages() {
                     include: 'src/**/*.tsx',
                 }),
                 preact({
-                   
                     include: 'sdk/**/*.tsx',
                 }),
                 {
@@ -106,7 +103,6 @@ async function buildPackages() {
                         if (id.includes('node_modules/@microsoft/signalr')) {
                             return code.replace(/\/\*#__PURE__\*\//g, '');
                         }
-                        
                         return null;
                     },
                 },
