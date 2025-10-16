@@ -1,0 +1,26 @@
+name: SDK DotNet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.0.0
+
+      - name: Set up dotnet
+        uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Pack
+        run: |
+          cd tools/sdk-dotnet/Notifo.SDK && dotnet pack -c Release
+
+      - name: Publish
+        run: |
+          cd tools/sdk-dotnet/Notifo.SDK && dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k ${{ secrets.NUGET }}

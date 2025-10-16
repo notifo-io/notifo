@@ -22,7 +22,7 @@ public sealed class PingController : BaseController
     /// </summary>
     /// <response code="204">Service ping successful.</response>.
     /// <remarks>
-    /// Can be used to test, if the Squidex API is alive and responding.
+    /// Can be used to test, if the API is alive and responding.
     /// </remarks>
     [HttpGet]
     [Route("ping/")]
@@ -38,7 +38,7 @@ public sealed class PingController : BaseController
     /// </summary>
     /// <response code="204">Service ping successful.</response>.
     /// <remarks>
-    /// Can be used to test, if the Squidex API is alive and responding.
+    /// Can be used to test, if the API is alive and responding.
     /// </remarks>
     [HttpGet]
     [Route("api/ping/")]
@@ -53,7 +53,7 @@ public sealed class PingController : BaseController
     /// </summary>
     /// <response code="204">Service info returned.</response>.
     /// <remarks>
-    /// Can be used to test, if the Squidex API is alive and responding.
+    /// Can be used to test, if the API is alive and responding.
     /// </remarks>
     [HttpGet]
     [Route("api/info/")]

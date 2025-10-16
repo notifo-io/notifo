@@ -1,0 +1,2 @@
+# docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli config-help -g php 
+docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate -i /local/openapi.json -g typescript-fetch --template-dir  /local/templates -o /local/src/generated -c /local/openapi-config.yml
