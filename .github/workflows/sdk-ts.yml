@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  compile:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,6 @@ jobs:
           cd tools/sdk-ts && npm run build
 
       - name: Publish to npm
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           cd tools/sdk-ts
           npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
