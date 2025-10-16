@@ -24,6 +24,6 @@
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.csproj" />
+    <ProjectReference Include="..\..\sdk-dotnet\Notifo.SDK\Notifo.SDK.csproj" />
   </ItemGroup>
 </Project>
