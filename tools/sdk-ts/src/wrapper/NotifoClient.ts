@@ -236,7 +236,8 @@ export class NotifoClients {
             addOptions(init, clientOptions);
 
             if (!getHeader(init, "X-AuthRequest")) {
-                addHeader(init, "Authorization", `Bearer ${await this.tokenApi.getToken()}`);
+                const token = await this.tokenApi.getToken();
+                addHeader(init, "Authorization", `${token.type} ${token.value}`);
             }
 
             let response: Response;
