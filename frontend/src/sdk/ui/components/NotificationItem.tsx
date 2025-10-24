@@ -73,6 +73,10 @@ export const NotificationItem = (props: NotificationItemProps) => {
         return '_blank';
     }, [config.linkTarget, notification.linkUrl]);
 
+    const doFollowLink = useCallback((event: Event) => {
+        config?.onLink?.(event, notification);
+    }, [config, notification]);
+
     const doSee = useCallback(async () => {
         if (!onSeen) {
             return;
@@ -162,7 +166,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
                     {notification.subject &&
                         <div class='notifo-notification-subject'>
                             {notification.linkUrl ? (
-                                <a href={notification.linkUrl} target={target} rel='noopener'>{notification.subject}</a>
+                                <a href={notification.linkUrl} onClick={doFollowLink} target={target} rel='noopener'>{notification.subject}</a>
                             ) : (
                                 <span>{notification.subject}</span>
                             )}

@@ -84,7 +84,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
 
                 ignoreNext.current = true;
                 try {
-                    onChangeRef.current?.(newValue);
+                    onChangeRef.current?.(newValue); 
                 } finally {
                     ignoreNext.current = false;
                 }
@@ -110,7 +110,6 @@ export const CodeEditor = (props: CodeEditorProps) => {
         } else {
             actualText = JSON.stringify(value || {}, undefined, 2);
         }
-
 
         if (valueRef.current !== value) {
             valueRef.current = value;

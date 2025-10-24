@@ -225,6 +225,14 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         logWarn('init.onNotification must be a function if defined.');
     }
 
+    if (!isFunctionOption(options.onConfirm)) {
+        logWarn('init.onConfirm must be a function if defined.');
+    }
+
+    if (!isFunctionOption(options.onLink)) {
+        logWarn('init.onLink must be a function if defined.');
+    }
+
     if (!isLocaleOption(options.locale)) {
         logWarn(`init.locale must be a valid locale. Allowed: ${Object.keys(SUPPORTED_LOCALES).join(',')}`);
         options.locale = undefined!;
@@ -403,7 +411,10 @@ export interface SDKConfig {
     // All needed texts.
     texts: Texts<string>;
 
-    // Shown when the notification is confirmed.
+    // A callback that is invoked when a notification link is clicked.
+    onLink?: (event: Event, notification: any) => void;
+
+    // A callback that is invoked when a notification is confirmed.
     onConfirm?: (notification: any) => void;
 
     // A callback that is invoked when a notification is retrieved.
