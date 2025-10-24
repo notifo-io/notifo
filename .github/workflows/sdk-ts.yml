@@ -1,0 +1,48 @@
+name: SDK Typescript
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4.1.0
+
+      - name: Set up node
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: 20
+
+      - name: Build - Install
+        run: |
+          cd tools/sdk-ts && npm i
+
+      - name: Build - Compile
+        run: |
+          cd tools/sdk-ts && npm run build
+
+      - name: Publish to npm
+        run: |
+          cd tools/sdk-ts
+          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+          
+          echo "Publishing package..."
+          if npm publish --access public 2>&1 | tee publish.log; then
+            echo "Publish succeeded."
+          else
+            if grep -q "You cannot publish over the previously published versions" publish.log; then
+              echo "Package version already exists on npm. Skipping publish."
+              exit 0
+            else
+              echo "Unexpected npm publish error:"
+              cat publish.log
+              exit 1
+            fi
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.401.11" />
-    <PackageReference Include="Confluent.Kafka" Version="2.5.3" />
     <PackageReference Include="Discord.Net" Version="3.16.0" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
     <PackageReference Include="FluentValidation" Version="11.10.0" />
@@ -23,9 +22,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
     <PackageReference Include="NodaTime" Version="3.1.12" />
     <PackageReference Include="OpenNotifications" Version="0.3.0" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
@@ -36,7 +35,7 @@
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
     <PackageReference Include="Twilio" Version="7.3.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj" />
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
