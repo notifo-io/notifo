@@ -187,7 +187,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
                     {notification.linkUrl && notification.linkText &&
                         <div class='notifo-notification-link'>
-                            <a class='notifo-link' href={notification.linkUrl} target={target} rel='noopener'>{notification.linkText}</a>
+                            <a class='notifo-link' href={notification.linkUrl} onClick={doFollowLink} target={target} rel='noopener'>{notification.linkText}</a>
                         </div>
                     }
 
