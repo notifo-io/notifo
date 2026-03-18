@@ -270,6 +270,27 @@
   <data name="MessageBird_WhatsAppTemplateNamespaceLabel" xml:space="preserve">
     <value>Şablon Alanadı</value>
   </data>
+  <data name="Seven_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Seven_Description" xml:space="preserve">
+    <value>seven (seven.io) kullanarak API Key ile SMS gönderin.</value>
+  </data>
+  <data name="Seven_Error" xml:space="preserve">
+    <value>'{0}' numarasına SMS gönderilemedi: {1}</value>
+  </data>
+  <data name="Seven_ErrorUnknown" xml:space="preserve">
+    <value>'{0}' numarasına SMS gönderilemedi.</value>
+  </data>
+  <data name="Seven_FromDescription" xml:space="preserve">
+    <value>SMS gönderici olarak görüntülenen gönderen adı veya telefon numarası.</value>
+  </data>
+  <data name="Seven_FromLabel" xml:space="preserve">
+    <value>Gönderen</value>
+  </data>
+  <data name="Seven_Name" xml:space="preserve">
+    <value>seven SMS</value>
+  </data>
   <data name="SMTP_Description" xml:space="preserve">
     <value>E-postaları özel bir e-posta sunucu kullanarak gönder.</value>
   </data>

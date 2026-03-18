@@ -145,6 +145,7 @@ public class Startup(IConfiguration config)
         services.AddIntegrationMailchimp();
         services.AddIntegrationMailjet();
         services.AddIntegrationMessageBird(config);
+        services.AddIntegrationSeven();
         services.AddIntegrationOpenNotifications(config);
         services.AddIntegrationSmtp();
         services.AddIntegrationTelegram();

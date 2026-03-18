@@ -574,6 +574,69 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to API Key.
+        /// </summary>
+        internal static string Seven_ApiKeyLabel {
+            get {
+                return ResourceManager.GetString("Seven_ApiKeyLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Send SMS via seven (seven.io) using your API Key..
+        /// </summary>
+        internal static string Seven_Description {
+            get {
+                return ResourceManager.GetString("Seven_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send SMS to &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string Seven_Error {
+            get {
+                return ResourceManager.GetString("Seven_Error", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send SMS to &apos;{0}&apos;..
+        /// </summary>
+        internal static string Seven_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("Seven_ErrorUnknown", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sender name or phone number shown as the sender of the SMS..
+        /// </summary>
+        internal static string Seven_FromDescription {
+            get {
+                return ResourceManager.GetString("Seven_FromDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        internal static string Seven_FromLabel {
+            get {
+                return ResourceManager.GetString("Seven_FromLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to seven SMS.
+        /// </summary>
+        internal static string Seven_Name {
+            get {
+                return ResourceManager.GetString("Seven_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Send emails using a custom email server..
         /// </summary>
         internal static string SMTP_Description {

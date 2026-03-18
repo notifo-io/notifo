@@ -288,6 +288,27 @@
   <data name="MessageBird_WhatsAppTemplateNamespaceLabel" xml:space="preserve">
     <value>Template Namespace</value>
   </data>
+  <data name="Seven_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Seven_Description" xml:space="preserve">
+    <value>Send SMS via seven (seven.io) using your API Key.</value>
+  </data>
+  <data name="Seven_Error" xml:space="preserve">
+    <value>Failed to send SMS to '{0}': {1}</value>
+  </data>
+  <data name="Seven_ErrorUnknown" xml:space="preserve">
+    <value>Failed to send SMS to '{0}'.</value>
+  </data>
+  <data name="Seven_FromDescription" xml:space="preserve">
+    <value>Sender name or phone number shown as the sender of the SMS.</value>
+  </data>
+  <data name="Seven_FromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Seven_Name" xml:space="preserve">
+    <value>seven SMS</value>
+  </data>
   <data name="SMTP_Description" xml:space="preserve">
     <value>Send emails using a custom email server.</value>
   </data>
