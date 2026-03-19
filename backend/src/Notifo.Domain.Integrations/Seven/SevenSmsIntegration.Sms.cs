@@ -25,10 +25,13 @@ public sealed partial class SevenSmsIntegration : ISmsSender
 
             var response = await client.SendSmsAsync(to, message.Text, from, ct);
 
-            var successCode = response.Success;
+            var statusCode = response.StatusCode;
 
             // 100 = SMS sent, 101 = SMS sent to multiple recipients
-            if (successCode != "100" && successCode != "101")
+            var isSuccess = (statusCode == "100" || statusCode == "101")
+                && response.Messages?.Any(m => !m.Success) != true;
+
+            if (!isSuccess)
             {
                 var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Seven_ErrorUnknown, to);
 

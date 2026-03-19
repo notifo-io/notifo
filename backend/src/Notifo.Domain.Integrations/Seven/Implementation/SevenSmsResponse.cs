@@ -14,7 +14,7 @@ namespace Notifo.Domain.Integrations.Seven.Implementation;
 public sealed class SevenSmsResponse
 {
     [JsonPropertyName("success")]
-    public string Success { get; set; }
+    public string StatusCode { get; set; }
 
     [JsonPropertyName("total_price")]
     public decimal TotalPrice { get; set; }

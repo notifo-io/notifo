@@ -12,22 +12,13 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Seven.Implementation;
 
-public sealed class SevenSmsClient : ISevenSmsClient
+public sealed class SevenSmsClient(string apiKey, IHttpClientFactory httpClientFactory) : ISevenSmsClient
 {
     private static readonly JsonSerializerOptions JsonOptions = new ()
     {
         PropertyNameCaseInsensitive = true,
         NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
     };
-
-    private readonly string apiKey;
-    private readonly IHttpClientFactory httpClientFactory;
-
-    public SevenSmsClient(string apiKey, IHttpClientFactory httpClientFactory)
-    {
-        this.apiKey = apiKey;
-        this.httpClientFactory = httpClientFactory;
-    }
 
     public async Task<SevenSmsResponse> SendSmsAsync(string to, string text, string? from,
         CancellationToken ct)
