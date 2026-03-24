@@ -72,7 +72,7 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         en: 'Notify me via Email',
     },
     notifyBeWebPush: {
-        de: 'Benachrichtige mich per Push Notification',
+        de: 'Benachrichtige mich per Push Nachricht',
         en: 'Notify me via Push Notification',
     },
     notificationsEmpty: {
@@ -116,7 +116,7 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         en: 'Topics',
     },
     unsubscribe: {
-        de: 'Deabbonieren',
+        de: 'Abmelden',
         en: 'Unsubscribe',
     },
     webpush: {
@@ -124,11 +124,11 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         en: 'Web Push',
     },
     webpushConfirmText: {
-        de: 'Notifications können jederzeit in den Browser Einstellungen deaktiviert werden.',
+        de: 'Benachrichtigungen können jederzeit in den Browser Einstellungen deaktiviert werden.',
         en: 'Notifications can be turned off anytime from browser settings.',
     },
     webpushConfirmTitle: {
-        de: 'Wir wollen dir Push Benachrichtigungen schenken',
+        de: 'Wir wollen dir Push Benachrichtigungen senden.',
         en: 'We want to send you push notifications.',
     },
     webpushTopics: {
