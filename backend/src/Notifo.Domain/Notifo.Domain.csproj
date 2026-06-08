@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Channels\Email\DefaultHtml.mjml" />
     <None Remove="Channels\Email\DefaultSubject.text" />
@@ -17,41 +15,36 @@
     <None Remove="Channels\Messaging\DefaultTemplate.liquid.text" />
     <None Remove="Channels\Sms\DefaultTemplate.liquid.text" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.10.0" />
     <PackageReference Include="Fluid.Core" Version="2.11.1" />
     <PackageReference Include="Jint" Version="4.0.2" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.45" />
     <PackageReference Include="Meziantou.Analyzer" Version="2.0.163">
-    <PrivateAssets>all</PrivateAssets>
+      <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
     <PackageReference Include="Mjml.Net" Version="4.1.0" />
     <PackageReference Include="Mjml.Net.PostProcessors" Version="4.1.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
     <PackageReference Include="NodaTime" Version="3.1.12" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="10.0.8" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
     <PackageReference Include="WebPush" Version="1.0.12" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj" />
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultSubject.text" />
@@ -59,7 +52,6 @@
     <EmbeddedResource Include="Channels\Messaging\DefaultTemplate.liquid.text" />
     <EmbeddedResource Include="Channels\Sms\DefaultTemplate.liquid.text" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Resources\Texts.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -67,12 +59,10 @@
       <DependentUpon>Texts.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Resources\Texts.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Texts.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
 </Project>

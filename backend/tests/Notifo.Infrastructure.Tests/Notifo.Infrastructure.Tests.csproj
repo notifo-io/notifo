@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Notifo.Infrastructure</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="8.3.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="2.0.163">
@@ -16,7 +14,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
     <PackageReference Include="Verify.Xunit" Version="26.5.0" />
     <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -29,18 +27,14 @@
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
-  
   <ItemGroup>
     <Using Include="FakeItEasy" />
     <Using Include="Xunit" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-
 </Project>
