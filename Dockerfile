@@ -1,7 +1,7 @@
 #
 # Stage 1, Build Backend
 #
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as backend
+FROM mcr.microsoft.com/dotnet/sdk:10.0 as backend
 
 ARG NOTIFO__BUILD__VERSION=1.0.0
 
@@ -65,7 +65,7 @@ RUN cp -a build /build/
 #
 # Stage 3, Build runtime
 #
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble
 
 ARG NOTIFO__RUNTIME__VERSION=1.0.0
 
