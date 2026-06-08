@@ -43,6 +43,7 @@ public static class MongoClientFactory
     {
         // Allow all types, independent from the actual assembly.
         BsonSerializer.TryRegisterSerializer(new ObjectSerializer(type => true));
+        BsonSerializer.TryRegisterSerializer(new GuidSerializer(BsonType.String));
 
         ActivityContextSerializer.Register();
         ActivitySpanIdSerializer.Register();
