@@ -16,26 +16,26 @@
     <None Remove="Channels\Sms\DefaultTemplate.liquid.text" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.10.0" />
-    <PackageReference Include="Fluid.Core" Version="2.11.1" />
-    <PackageReference Include="Jint" Version="4.0.2" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.45" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.163">
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="Fluid.Core" Version="2.31.0" />
+    <PackageReference Include="Jint" Version="4.9.3" />
+    <PackageReference Include="libphonenumber-csharp" Version="9.0.32" />
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.101">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
-    <PackageReference Include="Mjml.Net" Version="4.1.0" />
-    <PackageReference Include="Mjml.Net.PostProcessors" Version="4.1.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
-    <PackageReference Include="NodaTime" Version="3.1.12" />
+    <PackageReference Include="Mjml.Net" Version="4.11.0" />
+    <PackageReference Include="Mjml.Net.PostProcessors" Version="4.11.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+    <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="10.0.8" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="System.Text.Json" Version="10.0.8" />
-    <PackageReference Include="WebPush" Version="1.0.12" />
+    <PackageReference Include="WebPush" Version="1.0.13" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj" />

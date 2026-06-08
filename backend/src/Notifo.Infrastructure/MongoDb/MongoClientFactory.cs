@@ -33,9 +33,6 @@ public static class MongoClientFactory
 
         var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
 
-        // The current version of the linq provider has some issues with base classes.
-        clientSettings.LinqProvider = LinqProvider.V2;
-
         // If we really need custom config.
         configure?.Invoke(clientSettings);
 

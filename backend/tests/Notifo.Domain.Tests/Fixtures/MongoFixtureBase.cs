@@ -8,7 +8,6 @@
 using System.Diagnostics;
 using EphemeralMongo;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
@@ -31,11 +30,6 @@ public abstract class MongoFixtureBase : IDisposable
 
             connectionString = runner.ConnectionString;
         }
-
-        var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
-
-        // The current version of the linq provider has some issues with base classes.
-        clientSettings.LinqProvider = LinqProvider.V2;
 
         MongoClient = MongoClientFactory.Create(connectionString);
         MongoDatabase = MongoClient.GetDatabase("Notifo_Testing");

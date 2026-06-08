@@ -57,7 +57,7 @@ public sealed partial class TelegramIntegration(TelegramBotClientPool clientPool
     {
         try
         {
-            await GetBotClient(context).SetWebhookAsync(context.WebhookUrl, cancellationToken: ct);
+            await GetBotClient(context).SetWebhook(context.WebhookUrl, cancellationToken: ct);
         }
         catch (Exception ex)
         {
@@ -70,7 +70,7 @@ public sealed partial class TelegramIntegration(TelegramBotClientPool clientPool
     public async Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
-        await GetBotClient(context).DeleteWebhookAsync(cancellationToken: ct);
+        await GetBotClient(context).DeleteWebhook(cancellationToken: ct);
     }
 
     private ITelegramBotClient GetBotClient(IntegrationContext context)
