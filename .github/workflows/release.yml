@@ -44,7 +44,7 @@ jobs:
       - name: Test - RUN
         uses: kohlerdominik/docker-run-action@v2.0.0
         with:
-          image: mcr.microsoft.com/dotnet/sdk:8.0
+          image: mcr.microsoft.com/dotnet/sdk:10.0
           environment: |
             MAILCATCHER__HOST__SMTP=mailcatcher
             MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}
@@ -59,7 +59,7 @@ jobs:
       - name: Test - RUN on GooglePubSub
         uses: kohlerdominik/docker-run-action@v2.0.0
         with:
-          image: mcr.microsoft.com/dotnet/sdk:8.0
+          image: mcr.microsoft.com/dotnet/sdk:10.0
           environment: |
             MAILCATCHER__HOST__SMTP=mailcatcher
             MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}

@@ -113,7 +113,7 @@ public class AuthorizationController(IOpenIddictScopeManager scopeManager, IOpen
 
         if (User.Identity?.IsAuthenticated != true)
         {
-            if (request.HasPrompt(Prompts.None))
+            if (request.HasPromptValue(PromptValues.None))
             {
                 var properties = new AuthenticationProperties(new Dictionary<string, string?>
                 {

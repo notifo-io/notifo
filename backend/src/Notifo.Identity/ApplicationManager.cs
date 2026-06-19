@@ -15,9 +15,9 @@ namespace Notifo.Identity;
 public sealed class ApplicationManager<T>(
     IOptionsMonitor<OpenIddictCoreOptions> options,
     IOpenIddictApplicationCache<T> cache,
-    IOpenIddictApplicationStoreResolver resolver,
+    IOpenIddictApplicationStore<T> store,
     ILogger<OpenIddictApplicationManager<T>> logger)
-    : OpenIddictApplicationManager<T>(cache, logger, options, resolver) where T : class
+    : OpenIddictApplicationManager<T>(cache, logger, options, store) where T : class
 {
     protected override ValueTask<bool> ValidateClientSecretAsync(string secret, string comparand,
         CancellationToken cancellationToken = default)

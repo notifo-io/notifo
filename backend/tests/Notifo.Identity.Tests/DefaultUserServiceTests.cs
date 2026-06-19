@@ -19,7 +19,7 @@ public class DefaultUserServiceTests
 {
     private readonly CancellationTokenSource cts = new CancellationTokenSource();
     private readonly CancellationToken ct;
-    private readonly UserManager<IdentityUser> userManager = A.Fake<UserManager<IdentityUser>>();
+    private readonly UserManager<IdentityUser> userManager;
     private readonly IUserFactory userFactory = A.Fake<IUserFactory>();
     private readonly IMediator mediator = A.Fake<IMediator>();
     private readonly DefaultUserService sut;
@@ -27,6 +27,20 @@ public class DefaultUserServiceTests
     public DefaultUserServiceTests()
     {
         ct = cts.Token;
+
+        userManager = A.Fake<UserManager<IdentityUser>>(
+            o => o.WithArgumentsForConstructor(new object?[]
+            {
+                A.Fake<IUserStore<IdentityUser>>(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null, // null IServiceProvider prevents IMeterFactory cast failure
+                A.Fake<ILogger<UserManager<IdentityUser>>>(),
+            }));
 
         A.CallTo(() => userFactory.IsId(A<string>._))
             .Returns(true);

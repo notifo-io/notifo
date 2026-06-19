@@ -94,9 +94,9 @@ public static class IdentityServiceExtensions
                 builder
                     .SetAuthorizationEndpointUris("/connect/authorize")
                     .SetIntrospectionEndpointUris("/connect/introspect")
-                    .SetLogoutEndpointUris("/connect/logout")
+                    .SetEndSessionEndpointUris("/connect/logout")
                     .SetTokenEndpointUris("/connect/token")
-                    .SetUserinfoEndpointUris("/connect/userinfo");
+                    .SetUserInfoEndpointUris("/connect/userinfo");
 
                 builder.RegisterScopes(
                     Scopes.Email,
@@ -113,10 +113,10 @@ public static class IdentityServiceExtensions
                 builder.UseAspNetCore()
                     .DisableTransportSecurityRequirement()
                     .EnableAuthorizationEndpointPassthrough()
-                    .EnableLogoutEndpointPassthrough()
+                    .EnableEndSessionEndpointPassthrough()
                     .EnableStatusCodePagesIntegration()
                     .EnableTokenEndpointPassthrough()
-                    .EnableUserinfoEndpointPassthrough();
+                    .EnableUserInfoEndpointPassthrough();
             })
             .AddValidation(builder =>
             {

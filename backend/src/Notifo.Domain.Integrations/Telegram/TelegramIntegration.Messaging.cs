@@ -57,7 +57,7 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
             {
                 var client = clientPool.GetBotClient(accessToken);
 
-                await client.SendTextMessageAsync(chatId, text, null, ParseMode.Markdown, cancellationToken: ct);
+                await client.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
                 break;
             }
             catch (ObjectDisposedException)

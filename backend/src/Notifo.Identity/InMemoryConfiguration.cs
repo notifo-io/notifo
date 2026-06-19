@@ -22,15 +22,20 @@ public static class InMemoryConfiguration
 {
     public static IEnumerable<Claim> Claims(this IReadOnlyDictionary<string, JsonElement> properties)
     {
-        foreach (var (key, value) in properties)
+        foreach (var (claimType, jsonValue) in properties)
         {
-            var values = (string[]?)new OpenIddictParameter(value);
-
-            if (values != null)
+            if (jsonValue.ValueKind == JsonValueKind.String)
             {
-                foreach (var claimValue in values)
+                yield return new Claim(claimType, jsonValue.GetString()!);
+            }
+            else if (jsonValue.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in jsonValue.EnumerateArray())
                 {
-                    yield return new Claim(key, claimValue);
+                    if (item.ValueKind == JsonValueKind.String)
+                    {
+                        yield return new Claim(claimType, item.GetString()!);
+                    }
                 }
             }
         }
@@ -112,7 +117,7 @@ public static class InMemoryConfiguration
                 Permissions =
                 {
                     Permissions.Endpoints.Authorization,
-                    Permissions.Endpoints.Logout,
+                    Permissions.Endpoints.EndSession,
                     Permissions.Endpoints.Token,
                     Permissions.GrantTypes.AuthorizationCode,
                     Permissions.GrantTypes.Implicit,
