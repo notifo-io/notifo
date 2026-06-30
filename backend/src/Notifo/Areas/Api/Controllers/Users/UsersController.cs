@@ -39,7 +39,7 @@ public sealed class UsersController(
     /// <response code="200">Users returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<UserDto>))]
     public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q, [FromQuery] bool withDetails = false)
     {
@@ -69,12 +69,11 @@ public sealed class UsersController(
     /// <response code="200">User returned.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(UserDto))]
     public async Task<IActionResult> GetUser(string appId, string id, [FromQuery] bool withDetails = false)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -101,7 +100,7 @@ public sealed class UsersController(
     /// <response code="200">User subscriptions returned.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<SubscriptionDto>))]
     public async Task<IActionResult> GetSubscriptions(string appId, string id, [FromQuery] QueryDto q)
     {
@@ -124,12 +123,11 @@ public sealed class UsersController(
     /// <response code="204">User subscribed.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostSubscriptions(string appId, string id, [FromBody] SubscribeManyDto request)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -161,12 +159,11 @@ public sealed class UsersController(
     /// <response code="204">User unsubscribed.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions/{*prefix}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string appId, string id, string prefix)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -175,7 +172,6 @@ public sealed class UsersController(
         var command = new DeleteSubscription { UserId = id, Topic = Uri.UnescapeDataString(prefix) };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -187,7 +183,7 @@ public sealed class UsersController(
     /// <response code="200">Users upserted.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<UserDto>))]
     public async Task<IActionResult> PostUsers(string appId, [FromBody] UpsertUsersDto request)
     {
@@ -219,12 +215,11 @@ public sealed class UsersController(
     /// <response code="204">User updated.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -233,7 +228,6 @@ public sealed class UsersController(
         var command = request.ToUpdate(id);
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -246,12 +240,11 @@ public sealed class UsersController(
     /// <response code="204">User updated.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics/{*prefix}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAllowedTopic(string appId, string id, string prefix)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -260,7 +253,6 @@ public sealed class UsersController(
         var command = new RemoveUserAllowedTopic { UserId = id, Prefix = prefix };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -273,12 +265,11 @@ public sealed class UsersController(
     /// <response code="204">User updated.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/mobilepush/{token}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteMobilePushToken(string appId, string id, string token)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -287,7 +278,6 @@ public sealed class UsersController(
         var command = new RemoveUserMobileToken { UserId = id, Token = token };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -300,12 +290,11 @@ public sealed class UsersController(
     /// <response code="204">User updated.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/webpush/{endpoint}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteWebPushSubscription(string appId, string id, string endpoint)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -314,7 +303,6 @@ public sealed class UsersController(
         var command = new RemoveUserWebPushSubscription { UserId = id, Endpoint = endpoint };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -326,14 +314,13 @@ public sealed class UsersController(
     /// <response code="204">User deleted.</response>.
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string appId, string id)
     {
         var command = new DeleteUser { UserId = id };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 

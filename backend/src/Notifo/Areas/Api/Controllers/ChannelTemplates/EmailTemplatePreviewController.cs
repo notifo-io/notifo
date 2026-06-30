@@ -45,11 +45,10 @@ public class EmailTemplatePreviewController(
     /// <response code="404">Channel template not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/email-templates/{id:notEmpty}/preview")]
     [Produces("text/html")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> GetPreview(string appId, string id)
     {
         var template = await emailTemplateStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
         if (template == null || template.Languages.Count == 0)
         {
             return NotFound();
@@ -74,7 +73,7 @@ public class EmailTemplatePreviewController(
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/email-templates/render")]
     [Produces(typeof(EmailPreviewDto))]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)
     {
         var response = new EmailPreviewDto();

@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using Google.Protobuf.WellKnownTypes;
 using NJsonSchema;
 using NJsonSchema.CodeGeneration;
 using NJsonSchema.CodeGeneration.CSharp;

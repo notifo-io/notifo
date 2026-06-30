@@ -23,49 +23,48 @@ public sealed class AppResolver : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var appPermission = context.ActionDescriptor.EndpointMetadata.OfType<AppPermissionAttribute>().FirstOrDefault();
-
-        if (appPermission != null && appPermission.RequiredAppRoles.Length > 0)
+        var appPermission = context.ActionDescriptor.EndpointMetadata.OfType<AutorizeAppUserAttribute>().FirstOrDefault();
+        if (appPermission == null)
         {
-            string? appId;
+            await next();
+            return;
+        }
 
-            if (context.RouteData.Values.TryGetValue("appId", out var appIdValue))
+        string? appId;
+        if (context.RouteData.Values.TryGetValue("appId", out var appIdValue))
+        {
+            appId = appIdValue?.ToString();
+
+            if (string.IsNullOrWhiteSpace(appId))
             {
-                appId = appIdValue?.ToString();
-
-                if (string.IsNullOrWhiteSpace(appId))
-                {
-                    context.Result = new NotFoundResult();
-                    return;
-                }
+                context.Result = new NotFoundResult();
+                return;
             }
-            else
+        }
+        else
+        {
+            appId = context.HttpContext.User.AppId();
+        }
+
+        if (!string.IsNullOrWhiteSpace(appId))
+        {
+            var appStore = context.HttpContext.RequestServices.GetRequiredService<IAppStore>();
+
+            var app = await appStore.GetAsync(appId, context.HttpContext.RequestAborted);
+            if (app == null)
             {
-                appId = context.HttpContext.User.AppId();
+                context.Result = new NotFoundResult();
+                return;
             }
 
-            if (!string.IsNullOrWhiteSpace(appId))
+            var currentRoles = GetRoles(app, context.HttpContext.User);
+            if (currentRoles.Count == 0 || !appPermission.RequiredAppRoles.Any(x => currentRoles.Contains(x)))
             {
-                var appStore = context.HttpContext.RequestServices.GetRequiredService<IAppStore>();
-
-                var app = await appStore.GetAsync(appId, context.HttpContext.RequestAborted);
-
-                if (app == null)
-                {
-                    context.Result = new NotFoundResult();
-                    return;
-                }
-
-                var currentRoles = GetRoles(app, context.HttpContext.User);
-
-                if (currentRoles.Count == 0 || !appPermission.RequiredAppRoles.Any(x => currentRoles.Contains(x)))
-                {
-                    context.Result = new ForbidResult();
-                    return;
-                }
-
-                context.HttpContext.Features.Set<IAppFeature>(new AppFeature { App = app });
+                context.Result = new ForbidResult();
+                return;
             }
+
+            context.HttpContext.Features.Set<IAppFeature>(new AppFeature { App = app });
         }
 
         await next();
@@ -76,7 +75,6 @@ public sealed class AppResolver : IAsyncActionFilter
         var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         var subject = user.Sub();
-
         if (subject != null)
         {
             if (app.Contributors.TryGetValue(subject, out var role) && !string.IsNullOrWhiteSpace(role))

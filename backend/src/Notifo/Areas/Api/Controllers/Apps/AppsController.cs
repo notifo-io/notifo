@@ -25,7 +25,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// </summary>
     /// <response code="200">Apps returned.</response>.
     [HttpGet("api/apps")]
-    [AppPermission]
+    [AuthorizeUser]
     [Produces(typeof(List<AppDto>))]
     public async Task<IActionResult> GetApps()
     {
@@ -50,7 +50,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> GetApp(string appId)
     {
@@ -66,7 +66,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App auth settings returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/auth")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(AuthSchemeValueDto))]
     public IActionResult GetAuthScheme(string appId)
     {
@@ -83,7 +83,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App auth settings returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPut("api/apps/{appId:notEmpty}/auth")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(AuthSchemeValueDto))]
     public async Task<IActionResult> UpsertAuthScheme(string appId, [FromBody] AuthSchemeValueDto request)
     {
@@ -102,7 +102,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <param name="request">The request object.</param>
     /// <response code="200">App created.</response>.
     [HttpPost("api/apps/")]
-    [AppPermission]
+    [AuthorizeHostAdmin]
     [Produces(typeof(AppDto))]
     public async Task<IActionResult> PostApp([FromBody] UpsertAppDto request)
     {
@@ -111,7 +111,6 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
         var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = AppDto.FromDomainObject(app!, command.PrincipalId);
-
         return Ok(response);
     }
 
@@ -123,7 +122,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App updated.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
     {
@@ -144,7 +143,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">Apps returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/contributors")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppOwner)]
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> PostContributor(string appId, [FromBody] AddContributorDto request)
     {
@@ -165,7 +164,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">Apps returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/contributors/{contributorId:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> DeleteContributor(string appId, string contributorId)
     {
@@ -185,7 +184,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App email templates returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/integrations")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ConfiguredIntegrationsDto))]
     public IActionResult GetIntegrations(string appId)
     {
@@ -202,7 +201,7 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="200">App integration created.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/integration/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(IntegrationCreatedDto))]
     public async Task<IActionResult> PostIntegration(string appId, [FromBody] CreateIntegrationDto request)
     {
@@ -224,14 +223,13 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="204">App integration updated.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPut("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
     {
         var command = request.ToUpdate(id);
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -243,14 +241,13 @@ public sealed class AppsController(IAppStore appStore, IUserResolver userResolve
     /// <response code="204">App integration deleted.</response>.
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteIntegration(string appId, string id)
     {
         var command = new DeleteAppIntegration { IntegrationId = id };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 }

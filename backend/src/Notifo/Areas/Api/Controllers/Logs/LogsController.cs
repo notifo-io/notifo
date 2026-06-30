@@ -24,7 +24,7 @@ public class LogsController(ILogStore logStore) : BaseController
     /// <response code="200">Log entries returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/logs/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<LogEntryDto>))]
     public async Task<IActionResult> GetLogs(string appId, [FromQuery] LogQueryDto q)
     {

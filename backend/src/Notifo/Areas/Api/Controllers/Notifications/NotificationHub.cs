@@ -16,7 +16,7 @@ using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
-[AppPermission(NotifoRoles.AppUser)]
+[AutorizeAppUser(NotifoRoles.AppUser)]
 public sealed class NotificationHub(
     IUserNotificationStore userNotificationsStore,
     IUserNotificationService userNotificationService)

@@ -27,7 +27,7 @@ public sealed class TopicsController(ITopicStore topicStore) : BaseController
     /// <response code="200">Topics returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/topics/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TopicDto>))]
     public async Task<IActionResult> GetTopics(string appId, [FromQuery] TopicQueryDto q)
     {
@@ -48,7 +48,7 @@ public sealed class TopicsController(ITopicStore topicStore) : BaseController
     /// <param name="request">The upsert request.</param>
     /// <response code="200">Named topics upserted.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/topics/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<TopicDto>))]
     public async Task<IActionResult> PostTopics(string appId, [FromBody] UpsertTopicsDto request)
     {
@@ -73,7 +73,7 @@ public sealed class TopicsController(ITopicStore topicStore) : BaseController
     /// <param name="path">The path of the topic to delete.</param>
     /// <response code="204">Topic deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/topics/{*path}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTopic(string appId, string path)
     {

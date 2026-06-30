@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
@@ -25,7 +26,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// </summary>
     /// <response code="200">User returned.</response>.
     [HttpGet("api/me")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ProfileDto))]
     public async Task<IActionResult> GetUser()
     {
@@ -37,13 +38,13 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     }
 
     /// <summary>
-    /// Get the current admin user.
+    /// Get the token for the internal notifo app.
     /// </summary>
     /// <response code="200">User returned.</response>.
-    [HttpGet("api/me/admin")]
-    [AppPermission]
+    [HttpGet("api/me/token")]
+    [AuthorizeUser]
     [Produces(typeof(AdminProfileDto))]
-    public async Task<IActionResult> GetAdminUser()
+    public async Task<IActionResult> GetInternalToken()
     {
         var token = await integratedApp.GetTokenAsync(UserIdOrSub, HttpContext.RequestAborted);
 
@@ -61,7 +62,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// <param name="request">The upsert request.</param>
     /// <response code="200">Users upserted.</response>.
     [HttpPost("api/me")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ProfileDto))]
     public async Task<IActionResult> PostUser([FromBody] UpdateProfileDto request)
     {
@@ -80,7 +81,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// <param name="language">The optional language.</param>
     /// <response code="200">User subscriptions returned.</response>.
     [HttpGet("api/me/topics")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(UserTopicDto[]))]
     public async Task<IActionResult> GetTopics(string? language = null)
     {
@@ -97,7 +98,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// <param name="q">The query object.</param>
     /// <response code="200">User subscriptions returned.</response>.
     [HttpGet("api/me/subscriptions")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<SubscriptionDto>))]
     public async Task<IActionResult> GetMySubscriptions([FromQuery] SubscriptionQueryDto q)
     {
@@ -121,12 +122,11 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
     [HttpGet("api/me/subscriptions/{*topic}")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(SubscriptionDto))]
     public async Task<IActionResult> GetMySubscription(string topic)
     {
         var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
-
         if (subscription == null)
         {
             return NotFound();
@@ -146,7 +146,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
     [HttpPost("api/me/subscriptions")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMySubscriptions([FromBody] SubscribeManyDto request)
     {
@@ -176,7 +176,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
     [HttpPost("api/me/subscriptions/{*prefix}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string prefix)
     {

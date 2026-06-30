@@ -18,12 +18,11 @@ public class IntegrationsController(IIntegrationManager integrationManager) : Co
     public async Task<IActionResult> GetImageAsync(string type)
     {
         var image = await integrationManager.GetImageAsync(type, HttpContext.RequestAborted);
-
-        if (image != null)
+        if (image == null)
         {
-            return File(image.Stream, image.ContentType);
+            return NotFound();
         }
 
-        return NotFound();
+        return File(image.Stream, image.ContentType);
     }
 }

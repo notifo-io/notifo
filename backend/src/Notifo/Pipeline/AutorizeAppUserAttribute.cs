@@ -5,19 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.AspNetCore.Authorization;
-using Notifo.Identity;
-
 namespace Notifo.Pipeline;
 
-public sealed class AppPermissionAttribute : AuthorizeAttribute
+public sealed class AutorizeAppUserAttribute(string role, params string[] extraRoles) 
+    : AuthorizeUserAttribute
 {
-    public string[] RequiredAppRoles { get; }
-
-    public AppPermissionAttribute(params string[] appRoles)
-    {
-        AuthenticationSchemes = Constants.IdentityServerOrApiKeyScheme;
-
-        RequiredAppRoles = appRoles;
-    }
+    public string[] RequiredAppRoles { get; } = new string[] { role }.Concat(extraRoles).ToArray();
 }

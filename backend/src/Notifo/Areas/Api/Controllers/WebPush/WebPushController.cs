@@ -17,25 +17,23 @@ public sealed class WebPushController : BaseController
 {
     [HttpPost("api/me/webpush")]
     [HttpPost("api/webpush")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterWebTokenDto request)
     {
         var command = request.ToUpdate(UserId);
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
     [HttpDelete("api/me/webpush")]
     [HttpDelete("api/webpush")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public async Task<IActionResult> DeleteMyToken([FromBody] UnregisterWebTokenDto request)
     {
         var command = request.ToDelete(UserId);
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 }

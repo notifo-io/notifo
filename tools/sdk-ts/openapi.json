@@ -1,5 +1,5 @@
 {
-  "x-generator": "NSwag v14.1.0.0 (NJsonSchema v11.0.2.0 (Newtonsoft.Json v13.0.0.0))",
+  "x-generator": "NSwag v14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
     "title": "Notifo API",
@@ -99,13 +99,13 @@
         "x-method-name": "postUser"
       }
     },
-    "/api/me/admin": {
+    "/api/me/token": {
       "get": {
         "tags": [
           "User"
         ],
-        "summary": "Get the current admin user.",
-        "operationId": "User_GetAdminUser",
+        "summary": "Get the token for the internal notifo app.",
+        "operationId": "User_GetInternalToken",
         "responses": {
           "200": {
             "description": "User returned.",
@@ -128,7 +128,7 @@
             }
           }
         },
-        "x-method-name": "getAdminUser"
+        "x-method-name": "getInternalToken"
       }
     },
     "/api/me/topics": {

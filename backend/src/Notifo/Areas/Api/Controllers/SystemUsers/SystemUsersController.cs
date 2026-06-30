@@ -25,7 +25,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="200">Users returned.</response>.
     [HttpGet("api/system-users/")]
     [Produces(typeof(ListResponseDto<SystemUserDto>))]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> GetUsers([FromQuery] QueryDto q)
     {
         var users = await userService.QueryAsync(q.Query, q.Take, q.Skip, HttpContext.RequestAborted);
@@ -46,11 +46,10 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="404">User not found.</response>.
     [HttpGet("api/system-users/{id:notEmpty}/")]
     [Produces(typeof(SystemUserDto))]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> GetUser(string id)
     {
         var user = await userService.FindByIdAsync(id, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -68,7 +67,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="201">User created.</response>.
     [HttpPost("api/system-users/")]
     [ProducesResponseType(typeof(SystemUserDto), StatusCodes.Status201Created)]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> PostUser([FromBody] CreateSystemUserDto request)
     {
         var user = await userService.CreateAsync(request.Email, request.ToValues(), ct: HttpContext.RequestAborted);
@@ -87,7 +86,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="403">User cannot be updated.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/")]
     [Produces(typeof(SystemUserDto))]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> PutUser(string id, [FromBody] UpdateSystemUserDto request)
     {
         if (IsUser(id))
@@ -110,7 +109,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="403">User cannot be locked.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/lock/")]
     [Produces(typeof(SystemUserDto))]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> LockUser(string id)
     {
         if (IsUser(id))
@@ -133,7 +132,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="403">User cannot be unlocked.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/unlock/")]
     [ProducesResponseType(typeof(SystemUserDto), 200)]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     public async Task<IActionResult> UnlockUser(string id)
     {
         if (IsUser(id))
@@ -155,7 +154,7 @@ public sealed class SystemUsersController(IUserService userService) : BaseContro
     /// <response code="204">User deleted.</response>.
     /// <response code="403">User cannot be deleted.</response>.
     [HttpDelete("api/system-users/{id:notEmpty}/")]
-    [AppPermission(NotifoRoles.HostAdmin)]
+    [AuthorizeHostAdmin]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string id)
     {

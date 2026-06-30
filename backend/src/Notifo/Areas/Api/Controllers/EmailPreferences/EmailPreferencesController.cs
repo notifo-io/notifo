@@ -23,7 +23,7 @@ public sealed class EmailPreferencesController(ISubscriptionStore subscriptionSt
     private static readonly TopicQuery TopicQuery = new TopicQuery { Scope = TopicQueryScope.Explicit };
 
     [HttpGet("api/email-preferences")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public async Task<IActionResult> EmailPreferences()
     {
         var vm = new EmailPreferencesVM
@@ -50,7 +50,7 @@ public sealed class EmailPreferencesController(ISubscriptionStore subscriptionSt
     }
 
     [HttpPost("api/email-preferences")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public async Task<IActionResult> Unsubscribe([FromForm] EmailPreferencesModel request)
     {
         if (!request.All)

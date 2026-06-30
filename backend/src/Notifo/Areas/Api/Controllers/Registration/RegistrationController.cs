@@ -22,7 +22,7 @@ namespace Notifo.Areas.Api.Controllers.Registration;
 public sealed class RegistrationController(IWebPushService webPushService) : BaseController
 {
     [HttpPost("api/web/register")]
-    [AppPermission(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
     {
         string? userId = null;

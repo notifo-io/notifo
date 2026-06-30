@@ -30,7 +30,7 @@ const logoutDoneRedirect = createAction('logout/redirect');
 
 export const loadProfile = createApiThunk('login/profile',
     () => {
-        return Clients.User.getAdminUser();
+        return Clients.User.getInternalToken();
     });
 
 export const loginStart = () => {

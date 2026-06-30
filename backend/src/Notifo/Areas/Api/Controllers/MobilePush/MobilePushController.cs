@@ -21,12 +21,11 @@ public sealed class MobilePushController(IUserStore userStore) : BaseController
     /// </summary>
     /// <response code="200">Mobile push tokens returned.</response>.
     [HttpGet("api/me/mobilepush")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
     public async Task<IActionResult> GetMyToken()
     {
         var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
-
         if (user == null)
         {
             return NotFound();
@@ -46,7 +45,7 @@ public sealed class MobilePushController(IUserStore userStore) : BaseController
     /// <param name="request">The request object.</param>
     /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/mobilepush")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush>")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -61,14 +60,13 @@ public sealed class MobilePushController(IUserStore userStore) : BaseController
     /// <param name="request">The request object.</param>
     /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/me/mobilepush")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
     {
         var command = request.ToUpdate(UserId);
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
-
         return NoContent();
     }
 
@@ -78,7 +76,7 @@ public sealed class MobilePushController(IUserStore userStore) : BaseController
     /// <param name="token">The token to remove.</param>
     /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/mobilepush/{token:notEmpty}")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -93,7 +91,7 @@ public sealed class MobilePushController(IUserStore userStore) : BaseController
     /// <param name="token">The token to remove.</param>
     /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteMyToken(string token)
     {

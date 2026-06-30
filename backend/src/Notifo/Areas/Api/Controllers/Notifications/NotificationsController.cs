@@ -31,7 +31,7 @@ public sealed class NotificationsController(
     /// <response code="200">User notifications returned.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/notifications")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
     public async Task<IActionResult> GetAllNotifications(string appId, [FromQuery] UserNotificationQueryDto q)
     {
@@ -54,7 +54,7 @@ public sealed class NotificationsController(
     /// <response code="200">User notifications returned.</response>.
     /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/notifications")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
     public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] UserNotificationQueryDto q)
     {
@@ -75,7 +75,7 @@ public sealed class NotificationsController(
     /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
     public async Task<IActionResult> GetMyNotifications([FromQuery] UserNotificationQueryDto q)
     {
@@ -96,7 +96,7 @@ public sealed class NotificationsController(
     /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications/archive")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
     public async Task<IActionResult> GetMyArchive([FromQuery] string? channel = null)
     {
@@ -117,7 +117,7 @@ public sealed class NotificationsController(
     /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications/device")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
     public async Task<IActionResult> GetMyDeviceNotifications([FromQuery] DeviceNotificationsQueryDto q)
     {
@@ -137,7 +137,7 @@ public sealed class NotificationsController(
     /// <param name="request">The request object.</param>
     /// <response code="204">Notifications updated.</response>.
     [HttpPost("api/me/notifications/handled")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
     {

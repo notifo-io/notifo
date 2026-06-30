@@ -31,7 +31,7 @@ public sealed class EventsController(
     /// <response code="200">Events returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/events/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<EventDto>))]
     public async Task<IActionResult> GetEvents(string appId, [FromQuery] EventQueryDto q)
     {
@@ -53,7 +53,7 @@ public sealed class EventsController(
     /// <response code="204">Events created.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/events/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
     {
@@ -80,7 +80,7 @@ public sealed class EventsController(
     /// <response code="204">Events cancelled, if found.</response>.
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/events/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(CancelResponseDto))]
     public async Task<IActionResult> CancelEvent(string appId, [FromBody] CancelEventDto request)
     {
@@ -101,7 +101,7 @@ public sealed class EventsController(
     /// <response code="204">Event created.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/me/events/")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)
     {

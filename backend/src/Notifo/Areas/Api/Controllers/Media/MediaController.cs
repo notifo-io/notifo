@@ -34,7 +34,7 @@ public sealed class MediaController(
     /// <response code="200">Media returned.</response>.
     /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/media/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<MediaDto>))]
     public async Task<IActionResult> GetMedias(string appId, [FromQuery] QueryDto q)
     {
@@ -63,7 +63,6 @@ public sealed class MediaController(
     public async Task<IActionResult> Download(string appId, string fileName, [FromQuery] MediaFileQueryDto? query = null)
     {
         var media = await mediaStore.GetAsync(appId, fileName, HttpContext.RequestAborted);
-
         if (media == null)
         {
             return NotFound();
@@ -99,7 +98,7 @@ public sealed class MediaController(
     /// <response code="201">Media uploaded.</response>.
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/media/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Upload(string appId, IFormFile file)
     {
@@ -118,12 +117,11 @@ public sealed class MediaController(
     /// <response code="204">Media deleted.</response>.
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(string appId, string fileName)
     {
         await mediaStore.DeleteAsync(appId, fileName, HttpContext.RequestAborted);
-
         return NoContent();
     }
 

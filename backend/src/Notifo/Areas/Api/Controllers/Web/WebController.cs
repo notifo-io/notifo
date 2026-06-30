@@ -30,7 +30,7 @@ public sealed class WebController(
     private readonly SignalROptions signalROptions = signalROptions.Value;
 
     [HttpPost("api/me/web/connect")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public IActionResult GetMyConnection()
     {
         var response = new ConnectDto
@@ -55,7 +55,7 @@ public sealed class WebController(
     }
 
     [HttpPost("api/me/web/poll")]
-    [AppPermission(NotifoRoles.AppUser)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     public async Task<IActionResult> GetMyPolling([FromBody] PollRequest request)
     {
         var requestToken = request.Token ?? default;

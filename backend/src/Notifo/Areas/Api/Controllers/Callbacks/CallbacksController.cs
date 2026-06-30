@@ -27,7 +27,6 @@ public sealed class CallbacksController(IAppStore appStore) : BaseController
         }
 
         var app = await appStore.GetCachedAsync(appId, HttpContext.RequestAborted);
-
         if (app == null)
         {
             return NotFound();
@@ -36,7 +35,6 @@ public sealed class CallbacksController(IAppStore appStore) : BaseController
         var integrationManager = HttpContext.RequestServices.GetRequiredService<IIntegrationManager>();
 
         await integrationManager.OnCallbackAsync(integrationId, app, HttpContext, default);
-
         return Ok();
     }
 }

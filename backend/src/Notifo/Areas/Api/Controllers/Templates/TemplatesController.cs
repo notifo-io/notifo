@@ -26,7 +26,7 @@ public sealed class TemplatesController(ITemplateStore templateStore) : BaseCont
     /// <param name="q">The query object.</param>
     /// <response code="200">Templates returned.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/templates/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TemplateDto>))]
     public async Task<IActionResult> GetTemplates(string appId, [FromQuery] QueryDto q)
     {
@@ -47,7 +47,7 @@ public sealed class TemplatesController(ITemplateStore templateStore) : BaseCont
     /// <param name="request">The upsert request.</param>
     /// <response code="200">Templates upserted.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/templates/")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<TemplateDto>))]
     public async Task<IActionResult> PostTemplates(string appId, [FromBody] UpsertTemplatesDto request)
     {
@@ -72,7 +72,7 @@ public sealed class TemplatesController(ITemplateStore templateStore) : BaseCont
     /// <param name="code">The template code to delete.</param>
     /// <response code="204">Template deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
-    [AppPermission(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {
