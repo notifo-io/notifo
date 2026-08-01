@@ -10,7 +10,7 @@ using EphemeralMongo;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.Fixtures;
 
 public abstract class MongoFixtureBase : IDisposable
 {
@@ -46,7 +46,7 @@ public abstract class MongoFixtureBase : IDisposable
 public static class MongoRunnerProvider
 #pragma warning restore MA0048 // File name must match type name
 {
-    private static readonly object LockObject = new object();
+    private static readonly Lock LockObject = new Lock();
     private static IMongoRunner? runner;
     private static int useCounter;
 

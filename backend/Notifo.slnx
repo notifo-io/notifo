@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/domain/">
+    <Project Path="src/Notifo.Domain.Integrations.Abstractions/Notifo.Domain.Integrations.Abstractions.csproj" />
+    <Project Path="src/Notifo.Domain.Integrations/Notifo.Domain.Integrations.csproj" />
+    <Project Path="src/Notifo.Domain/Notifo.Domain.csproj" />
+    <Project Path="src/Notifo.Identity/Notifo.Identity.csproj" />
+    <Project Path="src/Notifo.Infrastructure/Notifo.Infrastructure.csproj" />
+    <Project Path="tests/Notifo.Domain.Tests/Notifo.Domain.Tests.csproj" />
+    <Project Path="tests/Notifo.Identity.Tests/Notifo.Identity.Tests.csproj" />
+    <Project Path="tests/Notifo.Infrastructure.Tests/Notifo.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Project Path="src/Notifo/Notifo.csproj" />
+  <Project Path="tests/Benchmarks/Benchmarks.csproj" />
+</Solution>

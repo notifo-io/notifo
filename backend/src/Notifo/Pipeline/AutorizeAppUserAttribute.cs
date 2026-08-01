@@ -7,7 +7,7 @@
 
 namespace Notifo.Pipeline;
 
-public sealed class AutorizeAppUserAttribute(string role, params string[] extraRoles) 
+public sealed class AutorizeAppUserAttribute(string role, params string[] extraRoles)
     : AuthorizeUserAttribute
 {
     public string[] RequiredAppRoles { get; } = new string[] { role }.Concat(extraRoles).ToArray();

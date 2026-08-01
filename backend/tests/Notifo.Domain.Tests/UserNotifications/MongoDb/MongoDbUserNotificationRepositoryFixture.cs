@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Notifo.Domain.Fixtures;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 

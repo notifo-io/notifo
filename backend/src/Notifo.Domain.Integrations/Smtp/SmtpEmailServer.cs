@@ -54,12 +54,12 @@ public class SmtpEmailServer(SmtpOptions options) : IDisposable
                 {
                     new TextPart(TextFormat.Plain)
                     {
-                        Text = message.BodyText
+                        Text = message.BodyText!
                     },
 
                     new TextPart(TextFormat.Html)
                     {
-                        Text = message.BodyHtml
+                        Text = message.BodyHtml!
                     }
                 };
             }
@@ -67,14 +67,14 @@ public class SmtpEmailServer(SmtpOptions options) : IDisposable
             {
                 smtpMessage.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = message.BodyHtml
+                    Text = message.BodyHtml!
                 };
             }
             else if (hasText)
             {
                 smtpMessage.Body = new TextPart(TextFormat.Plain)
                 {
-                    Text = message.BodyText
+                    Text = message.BodyText!
                 };
             }
             else

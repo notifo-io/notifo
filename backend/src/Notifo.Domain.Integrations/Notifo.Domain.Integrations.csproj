@@ -19,16 +19,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
-    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.10" />
+    <PackageReference Include="MongoDB.Driver" Version="3.10.0" />
     <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="OpenNotifications" Version="0.3.0" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="System.Net.Http.Json" Version="10.0.8" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" Version="10.0.8" />
     <PackageReference Include="Telegram.Bot" Version="22.10.0.1" />
     <PackageReference Include="Twilio" Version="7.14.9" />
   </ItemGroup>

@@ -23,7 +23,7 @@ public sealed class FirebaseMessagingWrapper : IDisposable
         {
             ProjectId = projectId,
             // Credentials are provided as a JSON string.
-            Credential = GoogleCredential.FromJson(credentials),
+            Credential = CredentialFactory.FromJson<GoogleCredential>(credentials),
         };
 
         app = FirebaseApp.Create(appOptions, Guid.NewGuid().ToString());

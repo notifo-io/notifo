@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications.MongoDb;
+using Notifo.Domain.Fixtures;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 

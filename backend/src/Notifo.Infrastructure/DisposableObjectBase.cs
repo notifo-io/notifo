@@ -9,7 +9,7 @@ namespace Notifo.Infrastructure;
 
 public abstract class DisposableObjectBase : IDisposable
 {
-    private readonly object disposeLock = new object();
+    private readonly Lock disposeLock = new Lock();
 
     public bool IsDisposed { get; private set; }
 
