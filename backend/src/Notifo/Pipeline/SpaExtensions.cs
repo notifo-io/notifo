@@ -15,14 +15,12 @@ public static class SpaExtensions
     public static string AddOptions(this string html, HttpContext httpContext)
     {
         const string Placeholder = "/* INJECT OPTIONS */";
-
         if (!html.Contains(Placeholder, StringComparison.Ordinal))
         {
             return html;
         }
 
         var spaOptions = httpContext.RequestServices.GetService<IOptions<SpaOptions>>()?.Value;
-
         if (spaOptions != null)
         {
             var serializer = httpContext.RequestServices.GetRequiredService<IJsonSerializer>();

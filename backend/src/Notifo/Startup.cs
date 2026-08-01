@@ -17,6 +17,7 @@ using Notifo.Areas.Frontend;
 using Notifo.Domain;
 using Notifo.Domain.Utils;
 using Notifo.Pipeline;
+using Squidex.Hosting.Ssrf;
 
 namespace Notifo;
 
@@ -33,6 +34,7 @@ public class Startup(IConfiguration config)
         services.AddDefaultForwardRules();
         services.AddCors();
         services.AddMediator().AddPipeline();
+        services.AddSsrfProtectedHttpClient(config);
 
         services.AddLocalization(options =>
         {
@@ -62,12 +64,11 @@ public class Startup(IConfiguration config)
         services.AddHttpContextAccessor();
 
         services.AddHttpClient("Unsafe")
+            .EnableSsrfProtection()
             .ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler
                 {
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-
                     // Decompress response so we can open the image.
                     AutomaticDecompression = DecompressionMethods.All
                 };

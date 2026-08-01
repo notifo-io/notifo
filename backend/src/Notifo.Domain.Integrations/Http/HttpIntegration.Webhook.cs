@@ -24,17 +24,16 @@ public sealed partial class HttpIntegration : IWebhookSender
             return DeliveryResult.Skipped();
         }
 
+        var httpClient = httpClientFactory.CreateClient("Unsafe");
+
         var httpUrl = HttpUrlProperty.GetString(context.Properties);
         var httpMethod = HttpMethodProperty.GetString(context.Properties);
-
-        var client = httpClientFactory.CreateClient();
-
-        var request = new HttpRequestMessage(new HttpMethod(httpMethod), httpUrl)
+        var httpRequest = new HttpRequestMessage(new HttpMethod(httpMethod), httpUrl)
         {
             Content = JsonContent.Create(message.Payload)
         };
 
-        await client.SendAsync(request, ct);
+        await httpClient.SendAsync(httpRequest, ct);
 
         return DeliveryResult.Handled;
     }

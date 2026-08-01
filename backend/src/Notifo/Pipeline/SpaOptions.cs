@@ -9,5 +9,4 @@ namespace Notifo.Pipeline;
 
 public sealed class SpaOptions
 {
-    public string? MarkerProject { get; set; }
 }
