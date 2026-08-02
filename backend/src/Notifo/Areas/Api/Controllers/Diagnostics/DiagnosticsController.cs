@@ -25,7 +25,6 @@ public sealed class DiagnosticsController(Diagnoser dumper) : BaseController
     /// <response code="501">Not configured.</response>.
     [HttpGet]
     [Route("api/diagnostics/dump")]
-    [AuthorizeHostAdmin]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetDump()
     {
@@ -45,7 +44,6 @@ public sealed class DiagnosticsController(Diagnoser dumper) : BaseController
     /// <response code="501">Not configured.</response>.
     [HttpGet]
     [Route("api/diagnostics/gcdump")]
-    [AuthorizeHostAdmin]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetGCDump()
     {
