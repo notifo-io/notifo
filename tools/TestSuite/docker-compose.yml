@@ -16,6 +16,7 @@ services:
       - ASSETS__RESIZERURL=http://resizer:9000
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
+      - SSRF__WHITELISTEDHOSTS__0=*
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
     networks:
@@ -34,6 +35,7 @@ services:
       - ASSETS__RESIZERURL=http://resizer:9000
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
+      - SSRF__WHITELISTEDHOSTS__0=*
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
       - MESSAGING__TYPE=GooglePubSub
