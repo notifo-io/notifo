@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="../sdk-dotnet/CodeGenerator/CodeGenerator.csproj" />
+  <Project Path="../sdk-dotnet/Notifo.SDK.Tests/Notifo.SDK.Tests.csproj" />
+  <Project Path="../sdk-dotnet/Notifo.SDK/Notifo.SDK.csproj" />
+  <Project Path="TestSuite.ApiTests/TestSuite.ApiTests.csproj" />
+  <Project Path="TestSuite.LoadTests/TestSuite.LoadTests.csproj" />
+  <Project Path="TestSuite.Shared/TestSuite.Shared.csproj" />
+</Solution>

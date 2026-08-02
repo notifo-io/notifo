@@ -15,7 +15,6 @@
     <PackageReference Include="NSwag.Core" Version="14.7.1" />
     <PackageReference Include="Squidex.Assets" Version="8.0.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="System.Net.Http.Json" Version="10.0.8" />
     <PackageReference Include="Verify.Xunit" Version="31.12.5" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">

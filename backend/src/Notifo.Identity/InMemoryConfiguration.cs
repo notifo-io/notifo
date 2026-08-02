@@ -67,13 +67,6 @@ public static class InMemoryConfiguration
         return sb.ToString();
     }
 
-    public static OpenIddictApplicationDescriptor SetAdmin(this OpenIddictApplicationDescriptor application)
-    {
-        application.Properties[ClaimTypes.Role] = (JsonElement)new OpenIddictParameter(NotifoRoles.HostAdmin);
-
-        return application;
-    }
-
     public sealed class Scopes : InMemoryScopeStore
     {
         public Scopes()
@@ -154,6 +147,10 @@ public static class InMemoryConfiguration
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
                     Constants.ApiScope
+                },
+                Properties =
+                {
+                    [OpenIddictConstants.Claims.Role] = (JsonElement)new OpenIddictParameter(NotifoRoles.HostAdmin),
                 }
             });
         }

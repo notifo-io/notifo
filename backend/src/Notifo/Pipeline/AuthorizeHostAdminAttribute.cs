@@ -10,11 +10,9 @@ using Notifo.Identity;
 
 namespace Notifo.Pipeline;
 
-public class AuthorizeHostAdminAttribute : AuthorizeUserAttribute
+public sealed class AuthorizeHostAdminAttribute : AuthorizeUserAttribute
 {
-    public string[] RequiredAppRoles { get; }
-
-    public AuthorizeHostAdminAttribute(params string[] roles)
+    public AuthorizeHostAdminAttribute()
     {
         AuthenticationSchemes = Constants.IdentityServerOrApiKeyScheme;
 
