@@ -1,14 +1,14 @@
 #
 # Stage 1, Build Backend
 #
-FROM mcr.microsoft.com/dotnet/sdk:10.0 as backend
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS backend
 
 ARG NOTIFO__BUILD__VERSION=1.0.0
 
 WORKDIR /src
 
 # Copy nuget project files.
-COPY backend/*.sln ./
+COPY backend/*.slnx ./
 
 # Copy the main source project files
 COPY backend/src/*/*.csproj ./
@@ -40,7 +40,7 @@ RUN dotnet tool install --tool-path /tools dotnet-counters \
 #
 # Stage 2, Build Frontend
 #
-FROM squidex/frontend-build:18.10 as frontend
+FROM squidex/frontend-build:18.10 AS frontend
 
 WORKDIR /src
 
