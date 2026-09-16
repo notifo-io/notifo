@@ -17,7 +17,7 @@ public readonly record struct TrackingToken(Guid UserNotificationId, string? Cha
 
     public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default, string? configuration = null)
     {
-        TryParse(id, channel, configurationId, configuration, out var result);
+        _ = TryParse(id, channel, configurationId, configuration, out var result);
 
         return result;
     }

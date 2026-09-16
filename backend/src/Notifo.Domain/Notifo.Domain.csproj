@@ -17,20 +17,20 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="Fluid.Core" Version="2.31.0" />
-    <PackageReference Include="Jint" Version="4.9.3" />
-    <PackageReference Include="libphonenumber-csharp" Version="9.0.32" />
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.101">
+    <PackageReference Include="Fluid.Core" Version="2.40.0" />
+    <PackageReference Include="Jint" Version="4.16.2" />
+    <PackageReference Include="libphonenumber-csharp" Version="9.0.39" />
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.259">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.10" />
-    <PackageReference Include="Mjml.Net" Version="4.13.0" />
-    <PackageReference Include="Mjml.Net.PostProcessors" Version="4.13.0" />
-    <PackageReference Include="MongoDB.Driver" Version="3.10.0" />
-    <PackageReference Include="NodaTime" Version="3.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.12" />
+    <PackageReference Include="Mjml.Net" Version="4.14.0" />
+    <PackageReference Include="Mjml.Net.PostProcessors" Version="4.14.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.11.2" />
+    <PackageReference Include="NodaTime" Version="3.3.4" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="WebPush" Version="1.0.13" />

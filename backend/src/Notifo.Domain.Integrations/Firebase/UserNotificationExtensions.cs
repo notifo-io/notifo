@@ -17,7 +17,9 @@ public static class UserNotificationExtensions
     {
         var message = new Message
         {
+#pragma warning disable CS0618 // The device token is an FCM registration token, not an installation ID.
             Token = source.DeviceToken
+#pragma warning restore CS0618
         };
 
         if (source.Wakeup)

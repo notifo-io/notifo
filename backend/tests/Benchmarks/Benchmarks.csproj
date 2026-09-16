@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageReference Include="FakeItEasy" Version="9.0.1" />
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.101">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.259">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

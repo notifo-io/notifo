@@ -16,5 +16,8 @@ public static class VerifySettings
     {
         VerifierSettings.DontScrubSolutionDirectory();
         VerifierSettings.DontScrubProjectDirectory();
+
+        // Firebase marks the message token as obsolete, but it is still what we send.
+        VerifierSettings.IncludeObsoletes();
     }
 }

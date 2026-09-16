@@ -44,7 +44,7 @@ public static class LiquidCache
             }
         }
 
-        Parser.TryParse(input, out var template, out var errorMessage);
+        _ = Parser.TryParse(input, out var template, out var errorMessage);
 
         var error = LiquidErrorParser.Parse(errorMessage);
 
