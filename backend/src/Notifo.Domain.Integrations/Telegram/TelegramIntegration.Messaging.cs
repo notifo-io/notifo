@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Notifo.Domain.Integrations.Resources;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.Enums;
 using TelegramChat = Telegram.Bot.Types.Chat;
 using TelegramUpdate = Telegram.Bot.Types.Update;
@@ -57,7 +58,16 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
             {
                 var client = clientPool.GetBotClient(accessToken);
 
-                await client.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                try
+                {
+                    await client.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                }
+                catch (ApiRequestException ex) when (ex.Message.Contains("parse entities", StringComparison.OrdinalIgnoreCase))
+                {
+                    // The text is not valid markdown, therefore we send it as plain text instead of losing the message.
+                    await client.SendMessage(chatId, text, cancellationToken: ct);
+                }
+
                 break;
             }
             catch (ObjectDisposedException)

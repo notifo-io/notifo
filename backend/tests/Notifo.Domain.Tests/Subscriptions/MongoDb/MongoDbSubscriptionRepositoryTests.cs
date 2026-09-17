@@ -241,6 +241,17 @@ public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : IAsyncLi
         return repository.UpsertAsync(subscription);
     }
 
+    [Fact]
+    public async Task Should_throw_exception_if_query_is_cancelled()
+    {
+        await SubscribeAsync(userId1, topic);
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ToList(repository.QueryAsync(appId, topic, null, cts.Token)));
+    }
+
     private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)
     {
         var list = new List<T>();

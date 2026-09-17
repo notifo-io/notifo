@@ -50,7 +50,7 @@ public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStor
 
             using (var cursor = await find.ToCursorAsync(ct))
             {
-                while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
+                while (await cursor.MoveNextAsync(ct))
                 {
                     foreach (var user in cursor.Current)
                     {

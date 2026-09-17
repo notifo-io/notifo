@@ -15,6 +15,9 @@ namespace Notifo.Domain.Integrations.Mailchimp;
 
 public sealed partial class MailchimpIntegration : IEmailSender
 {
+    // Unknown values must not throw, therefore the status is not deserialized to an enum.
+    private static readonly string[] AcceptedStates = ["sent", "queued", "scheduled"];
+
     private sealed class ResponseMessage
     {
         [JsonPropertyName("email")]
@@ -24,16 +27,7 @@ public sealed partial class MailchimpIntegration : IEmailSender
         public string Reason { get; set; }
 
         [JsonPropertyName("status")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ResponseStatus Status { get; set; }
-    }
-
-    private enum ResponseStatus
-    {
-        Sent,
-        Queued,
-        Rejected,
-        Invalid
+        public string Status { get; set; }
     }
 
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage message,
@@ -81,7 +75,8 @@ public sealed partial class MailchimpIntegration : IEmailSender
             var response = responses[0];
             var responseType = response.Status;
 
-            if (responseType != ResponseStatus.Sent)
+            // Queued and scheduled messages are delivered by mailchimp later.
+            if (!AcceptedStates.Contains(responseType, StringComparer.OrdinalIgnoreCase))
             {
                 var errorMessage =
                     string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error,

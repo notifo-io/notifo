@@ -33,46 +33,75 @@ Paths are relative to `backend/src/`. Each item has a status: **Fixed**, **By de
 
 ## Round 2
 
-1. **Open: seen state is never pushed to iOS devices**
-   - **Where:** `Channels/MobilePush/MobilePushChannel.cs:53`
-   - **Bug:** `HandleSeenAsync` is missing the `!` before `TryGetValue`. It returns exactly when a token exists.
+| # | Status | Issue |
+|---|--------|-------|
+| 1 | Fixed | **Seen state was never pushed to iOS devices.** `MobilePushChannel.cs`: `HandleSeenAsync` was missing the `!` before `TryGetValue`. Covered by `MobilePushChannelTests`. |
+| 2 | Fixed | **Mailchimp treated accepted emails as failed.** `queued` and `scheduled` are accepted now, and the status is no longer deserialized to an enum, so unknown values do not throw. Not tested (needs the Mandrill API). |
+| 3 | Fixed | **Telegram rejected messages with special characters.** The text is sent again as plain text when Telegram cannot parse the markdown. Not tested (needs the Telegram API). |
+| 4 | Fixed | **Discord turned temporary errors into permanent failures.** Rate limits, 5xx responses and timeouts are thrown now, so the scheduler retries them. Not tested (needs the Discord API). |
+| 5 | Fixed | **Grouped emails were sent before their own delay.** `EnqueueGroupedAsync` raises the due time of the batch to the due time of the last job (`$max`). |
+| 6 | Fixed | **One invalid event dropped its whole group.** `UserNotificationService` now takes the last event of the group that produces a notification. |
+| 7 | Fixed | **Exhausted user event jobs were never marked failed.** `HandleExceptionAsync` tracks a failure for every job of the batch. |
+| 8 | Fixed | **SMS status was not updated when the app was missing.** The jobs are marked as `Handled`, like in the other channels. |
+| 9 | Fixed | **A cancelled fan-out counted as complete.** The cursor loops no longer swallow the cancellation. |
+| 10 | Partly fixed | **Non-grouped scheduling.** A job scheduled again with an earlier due time now updates the batch (`$min`). **Still open:** there is no unique index on the group key, so two nodes enqueuing at the same time can insert duplicate batches and send the message twice. |
 
-2. **Open: Mailchimp treats accepted emails as failed**
-   - **Where:** `Notifo.Domain.Integrations/Mailchimp/MailchimpIntegration.Email.cs:84`
-   - **`queued`:** The status is treated as a permanent failure, although Mandrill still delivers the email.
-   - **`scheduled`:** The status is missing from the enum. Deserialization throws, the job is retried, and the email is sent again.
+## Round 3
 
-3. **Open: Telegram rejects messages with special characters**
-   - **Where:** `Notifo.Domain.Integrations/Telegram/TelegramIntegration.Messaging.cs:60`
-   - **Bug:** Text is sent with `ParseMode.Markdown` without escaping.
-   - **Example:** A lone `_`, `*` or `[` (common in URLs) makes Telegram return 400 on every attempt.
+All items verified in the code and open. Paths are relative to `backend/src/`.
 
-4. **Open: Discord turns temporary errors into permanent failures**
-   - **Where:** `Notifo.Domain.Integrations/Discord/DiscordIntegration.Messaging.cs:93-98`
-   - **Bug:** The catch-all retries 5 times immediately, including after timeouts and 5xx responses, then returns `Failed`. The scheduler never gets a chance to retry.
+1. **Open: a malformed tracking token returns HTTP 500 and the event is lost**
+   - **Where:** `Notifo.Domain/TrackingToken.cs:49`
+   - **Bug:** The guard is `decoded.Length >= 1` but then reads `decoded[1]`, and the catch only handles `FormatException`.
+   - **Example:** A seen, delivered or confirm call with a base64 id that contains no `|` throws `IndexOutOfRangeException`. The confirmation is lost, so the channels that react to it never send.
 
-5. **Open: grouped emails are sent before their own delay**
-   - **Where:** `MongoDbSchedulerStore.EnqueueGroupedAsync` together with `Channels/Email/EmailChannel.cs:67`
-   - **Bug:** A job joins any pending batch that is due earlier, so its delay and `IfNotSeen` window are shortened.
+2. **Open: pending integrations are never verified, so their notifications are dropped**
+   - **Where:** `Notifo.Domain/Integrations/IntegrationManager.cs:243-256`
+   - **Bug:** The result of `CheckStatusAsync` is discarded, and `status != configured.Status` compares a copy with itself, so it is never true. `newStatus` is assigned and never used.
+   - **Example:** An Amazon SES integration stays `Pending` after AWS has confirmed the sender address. `Resolve` skips it and every email of that app is dropped.
 
-6. **Open: one invalid event drops its whole group**
-   - **Where:** `UserNotifications/UserNotificationService.cs:47, 91-96`
-   - **Bug:** If the factory returns null for the last job in a group, all child events of that batch are dropped and the batch is completed.
+3. **Open: the "already handled" check never matches**
+   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/MongoDbUserNotificationRepository.cs:135, 155, 173`
+   - **Bug:** The filter compares the status as a number, while `StatusDictionarySerializer` stores it as a string.
+   - **Example:** A delayed job asks `IsHandledAsync`, gets false although the channel already reported `Handled`, and sends the notification twice.
 
-7. **Open: exhausted user event jobs are never marked failed**
-   - **Where:** `UserNotifications/UserNotificationService.cs:39`
-   - **Bug:** `HandleExceptionAsync` is a no-op. Jobs that run out of attempts, for example after crashes, never get the `Failed` status.
+4. **Open: a dot in the schedule key destroys a mobile push job**
+   - **Where:** `Notifo.Domain/Channels/MobilePush/MobilePushJob.cs:22-30`, used as a field path in `MongoDbSchedulerStore.cs:128`
+   - **Bug:** The key contains the raw user id and group key. MongoDB treats a dot as a path separator, so the job is nested and comes back without its notification.
+   - **Example:** A user id like `john.doe` makes the push fail with a `NullReferenceException` in `SchedulingChannelBase.HandleAsync`, and the notification is never marked failed.
 
-8. **Open: SMS status is not updated when the app is missing**
-   - **Where:** `Channels/Sms/SmsChannel.cs:115`
-   - **Bug:** The channel only returns, so the notification stays at `Unknown`. Email and Messaging mark it `Handled` in this case.
+5. **Open: dead Firebase tokens are kept and retried forever**
+   - **Where:** `Notifo.Domain.Integrations/Firebase/FirebaseIntegration.MobilePush.cs:49-52`
+   - **Bug:** Only `Unregistered` is mapped to `MobilePushTokenExpiredException`, which is the only case that removes a token.
+   - **Example:** After a Firebase project change, tokens rejected with `SenderIdMismatch` burn all retries of every future notification and are never removed.
 
-9. **Open: cancelled fan-out to all users counts as complete**
-   - **Where:** `Users/MongoDb/MongoDbUserRepository.cs:53`, `Subscriptions/MongoDb/MongoDbSubscriptionRepository.cs:85`
-   - **Bug:** `while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)` exits without throwing.
-   - **Example:** For `users/all`, the fan-out ends normally on shutdown and is marked published, so the remaining users never get the event.
+6. **Open: skipped deliveries stay at `Attempt`**
+   - **Where:** `Notifo.Domain/Channels/MobilePush/MobilePushChannel.cs:191` (the same `> DeliveryStatus.Attempt` check is used in the other channels)
+   - **Bug:** `Skipped` is 1 and `Attempt` is 2, so a skipped result is never written.
+   - **Example:** A silent push to a device type with silent push disabled stays pending forever.
 
-10. **Open: non-grouped scheduling problems**
-    - **Where:** `MongoDbSchedulerStore.EnqueueAsync`
-    - **Due time:** A reschedule with the same key cannot change the due time, because `DueTime` is only set on insert.
-    - **Duplicates:** There is no unique index, so two nodes enqueuing at the same time can insert duplicate batches, and the message is sent twice.
+7. **Open: web push loses the status code of an error**
+   - **Where:** `Notifo.Domain/Channels/WebPush/WebPushChannel.cs:168-171`
+   - **Bug:** Every `WebPushException` other than 404 and 410 becomes a `DomainException`, so a 429 or 503 is a permanent failure and is never retried.
+   - **Also:** The early return for updates at line 70 makes the `IsUpdate` branches at lines 94-101 dead code, so web push never delivers updates.
+
+8. **Open: the app notification list hides everything with a correlation ID**
+   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/MongoDbUserNotificationRepository.cs:416-423`
+   - **Bug:** The else branch adds `CorrelationId >= null`, which only matches null or missing values.
+   - **Example:** Notifications from events published with a correlation ID are missing from the app view, although they were delivered.
+
+9. **Open: repeated seen calls trigger the channels again**
+   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/TrackingBatch.cs:261-264`
+   - **Bug:** `ShouldUpdate` is correct for `Updated` but inverted for the `First*` fields, so an already seen notification still reports a change.
+   - **Example:** Every seen ping from a client runs `HandleSeenAsync` again, which schedules another iOS wakeup.
+
+10. **Open: log entries are lost and a failed log write aborts the delivery**
+    - **Where:** `Notifo.Domain/Log/Internal/LogCollector.cs:56-59, 89-98`
+    - **Bug:** `StopAsync` does not flush, the queue is cleared before the write, and the exception is not caught, unlike in `StatisticsCollector`.
+    - **Example:** A short database problem during a flush makes `LogStore.LogAsync` throw inside the send path and aborts the user event.
+
+### Also noted
+
+- **`MobilePushChannel.cs:126-139`:** iOS wakeup jobs are tracked like real notifications, which roughly doubles the mobile push counters for iOS users.
+- **`Users/AddUserMobileToken.cs:36-39`:** Re-registering a known token never corrects its device type, so a token registered as `Unknown` never gets silent pushes.
+- **Batch endpoints** (`EventsController.PostEvents`, `UsersController.PostUsers`, `TopicsController.PostTopics`): one invalid item fails the whole request after the earlier items have been applied, so a retry duplicates them.

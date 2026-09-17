@@ -90,6 +90,19 @@ public sealed partial class DiscordIntegration : IMessagingSender
             {
                 return DeliveryResult.Failed("User has privacy settings that prevent sending them DMs on Discord.");
             }
+            catch (RateLimitedException)
+            {
+                // Let the scheduler retry temporary errors with a delay instead of failing the notification.
+                throw;
+            }
+            catch (HttpException ex) when (ex.HttpCode.IsTransient())
+            {
+                throw;
+            }
+            catch (Exception ex) when (ex.IsTransient())
+            {
+                throw;
+            }
             catch
             {
                 if (i == Attempts)

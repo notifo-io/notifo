@@ -100,7 +100,8 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
             await Collection.UpdateOneAsync(x => x.GroupKey == groupKey && !x.Progressing && x.DueTime <= dueTime,
                 Update
                     .SetOnInsert(x => x.Id, Guid.NewGuid().ToString())
-                    .SetOnInsert(x => x.DueTime, dueTime)
+                    // The batch must not be handled before the delay of the last job has been elapsed.
+                    .Max(x => x.DueTime, dueTime)
                     .SetOnInsert(x => x.GroupKey, groupKey)
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)
@@ -118,7 +119,8 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
             await Collection.UpdateOneAsync(x => x.GroupKey == key && !x.Progressing,
                 Update
                     .SetOnInsert(x => x.Id, Guid.NewGuid().ToString())
-                    .SetOnInsert(x => x.DueTime, dueTime)
+                    // A job can be scheduled again with an earlier due time, e.g. for updates.
+                    .Min(x => x.DueTime, dueTime)
                     .SetOnInsert(x => x.GroupKey, key)
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)

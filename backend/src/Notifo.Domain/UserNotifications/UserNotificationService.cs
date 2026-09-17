@@ -36,9 +36,12 @@ public sealed class UserNotificationService(
 {
     private readonly Dictionary<string, ICommunicationChannel> channels = channels.ToDictionary(x => x.Name);
 
-    public Task HandleExceptionAsync(List<UserEventMessage> jobs, Exception exception)
+    public async Task HandleExceptionAsync(List<UserEventMessage> jobs, Exception exception)
     {
-        return Task.CompletedTask;
+        foreach (var job in jobs)
+        {
+            await userNotificationsStore.TrackAsync(job, DeliveryResult.Failed());
+        }
     }
 
     public async Task<bool> HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt,
@@ -88,7 +91,7 @@ public sealed class UserNotificationService(
                     return;
                 }
 
-                var notification = await CreateUserNotificationAsync(userEvent, children, context);
+                var notification = await CreateUserNotificationAsync(children.Append(userEvent).ToList(), context);
 
                 if (notification == null)
                 {
@@ -147,15 +150,23 @@ public sealed class UserNotificationService(
         }
     }
 
-    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, IEnumerable<UserEventMessage> children, ChannelContext context)
+    private async Task<UserNotification?> CreateUserNotificationAsync(List<UserEventMessage> userEvents, ChannelContext context)
     {
         using (Telemetry.Activities.StartActivity("CreateUserNotification"))
         {
-            var notification = userNotificationFactory.Create(context.App, context.User, userEvent, children);
+            var notification = (UserNotification?)null;
+
+            // The last event defines the notification, but we skip invalid events to not lose the whole group.
+            for (var i = userEvents.Count - 1; i >= 0 && notification == null; i--)
+            {
+                var children = userEvents.Where((_, index) => index != i);
+
+                notification = userNotificationFactory.Create(context.App, context.User, userEvents[i], children);
+            }
 
             if (notification == null)
             {
-                await logStore.LogAsync(userEvent.AppId, LogMessage.Notification_NoSubject("System"));
+                await logStore.LogAsync(userEvents[^1].AppId, LogMessage.Notification_NoSubject("System"));
                 return null;
             }
 

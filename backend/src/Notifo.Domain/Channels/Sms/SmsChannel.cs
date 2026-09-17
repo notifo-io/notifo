@@ -112,7 +112,9 @@ public sealed class SmsChannel(
 
             if (app == null)
             {
-                Log.LogWarning("Cannot send email: App not found.");
+                Log.LogWarning("Cannot send sms: App not found.");
+
+                await UpdateAsync(jobs, DeliveryResult.Handled);
                 return;
             }
 

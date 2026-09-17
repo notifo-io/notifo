@@ -82,7 +82,7 @@ public sealed class MongoDbSubscriptionRepository(IMongoDatabase database) : Mon
 
             using (var cursor = await find.ToCursorAsync(ct))
             {
-                while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
+                while (await cursor.MoveNextAsync(ct))
                 {
                     foreach (var subscription in cursor.Current)
                     {

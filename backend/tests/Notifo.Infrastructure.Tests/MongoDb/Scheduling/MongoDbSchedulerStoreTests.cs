@@ -124,6 +124,37 @@ public class MongoDbSchedulerStoreTests(MongoFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Should_not_handle_grouped_batch_before_due_time_of_last_job()
+    {
+        var delay = Duration.FromSeconds(60 * 1000);
+
+        await store.EnqueueGroupedAsync("1", "group-a", 1, now, 0, default);
+        await store.EnqueueGroupedAsync("2", "group-a", 2, now.Plus(delay), 0, default);
+
+        var notDequeued = await store.DequeueAsync(now, default);
+
+        var dequeued = await store.DequeueAsync(now.Plus(delay), default);
+
+        Assert.Null(notDequeued);
+        Assert.NotNull(dequeued);
+        Assert.Equal([1, 2], dequeued!.GetAllJobs());
+    }
+
+    [Fact]
+    public async Task Should_update_due_time_if_job_is_scheduled_again_with_earlier_time()
+    {
+        var delay = Duration.FromSeconds(60 * 1000);
+
+        await store.EnqueueAsync("1", 1, now.Plus(delay), 0, default);
+        await store.EnqueueAsync("1", 2, now, 0, default);
+
+        var dequeued = await store.DequeueAsync(now, default);
+
+        Assert.NotNull(dequeued);
+        Assert.Equal([2], dequeued!.GetAllJobs());
+    }
+
+    [Fact]
     public async Task Should_not_remove_key_from_progressing_group()
     {
         await store.EnqueueGroupedAsync("1", "group-a", 1, now, 0, default);

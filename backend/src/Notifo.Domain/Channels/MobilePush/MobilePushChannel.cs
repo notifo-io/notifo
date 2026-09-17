@@ -50,7 +50,7 @@ public sealed class MobilePushChannel(IServiceProvider serviceProvider) : Schedu
     {
         using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
         {
-            if (context.Configuration == null || context.Configuration.TryGetValue(Token, out var mobileToken))
+            if (context.Configuration == null || !context.Configuration.TryGetValue(Token, out var mobileToken))
             {
                 // The configuration has no token.
                 return;
