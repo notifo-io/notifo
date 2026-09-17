@@ -87,6 +87,9 @@ public sealed class MongoDbEventRepository(IMongoDatabase database, IOptions<Eve
         {
             var document = MongoDbEvent.FromEvent(@event);
 
+            // The flag is removed when the event has been published to all subscribers.
+            document.Pending = true;
+
             try
             {
                 await Collection.InsertOneAsync(document, null, ct);
@@ -95,6 +98,32 @@ public sealed class MongoDbEventRepository(IMongoDatabase database, IOptions<Eve
             {
                 throw new UniqueConstraintException();
             }
+        }
+    }
+
+    public async Task<bool> IsPendingAsync(string appId, string id,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbEventRepository/IsPendingAsync"))
+        {
+            var docId = MongoDbEvent.CreateId(appId, id);
+
+            var count = await Collection.Find(x => x.DocId == docId && x.Pending).Limit(1).CountDocumentsAsync(ct);
+
+            return count > 0;
+        }
+    }
+
+    public async Task MarkPublishedAsync(string appId, string id,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbEventRepository/MarkPublishedAsync"))
+        {
+            var docId = MongoDbEvent.CreateId(appId, id);
+
+            await Collection.UpdateOneAsync(x => x.DocId == docId,
+                Update.Unset(x => x.Pending),
+                cancellationToken: ct);
         }
     }
 

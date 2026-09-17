@@ -15,7 +15,7 @@ public sealed class WebhookJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => Notification.Id.ToString();
+        get => $"{Notification.Id}_{ConfigurationId}";
     }
 
     public WebhookJob()

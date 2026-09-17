@@ -16,4 +16,10 @@ public interface IEventStore
 
     Task InsertAsync(EventMessage request,
         CancellationToken ct = default);
+
+    Task<bool> IsPendingAsync(string appId, string id,
+        CancellationToken ct = default);
+
+    Task MarkPublishedAsync(string appId, string id,
+        CancellationToken ct = default);
 }

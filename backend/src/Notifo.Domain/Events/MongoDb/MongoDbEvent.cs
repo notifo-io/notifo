@@ -7,6 +7,7 @@
 
 using System.Text;
 using Microsoft.Extensions.ObjectPool;
+using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Events.MongoDb;
@@ -16,6 +17,9 @@ public sealed class MongoDbEvent : MongoDbEntity<Event>
     private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
 
     public string SearchText { get; set; }
+
+    [BsonIgnoreIfDefault]
+    public bool Pending { get; set; }
 
     public static string CreateId(string appId, string id)
     {

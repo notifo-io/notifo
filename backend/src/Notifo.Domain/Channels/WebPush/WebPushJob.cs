@@ -18,7 +18,7 @@ public sealed class WebPushJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => Notification.Id.ToString();
+        get => $"{Notification.Id}_{ConfigurationId}";
     }
 
     public WebPushJob()

@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using System.Globalization;
+using MailKit;
+using MailKit.Net.Smtp;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
@@ -56,6 +58,11 @@ public sealed partial class SmtpIntegration : IEmailSender
                     throw;
                 }
             }
+            catch (Exception ex) when (IsTransient(ex))
+            {
+                // Let the scheduler retry temporary errors instead of failing the notification permanently.
+                throw;
+            }
             catch (Exception ex)
             {
                 var error = string.Format(CultureInfo.InvariantCulture, Texts.SMTP_Exception, ex.Message);
@@ -65,5 +72,20 @@ public sealed partial class SmtpIntegration : IEmailSender
         }
 
         return DeliveryResult.Sent;
+    }
+
+    private static bool IsTransient(Exception exception)
+    {
+        switch (exception)
+        {
+            case SmtpCommandException command:
+                // 4xx codes are temporary errors like greylisting or rate limits.
+                return (int)command.StatusCode is >= 400 and < 500;
+            case SmtpProtocolException:
+            case ServiceNotConnectedException:
+                return true;
+            default:
+                return exception.IsTransient();
+        }
     }
 }

@@ -44,6 +44,11 @@ public sealed partial class SevenSmsIntegration : ISmsSender
         {
             throw;
         }
+        catch (Exception ex) when (ex.IsTransient())
+        {
+            // Let the scheduler retry temporary errors instead of failing the notification permanently.
+            throw;
+        }
         catch (Exception ex)
         {
             var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Seven_Error, to, ex.Message);

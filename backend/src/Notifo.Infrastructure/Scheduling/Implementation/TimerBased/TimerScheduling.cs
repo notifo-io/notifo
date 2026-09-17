@@ -36,14 +36,15 @@ public sealed class TimerScheduling<T>(
     public async Task ReleaseAsync(
         CancellationToken ct)
     {
-        if (schedulerStore is IInitializable initializable)
-        {
-            await initializable.ReleaseAsync(ct);
-        }
-
+        // Stop the consumer first, so that running jobs can still be completed in the store.
         if (consumer != null)
         {
             await consumer.StopAsync();
+        }
+
+        if (schedulerStore is IInitializable initializable)
+        {
+            await initializable.ReleaseAsync(ct);
         }
     }
 
@@ -68,12 +69,10 @@ public sealed class TimerScheduling<T>(
     {
         var now = clock.GetCurrentInstant();
 
-        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
+        // Without a consumer the job cannot be executed inline, so it is queued to be handled by another node.
+        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline && consumer != null)
         {
-            if (consumer != null)
-            {
-                await consumer.ExecuteInlineAsync(key, job);
-            }
+            await consumer.ExecuteInlineAsync(key, null, job);
         }
         else
         {
@@ -86,12 +85,9 @@ public sealed class TimerScheduling<T>(
     {
         var now = clock.GetCurrentInstant();
 
-        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
+        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline && consumer != null)
         {
-            if (consumer != null)
-            {
-                await consumer.ExecuteInlineAsync(key, job);
-            }
+            await consumer.ExecuteInlineAsync(key, groupKey, job);
         }
         else
         {

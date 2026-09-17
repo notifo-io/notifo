@@ -340,6 +340,39 @@ public class UserEventPublisherTests
     }
 
     [Fact]
+    public async Task Should_produce_message_if_event_in_store_is_still_pending()
+    {
+        var @event = CreateMinimumEvent();
+
+        var subscriptions = new[]
+        {
+            new Subscription
+            {
+                AppId = @event.AppId,
+                TopicPrefix = "updates/sport",
+                TopicSettings = [],
+                UserId = "123"
+            }
+        };
+
+        A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
+            .Returns(CreateAsyncEnumerable(subscriptions));
+
+        A.CallTo(() => eventStore.InsertAsync(@event, ct))
+            .Throws(new UniqueConstraintException());
+
+        A.CallTo(() => eventStore.IsPendingAsync(@event.AppId, @event.Id, ct))
+            .Returns(true);
+
+        await sut.PublishAsync(@event, ct);
+
+        Assert.Single(publishedUserEvents);
+
+        A.CallTo(() => eventStore.MarkPublishedAsync(@event.AppId, @event.Id, ct))
+            .MustHaveHappened();
+    }
+
+    [Fact]
     public async Task Should_produce_message_to_subscriptions_with_data_from_template()
     {
         var @event = CreateMinimumEvent();

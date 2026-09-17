@@ -6,9 +6,11 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
+using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
@@ -46,11 +48,33 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
 
             return DeliveryResult.Sent;
         }
+        catch (DomainException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (IsTransient(ex))
+        {
+            // Let the scheduler retry temporary errors instead of failing the notification permanently.
+            throw;
+        }
         catch (Exception ex)
         {
             var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.To);
 
             throw new DomainException(errorMessage, ex);
+        }
+    }
+
+    private static bool IsTransient(Exception exception)
+    {
+        switch (exception)
+        {
+            case ApiException api:
+                return ((HttpStatusCode)api.Status).IsTransient();
+            case ApiConnectionException:
+                return true;
+            default:
+                return exception.IsTransient();
         }
     }
 

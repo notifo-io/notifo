@@ -146,8 +146,12 @@ public sealed class UserEventPublisher(
                     }
                     catch (UniqueConstraintException)
                     {
-                        await logStore.LogAsync(@event.AppId, LogMessage.Event_AlreadyProcessed("System"));
-                        break;
+                        // A pending event has been interrupted before all subscribers got it (e.g. by a crash), so we publish it again.
+                        if (!await eventStore.IsPendingAsync(@event.AppId, @event.Id, ct))
+                        {
+                            await logStore.LogAsync(@event.AppId, LogMessage.Event_AlreadyProcessed("System"));
+                            return;
+                        }
                     }
                 }
 
@@ -164,6 +168,8 @@ public sealed class UserEventPublisher(
 
             if (count > 0)
             {
+                await eventStore.MarkPublishedAsync(@event.AppId, @event.Id, ct);
+
                 var counterMap = CounterMap.ForNotification(DeliveryStatus.Attempt, count);
                 var counterKey = TrackingKey.ForEvent(@event);
 

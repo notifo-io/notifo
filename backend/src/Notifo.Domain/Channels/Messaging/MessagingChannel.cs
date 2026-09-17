@@ -185,7 +185,7 @@ public sealed class MessagingChannel(
     {
         var lastResult = default(DeliveryResult);
 
-        foreach (var (_, context, sender) in integrations)
+        foreach (var (integrationId, context, sender) in integrations)
         {
             try
             {
@@ -208,7 +208,7 @@ public sealed class MessagingChannel(
             {
                 await LogStore.LogAsync(appId, LogMessage.General_InternalException(sender.Definition.Type, ex));
 
-                if (sender == integrations[^1].System)
+                if (integrationId == integrations[^1].Id)
                 {
                     throw;
                 }

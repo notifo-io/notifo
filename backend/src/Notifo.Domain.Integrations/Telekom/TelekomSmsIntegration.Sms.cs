@@ -44,6 +44,20 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
 
             var response = await httpClient.SendAsync(httpRequest, ct);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync(ct);
+
+                if (response.StatusCode.IsTransient())
+                {
+                    throw new HttpIntegrationException(body, (int)response.StatusCode);
+                }
+
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, phoneNumberTo, body);
+
+                throw new DomainException(errorMessage);
+            }
+
             var result = await response.Content.ReadFromJsonAsync<Response>((JsonSerializerOptions?)null, ct);
 
             if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
@@ -54,6 +68,15 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
             }
 
             return DeliveryResult.Sent;
+        }
+        catch (DomainException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex.IsTransient())
+        {
+            // Let the scheduler retry temporary errors instead of failing the notification permanently.
+            throw;
         }
         catch (Exception ex)
         {

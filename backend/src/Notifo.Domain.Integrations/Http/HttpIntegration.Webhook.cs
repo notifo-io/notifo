@@ -33,7 +33,20 @@ public sealed partial class HttpIntegration : IWebhookSender
             Content = JsonContent.Create(message.Payload)
         };
 
-        await httpClient.SendAsync(httpRequest, ct);
+        using var response = await httpClient.SendAsync(httpRequest, ct);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = $"Webhook failed with status code {(int)response.StatusCode}.";
+
+            // Throw an exception for temporary errors, so that the webhook is retried.
+            if (response.StatusCode.IsTransient())
+            {
+                throw new HttpIntegrationException(error, (int)response.StatusCode);
+            }
+
+            return DeliveryResult.Failed(error);
+        }
 
         return DeliveryResult.Handled;
     }

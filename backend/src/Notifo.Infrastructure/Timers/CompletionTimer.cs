@@ -52,7 +52,14 @@ public sealed class CompletionTimer
 
             while (oneCallState == OneCallRequested || !stopToken.IsCancellationRequested)
             {
-                await callback(stopToken.Token).ConfigureAwait(false);
+                try
+                {
+                    await callback(stopToken.Token).ConfigureAwait(false);
+                }
+                catch (Exception) when (!stopToken.IsCancellationRequested)
+                {
+                    // A failing callback must not stop the timer, it will be called again after the delay.
+                }
 
                 oneCallState = OneCallExecuted;
 

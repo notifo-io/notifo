@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MailKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.ObjectPool;
 using MimeKit;
@@ -30,74 +31,92 @@ public class SmtpEmailServer(SmtpOptions options) : IDisposable
     public async Task SendAsync(EmailMessage message,
         CancellationToken ct)
     {
+        var smtpMessage = new MimeMessage();
+
+        smtpMessage.From.Add(new MailboxAddress(
+            message.FromName,
+            message.FromEmail));
+
+        smtpMessage.To.Add(new MailboxAddress(
+            message.ToName,
+            message.ToEmail));
+
+        var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
+        var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
+
+        if (hasHtml && hasText)
+        {
+            smtpMessage.Body = new MultipartAlternative
+            {
+                new TextPart(TextFormat.Plain)
+                {
+                    Text = message.BodyText!
+                },
+
+                new TextPart(TextFormat.Html)
+                {
+                    Text = message.BodyHtml!
+                }
+            };
+        }
+        else if (hasHtml)
+        {
+            smtpMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = message.BodyHtml!
+            };
+        }
+        else if (hasText)
+        {
+            smtpMessage.Body = new TextPart(TextFormat.Plain)
+            {
+                Text = message.BodyText!
+            };
+        }
+        else
+        {
+            ThrowHelper.InvalidOperationException("Cannot send email without text body or html body");
+            return;
+        }
+
+        smtpMessage.Subject = message.Subject;
+
         var smtpClient = clientPool.Get();
         try
         {
-            await EnsureConnectedAsync(smtpClient);
-
-            var smtpMessage = new MimeMessage();
-
-            smtpMessage.From.Add(new MailboxAddress(
-                message.FromName,
-                message.FromEmail));
-
-            smtpMessage.To.Add(new MailboxAddress(
-                message.ToName,
-                message.ToEmail));
-
-            var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
-            var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
-
-            if (hasHtml && hasText)
+            try
             {
-                smtpMessage.Body = new MultipartAlternative
-                {
-                    new TextPart(TextFormat.Plain)
-                    {
-                        Text = message.BodyText!
-                    },
+                await EnsureConnectedAsync(smtpClient, ct);
 
-                    new TextPart(TextFormat.Html)
-                    {
-                        Text = message.BodyHtml!
-                    }
-                };
+                await smtpClient.SendAsync(smtpMessage, ct);
             }
-            else if (hasHtml)
+            catch (Exception ex) when (ex is IOException or SmtpProtocolException or ServiceNotConnectedException)
             {
-                smtpMessage.Body = new TextPart(TextFormat.Html)
-                {
-                    Text = message.BodyHtml!
-                };
-            }
-            else if (hasText)
-            {
-                smtpMessage.Body = new TextPart(TextFormat.Plain)
-                {
-                    Text = message.BodyText!
-                };
-            }
-            else
-            {
-                ThrowHelper.InvalidOperationException("Cannot send email without text body or html body");
-                return;
+                // The server might have closed the pooled connection in the meantime, therefore try again with a new connection.
+                smtpClient.Dispose();
+                smtpClient = new SmtpClient();
+
+                await EnsureConnectedAsync(smtpClient, ct);
+
+                await smtpClient.SendAsync(smtpMessage, ct);
             }
 
-            smtpMessage.Subject = message.Subject;
-
-            await smtpClient.SendAsync(smtpMessage, ct);
-        }
-        finally
-        {
             clientPool.Return(smtpClient);
+        }
+        catch
+        {
+            // Do not return the client to the pool, because the connection might be broken.
+            smtpClient.Dispose();
+            throw;
         }
     }
 
-    private async Task EnsureConnectedAsync(SmtpClient smtpClient)
+    private async Task EnsureConnectedAsync(SmtpClient smtpClient,
+        CancellationToken ct)
     {
         if (!smtpClient.IsConnected)
         {
-            await smtpClient.ConnectAsync(options.HostName, options.HostPort);
+            await smtpClient.ConnectAsync(options.HostName, options.HostPort, cancellationToken: ct);
         }
 
         if (string.IsNullOrWhiteSpace(options.Username) ||
@@ -108,7 +127,7 @@ public class SmtpEmailServer(SmtpOptions options) : IDisposable
 
         if (!smtpClient.IsAuthenticated)
         {
-            await smtpClient.AuthenticateAsync(options.Username, options.Password);
+            await smtpClient.AuthenticateAsync(options.Username, options.Password, ct);
         }
     }
 }

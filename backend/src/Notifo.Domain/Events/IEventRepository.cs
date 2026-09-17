@@ -17,4 +17,10 @@ public interface IEventRepository : ICounterStore<(string AppId, string EventId)
 
     Task InsertAsync(Event @event,
         CancellationToken ct = default);
+
+    Task<bool> IsPendingAsync(string appId, string id,
+        CancellationToken ct = default);
+
+    Task MarkPublishedAsync(string appId, string id,
+        CancellationToken ct = default);
 }

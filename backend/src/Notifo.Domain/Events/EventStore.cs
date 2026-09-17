@@ -57,4 +57,22 @@ public sealed class EventStore(
 
         return eventRepository.InsertAsync(@event, ct);
     }
+
+    public Task<bool> IsPendingAsync(string appId, string id,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(id);
+
+        return eventRepository.IsPendingAsync(appId, id, ct);
+    }
+
+    public Task MarkPublishedAsync(string appId, string id,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(id);
+
+        return eventRepository.MarkPublishedAsync(appId, id, ct);
+    }
 }

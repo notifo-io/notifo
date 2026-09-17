@@ -53,6 +53,7 @@ dotnet test --filter "Category!=Dependencies"
 
 - Code style is enforced by StyleCop (`backend/stylecop.json`) and `.editorconfig` — follow the surrounding file's conventions.
 - Do not write XML comments.
+- Do not log `OperationCanceledException`, it is too noisy.
 
 ## Shared best practices
 
