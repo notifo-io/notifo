@@ -535,6 +535,56 @@ public class MongoDbUserNotificationRepositoryTests(MongoFixture fixture) : IAsy
         await collection.InsertOneAsync(bsonDocument);
     }
 
+    [Fact]
+    public async Task Should_detect_handled_notification()
+    {
+        var notification = CreateNotification(userId1);
+
+        await repository.InsertAsync(notification, default);
+
+        var isHandledBefore = await repository.IsHandledAsync(notification.Id, channel, configurationId1, default);
+
+        await repository.BatchWriteAsync(
+        [
+            (new TrackingToken(notification.Id, channel, configurationId1), DeliveryResult.Handled)
+        ], now, default);
+
+        var isHandledAfter = await repository.IsHandledAsync(notification.Id, channel, configurationId1, default);
+
+        Assert.False(isHandledBefore);
+        Assert.True(isHandledAfter);
+    }
+
+    [Fact]
+    public async Task Should_query_notification_with_correlation_id()
+    {
+        var notification = CreateNotification(userId1);
+
+        notification.CorrelationId = Guid.NewGuid().ToString();
+
+        await repository.InsertAsync(notification, default);
+
+        var notifications = await repository.QueryAsync(appId, new UserNotificationQuery(), default);
+
+        Assert.Contains(notifications, x => x.Id == notification.Id);
+    }
+
+    [Fact]
+    public async Task Should_not_mark_as_updated_if_already_seen()
+    {
+        var notification = CreateNotification(userId1);
+
+        await repository.InsertAsync(notification, default);
+
+        var tokens = new[] { new TrackingToken(notification.Id, channel, configurationId1) };
+
+        var result1 = await repository.TrackSeenAsync(tokens, now, default);
+        var result2 = await repository.TrackSeenAsync(tokens, now.Plus(Duration.FromMinutes(1)), default);
+
+        Assert.True(result1.Single().Item2);
+        Assert.False(result2.Single().Item2);
+    }
+
     private UserNotification CreateNotification(string userId, Instant created = default)
     {
         return new UserNotification

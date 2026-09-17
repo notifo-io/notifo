@@ -49,13 +49,25 @@ public sealed class LogCollector
 
         if (updateQueue.Count >= updatesCapacity)
         {
-            await StoreAsync(default);
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+            try
+            {
+                await StoreAsync(default);
+            }
+            catch (Exception)
+            {
+                // The entries are kept and written with the next flush, so the caller does not need to fail.
+            }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
         }
     }
 
-    public Task StopAsync()
+    public async Task StopAsync()
     {
-        return timer.StopAsync();
+        await timer.StopAsync();
+
+        // Write the remaining entries, otherwise they would be lost on shutdown.
+        await StoreAsync(default);
     }
 
     private async Task StoreAsync(
@@ -93,7 +105,12 @@ public sealed class LogCollector
             readerWriterLock.ExitWriteLock();
         }
 
-        if (commands.Count > 0)
+        if (commands.Count == 0)
+        {
+            return;
+        }
+
+        try
         {
             var newEntries = await repository.BatchWriteAsync(commands, ct);
 
@@ -101,6 +118,24 @@ public sealed class LogCollector
             {
                 OnNewEntries?.Invoke(newEntries);
             }
+        }
+        catch
+        {
+            readerWriterLock.EnterWriteLock();
+            try
+            {
+                // Add the entries again, so that they are written with the next flush.
+                foreach (var (write, count, _) in commands)
+                {
+                    updateQueue.AddOrUpdate(write, count, (_, value) => value + count);
+                }
+            }
+            finally
+            {
+                readerWriterLock.ExitWriteLock();
+            }
+
+            throw;
         }
     }
 }

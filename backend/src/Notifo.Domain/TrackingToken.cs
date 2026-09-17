@@ -46,7 +46,7 @@ public readonly record struct TrackingToken(Guid UserNotificationId, string? Cha
                 return false;
             }
 
-            if (decoded.Length >= 1 && !string.IsNullOrWhiteSpace(decoded[1]))
+            if (decoded.Length >= 2 && !string.IsNullOrWhiteSpace(decoded[1]))
             {
                 channel = decoded[1];
             }

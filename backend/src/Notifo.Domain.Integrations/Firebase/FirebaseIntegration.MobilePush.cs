@@ -46,8 +46,9 @@ public sealed partial class FirebaseIntegration : IMobilePushSender
                 }
             }
         }
-        catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
+        catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode is MessagingErrorCode.Unregistered or MessagingErrorCode.SenderIdMismatch)
         {
+            // A mismatching sender id means that the token belongs to another firebase project and will never work.
             throw new MobilePushTokenExpiredException();
         }
 

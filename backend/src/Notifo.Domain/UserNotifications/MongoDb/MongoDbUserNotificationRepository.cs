@@ -132,7 +132,7 @@ public sealed class MongoDbUserNotificationRepository(
                     Filter.Eq(x => x.Id, id),
                     Filter.Or(
                         Filter.Exists(x => x.FirstConfirmed),
-                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled)));
+                        IsHandledFilter(channel, configurationId)));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -152,7 +152,7 @@ public sealed class MongoDbUserNotificationRepository(
                     Filter.Eq(x => x.Id, id),
                     Filter.Or(
                         Filter.Exists(x => x.FirstSeen),
-                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled)));
+                        IsHandledFilter(channel, configurationId)));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -170,7 +170,7 @@ public sealed class MongoDbUserNotificationRepository(
             var filter =
                 Filter.And(
                     Filter.Eq(x => x.Id, id),
-                    Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled));
+                    IsHandledFilter(channel, configurationId));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -178,6 +178,16 @@ public sealed class MongoDbUserNotificationRepository(
 
             return count == 1;
         }
+    }
+
+    private static FilterDefinition<UserNotification> IsHandledFilter(string channel, Guid configurationId)
+    {
+        var path = $"Channels.{channel}.Status.{configurationId}.Status";
+
+        // Older documents have been written with the numeric representation of the status.
+        return Filter.Or(
+            Filter.Eq(path, DeliveryStatus.Handled.ToString()),
+            Filter.Eq(path, (int)DeliveryStatus.Handled));
     }
 
     public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
@@ -416,10 +426,6 @@ public sealed class MongoDbUserNotificationRepository(
         if (!string.IsNullOrWhiteSpace(query.CorrelationId))
         {
             filters.Add(Filter.Eq(x => x.CorrelationId, query.CorrelationId));
-        }
-        else
-        {
-            filters.Add(Filter.Gte(x => x.CorrelationId, null));
         }
 
         AddDefaultFilters(query, filters);

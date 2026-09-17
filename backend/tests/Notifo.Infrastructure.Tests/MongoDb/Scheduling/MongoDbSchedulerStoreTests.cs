@@ -124,6 +124,32 @@ public class MongoDbSchedulerStoreTests(MongoFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Should_schedule_job_with_dot_in_key()
+    {
+        await store.EnqueueAsync("app.id_user.id", 42, now, 0, default);
+
+        var dequeued = await store.DequeueAsync(now, default);
+
+        Assert.NotNull(dequeued);
+        Assert.Equal([42], dequeued!.GetAllJobs());
+    }
+
+    [Fact]
+    public async Task Should_remove_job_with_dot_in_key_from_group()
+    {
+        await store.EnqueueGroupedAsync("app.id_1", "group-a", 1, now, 0, default);
+        await store.EnqueueGroupedAsync("app.id_2", "group-a", 2, now, 0, default);
+
+        var removed = await store.CompleteByKeyAsync("app.id_1", "group-a", default);
+
+        var dequeued = await store.DequeueAsync(now, default);
+
+        Assert.True(removed);
+        Assert.NotNull(dequeued);
+        Assert.Equal([2], dequeued!.GetAllJobs());
+    }
+
+    [Fact]
     public async Task Should_not_handle_grouped_batch_before_due_time_of_last_job()
     {
         var delay = Duration.FromSeconds(60 * 1000);

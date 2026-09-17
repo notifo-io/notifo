@@ -106,7 +106,7 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)
                     .SetOnInsert(x => x.RetryCount, retryCount)
-                    .Set($"JobsV2.{key}", job),
+                    .Set(JobField(key), job),
                 Upsert, ct);
         }
     }
@@ -125,7 +125,7 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)
                     .SetOnInsert(x => x.RetryCount, retryCount)
-                    .Set($"JobsV2.{key}", job),
+                    .Set(JobField(key), job),
                 Upsert, ct);
         }
     }
@@ -155,7 +155,7 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
     {
         using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteByKeyAsync"))
         {
-            var jobField = $"JobsV2.{key}";
+            var jobField = JobField(key);
 
             // Multiple batches can have the same group key, therefore we have to find the batch that contains the job.
             var result =
@@ -183,5 +183,11 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
 
             return true;
         }
+    }
+
+    private static string JobField(string key)
+    {
+        // A dot in the key would be interpreted as a path separator and would nest the job in sub documents.
+        return "JobsV2." + key.Replace('.', '_');
     }
 }

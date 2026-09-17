@@ -17,6 +17,9 @@ internal sealed class TrackingChange
 
     public bool HasChanges => changes.Count > 0;
 
+    // The updated timestamp is only used for sorting and does not indicate a real change.
+    public bool HasTrackingChanges { get; private set; }
+
     public void Min(string key, object? value)
     {
         if (value == null)
@@ -25,6 +28,7 @@ internal sealed class TrackingChange
         }
 
         changes[key] = Builders<UserNotification>.Update.Min(key, value);
+        HasTrackingChanges = true;
     }
 
     public void Max(string key, object? value)
@@ -45,6 +49,7 @@ internal sealed class TrackingChange
         }
 
         changes[key] = Builders<UserNotification>.Update.Set(key, value);
+        HasTrackingChanges = true;
     }
 
     public WriteModel<UserNotification>? ToWrite()

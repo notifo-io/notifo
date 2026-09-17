@@ -22,6 +22,7 @@ namespace Notifo.Domain.Channels.MobilePush;
 public class MobilePushChannelTests
 {
     private readonly IScheduler<MobilePushJob> scheduler = A.Fake<IScheduler<MobilePushJob>>();
+    private readonly IUserNotificationStore userNotificationStore = A.Fake<IUserNotificationStore>();
     private readonly App app = new App("app", default);
     private readonly MobilePushToken token = new MobilePushToken
     {
@@ -37,7 +38,7 @@ public class MobilePushChannelTests
             new ServiceCollection()
                 .AddSingleton(A.Fake<IAppStore>())
                 .AddSingleton(A.Fake<IIntegrationManager>())
-                .AddSingleton(A.Fake<IUserNotificationStore>())
+                .AddSingleton(userNotificationStore)
                 .AddSingleton(A.Fake<IUserStore>())
                 .AddSingleton(A.Fake<ILogger<MobilePushChannel>>())
                 .AddSingleton(A.Fake<ILogStore>())
@@ -55,6 +56,24 @@ public class MobilePushChannelTests
 
         A.CallTo(() => scheduler.ScheduleAsync(A<string>._, A<MobilePushJob>._, A<Instant>._, false, A<CancellationToken>._))
             .MustHaveHappened();
+    }
+
+    [Fact]
+    public async Task Should_not_track_wakeup_job()
+    {
+        var wakeupNotification = new UserNotification
+        {
+            AppId = app.Id,
+            UserId = "user"
+        };
+
+        var context = CreateContext(token.Token);
+
+        await sut.HandleAsync([new MobilePushJob(wakeupNotification, context, token)], false, default);
+
+        A.CallTo(userNotificationStore)
+            .Where(x => x.Method.Name == nameof(IUserNotificationStore.TrackAsync))
+            .MustNotHaveHappened();
     }
 
     [Fact]

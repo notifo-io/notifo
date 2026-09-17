@@ -90,23 +90,11 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
 
             var job = new WebPushJob(notification, context, subscription, serializer);
 
-            // Do not use scheduling when the notification is an update.
-            if (context.IsUpdate)
-            {
-                await Scheduler.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    default(Instant),
-                    false, ct);
-            }
-            else
-            {
-                await Scheduler.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    job.SendDelay,
-                    false, ct);
-            }
+            await Scheduler.ScheduleAsync(
+                job.ScheduleKey,
+                job,
+                job.SendDelay,
+                false, ct);
         }
     }
 
@@ -164,6 +152,11 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
             await RemoveTokenAsync(job);
 
             return DeliveryResult.Failed(logMessage.Reason);
+        }
+        catch (WebPushException ex) when (ex.StatusCode.IsTransient())
+        {
+            // Let the scheduler retry temporary errors instead of failing the notification permanently.
+            throw;
         }
         catch (WebPushException ex)
         {

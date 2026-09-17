@@ -40,7 +40,7 @@ public abstract class SchedulingChannelBase<TJob, T>(IServiceProvider servicePro
         }
     }
 
-    protected Task UpdateAsync(TJob job, DeliveryResult result)
+    protected virtual Task UpdateAsync(TJob job, DeliveryResult result)
     {
         return UserNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
     }

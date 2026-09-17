@@ -189,15 +189,15 @@ public sealed class UsersController(
     {
         var response = new List<UserDto>();
 
-        if (request.Requests.Length > 100)
+        var commands = request.Requests.OrEmpty().NotNull().Select(x => x.ToUpsert()).ToList();
+
+        if (commands.Count > 100)
         {
-            throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
+            throw new ValidationException($"Only 100 users can be update in one request, found: {commands.Count}");
         }
 
-        foreach (var dto in request.Requests.OrEmpty().NotNull())
+        foreach (var command in commands)
         {
-            var command = dto.ToUpsert();
-
             var user = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
             response.Add(UserDto.FromDomainObject(user!, null, null));

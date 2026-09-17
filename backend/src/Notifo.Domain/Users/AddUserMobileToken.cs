@@ -33,9 +33,22 @@ public sealed class AddUserMobileToken : UserCommand
     {
         Validate<Validator>.It(this);
 
-        if (target.MobilePushTokens.Any(x => x.Token == Token.Token))
+        var existing = target.MobilePushTokens.FirstOrDefault(x => x.Token == Token.Token);
+
+        if (existing != null)
         {
-            return default;
+            // A client can register the token again with the correct device type or identifier.
+            if (existing.DeviceType == Token.DeviceType && existing.DeviceIdentifier == Token.DeviceIdentifier)
+            {
+                return default;
+            }
+
+            var updatedTokens = target.MobilePushTokens.Select(x => x.Token == Token.Token ? Token with { LastWakeup = x.LastWakeup } : x);
+
+            return new ValueTask<User?>(target with
+            {
+                MobilePushTokens = updatedTokens.ToReadonlyList()
+            });
         }
 
         var newMobilePushTokens = new List<MobilePushToken>(target.MobilePushTokens)

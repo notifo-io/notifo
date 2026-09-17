@@ -5,7 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Domain.Channels.MobilePush;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users;
@@ -68,5 +70,33 @@ public class AddUserMobileTokenTests
         var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
         Assert.Null(updatedUser);
+    }
+
+    [Fact]
+    public async Task Should_update_device_type_if_token_added_again()
+    {
+        var sut = new AddUserMobileToken();
+
+        var token = "test token";
+
+        sut.Token = new MobilePushToken { Token = token, DeviceType = MobileDeviceType.iOS };
+
+        var user = new User("1", "1", default)
+        {
+            MobilePushTokens = ReadonlyList.Create(
+                new MobilePushToken
+                {
+                    Token = token,
+                    DeviceType = MobileDeviceType.Unknown,
+                    LastWakeup = Instant.FromUtc(2020, 1, 1, 0, 0)
+                })
+        };
+
+        var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
+
+        var updatedToken = updatedUser!.MobilePushTokens.Single();
+
+        Assert.Equal(MobileDeviceType.iOS, updatedToken.DeviceType);
+        Assert.Equal(Instant.FromUtc(2020, 1, 1, 0, 0), updatedToken.LastWakeup);
     }
 }

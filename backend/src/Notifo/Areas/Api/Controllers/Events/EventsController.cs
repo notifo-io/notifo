@@ -57,15 +57,21 @@ public sealed class EventsController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
     {
-        if (request.Requests?.Length > 100)
+        var events = request.Requests.OrEmpty().NotNull().Select(x => x.ToEvent(appId)).ToList();
+
+        if (events.Count > 100)
         {
-            throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
+            throw new ValidationException($"Only 100 events can be published in one request, found: {events.Count}");
         }
 
-        foreach (var dto in request.Requests.OrEmpty().NotNull())
+        // Validate all events first, otherwise an invalid event would publish only a part of the request.
+        foreach (var @event in events)
         {
-            var @event = dto.ToEvent(appId);
+            @event.Validate();
+        }
 
+        foreach (var @event in events)
+        {
             await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
         }
 

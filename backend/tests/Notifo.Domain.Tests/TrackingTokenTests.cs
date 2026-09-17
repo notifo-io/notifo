@@ -101,6 +101,9 @@ public class TrackingTokenTests
     [Theory]
     [InlineData("1")]
     [InlineData("1a")]
+    [InlineData("test")]
+    [InlineData("dGVzdA==")]
+    [InlineData("MTIzNA==")]
     public void Should_not_throw_if_invalid_value(string value)
     {
         var result = TrackingToken.Parse(value);

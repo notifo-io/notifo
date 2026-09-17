@@ -48,60 +48,24 @@ Paths are relative to `backend/src/`. Each item has a status: **Fixed**, **By de
 
 ## Round 3
 
-All items verified in the code and open. Paths are relative to `backend/src/`.
+| # | Status | Issue |
+|---|--------|-------|
+| 1 | Fixed | **A malformed tracking token returned HTTP 500 and the event was lost.** `TrackingToken.cs`: the length check allowed a read past the end. Covered by `TrackingTokenTests`. |
+| 2 | Fixed | **Pending integrations were never verified, so their notifications were dropped.** `IntegrationManager` uses the status returned by `CheckStatusAsync` now. Covered by `IntegrationManagerTests`. |
+| 3 | Fixed | **The "already handled" check never matched.** The status is written and compared as string, and the filter also accepts the old numeric values. Covered by `MongoDbUserNotificationRepositoryTests`. |
+| 4 | Fixed | **A dot in the schedule key destroyed a job.** The scheduler store escapes the key before it is used as a field path. Covered by `MongoDbSchedulerStoreTests`. |
+| 5 | Fixed | **Dead Firebase tokens were kept and retried forever.** `SenderIdMismatch` removes the token now. Not tested (needs the Firebase API). |
+| 6 | Fixed | **Skipped deliveries stayed at `Attempt`.** All channels track every result except `Unknown` and `Attempt`. Covered by `MessagingChannelTests`. |
+| 7 | Fixed | **Web push lost the status code of an error.** Temporary errors are thrown now, so the scheduler retries them. The dead update branch has been removed, web push still does not send updates. |
+| 8 | Fixed | **The app notification list hid everything with a correlation ID.** The `CorrelationId >= null` filter is gone. Covered by `MongoDbUserNotificationRepositoryTests`. |
+| 9 | Fixed | **Repeated seen calls triggered the channels again.** The first timestamps are only written once, and the updated timestamp alone no longer counts as a change. Covered by `MongoDbUserNotificationRepositoryTests`. |
+| 10 | Fixed | **Log entries were lost and a failed log write aborted the delivery.** `LogCollector` flushes on stop, keeps failed entries and no longer fails the caller. Covered by `LogCollectorTests`. |
+| 11 | Fixed | **iOS wakeup jobs inflated the mobile push counters.** They are no longer tracked. Covered by `MobilePushChannelTests`. |
+| 12 | Fixed | **A device type could never be corrected.** Registering a known token again updates the device type and identifier. Covered by `AddUserMobileTokenTests`. |
+| 13 | Fixed | **Batch endpoints applied a prefix and then failed.** Events are validated before the first one is published, and the user endpoint no longer throws on a missing list. Not tested. |
 
-1. **Open: a malformed tracking token returns HTTP 500 and the event is lost**
-   - **Where:** `Notifo.Domain/TrackingToken.cs:49`
-   - **Bug:** The guard is `decoded.Length >= 1` but then reads `decoded[1]`, and the catch only handles `FormatException`.
-   - **Example:** A seen, delivered or confirm call with a base64 id that contains no `|` throws `IndexOutOfRangeException`. The confirmation is lost, so the channels that react to it never send.
+### Open
 
-2. **Open: pending integrations are never verified, so their notifications are dropped**
-   - **Where:** `Notifo.Domain/Integrations/IntegrationManager.cs:243-256`
-   - **Bug:** The result of `CheckStatusAsync` is discarded, and `status != configured.Status` compares a copy with itself, so it is never true. `newStatus` is assigned and never used.
-   - **Example:** An Amazon SES integration stays `Pending` after AWS has confirmed the sender address. `Resolve` skips it and every email of that app is dropped.
-
-3. **Open: the "already handled" check never matches**
-   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/MongoDbUserNotificationRepository.cs:135, 155, 173`
-   - **Bug:** The filter compares the status as a number, while `StatusDictionarySerializer` stores it as a string.
-   - **Example:** A delayed job asks `IsHandledAsync`, gets false although the channel already reported `Handled`, and sends the notification twice.
-
-4. **Open: a dot in the schedule key destroys a mobile push job**
-   - **Where:** `Notifo.Domain/Channels/MobilePush/MobilePushJob.cs:22-30`, used as a field path in `MongoDbSchedulerStore.cs:128`
-   - **Bug:** The key contains the raw user id and group key. MongoDB treats a dot as a path separator, so the job is nested and comes back without its notification.
-   - **Example:** A user id like `john.doe` makes the push fail with a `NullReferenceException` in `SchedulingChannelBase.HandleAsync`, and the notification is never marked failed.
-
-5. **Open: dead Firebase tokens are kept and retried forever**
-   - **Where:** `Notifo.Domain.Integrations/Firebase/FirebaseIntegration.MobilePush.cs:49-52`
-   - **Bug:** Only `Unregistered` is mapped to `MobilePushTokenExpiredException`, which is the only case that removes a token.
-   - **Example:** After a Firebase project change, tokens rejected with `SenderIdMismatch` burn all retries of every future notification and are never removed.
-
-6. **Open: skipped deliveries stay at `Attempt`**
-   - **Where:** `Notifo.Domain/Channels/MobilePush/MobilePushChannel.cs:191` (the same `> DeliveryStatus.Attempt` check is used in the other channels)
-   - **Bug:** `Skipped` is 1 and `Attempt` is 2, so a skipped result is never written.
-   - **Example:** A silent push to a device type with silent push disabled stays pending forever.
-
-7. **Open: web push loses the status code of an error**
-   - **Where:** `Notifo.Domain/Channels/WebPush/WebPushChannel.cs:168-171`
-   - **Bug:** Every `WebPushException` other than 404 and 410 becomes a `DomainException`, so a 429 or 503 is a permanent failure and is never retried.
-   - **Also:** The early return for updates at line 70 makes the `IsUpdate` branches at lines 94-101 dead code, so web push never delivers updates.
-
-8. **Open: the app notification list hides everything with a correlation ID**
-   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/MongoDbUserNotificationRepository.cs:416-423`
-   - **Bug:** The else branch adds `CorrelationId >= null`, which only matches null or missing values.
-   - **Example:** Notifications from events published with a correlation ID are missing from the app view, although they were delivered.
-
-9. **Open: repeated seen calls trigger the channels again**
-   - **Where:** `Notifo.Domain/UserNotifications/MongoDb/TrackingBatch.cs:261-264`
-   - **Bug:** `ShouldUpdate` is correct for `Updated` but inverted for the `First*` fields, so an already seen notification still reports a change.
-   - **Example:** Every seen ping from a client runs `HandleSeenAsync` again, which schedules another iOS wakeup.
-
-10. **Open: log entries are lost and a failed log write aborts the delivery**
-    - **Where:** `Notifo.Domain/Log/Internal/LogCollector.cs:56-59, 89-98`
-    - **Bug:** `StopAsync` does not flush, the queue is cleared before the write, and the exception is not caught, unlike in `StatisticsCollector`.
-    - **Example:** A short database problem during a flush makes `LogStore.LogAsync` throw inside the send path and aborts the user event.
-
-### Also noted
-
-- **`MobilePushChannel.cs:126-139`:** iOS wakeup jobs are tracked like real notifications, which roughly doubles the mobile push counters for iOS users.
-- **`Users/AddUserMobileToken.cs:36-39`:** Re-registering a known token never corrects its device type, so a token registered as `Unknown` never gets silent pushes.
-- **Batch endpoints** (`EventsController.PostEvents`, `UsersController.PostUsers`, `TopicsController.PostTopics`): one invalid item fails the whole request after the earlier items have been applied, so a retry duplicates them.
+- **No unique index on the scheduler group key** (`MongoDbSchedulerStore`): two nodes enqueuing the same key at the same moment can insert duplicate batches and send a message twice. A partial unique index would make concurrent upserts fail, so this needs a decision on the error handling.
+- **Batch endpoints** still apply items one by one, so a failure inside a handler (not during validation) leaves the earlier items applied.
+- **Not tested:** the SMTP reconnect after a stale pooled connection, the SMS and Messaging retry settings, and the Mailchimp, Telegram, Discord and Firebase changes, which all need the provider APIs.

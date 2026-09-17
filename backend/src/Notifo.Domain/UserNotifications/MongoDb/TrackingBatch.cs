@@ -33,7 +33,7 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 
     public List<(UserNotification, bool Updated)> GetNotifications()
     {
-        return pendingChanges.Select(x => (x.Value.Notification, x.Value.HasChanges)).ToList();
+        return pendingChanges.Select(x => (x.Value.Notification, x.Value.HasTrackingChanges)).ToList();
     }
 
     public static async Task<TrackingBatch> CreateAsync(IMongoCollection<UserNotification> collection, IEnumerable<TrackingToken> tokens,
@@ -89,7 +89,8 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
                     configuration.Status = result.Status;
                     configuration.Detail = result.Detail;
 
-                    changes.Set($"Channels.{channel}.Status.{configurationId}.Status", result.Status);
+                    // Write the status as string, like the class map does for the whole document.
+                    changes.Set($"Channels.{channel}.Status.{configurationId}.Status", result.Status.ToString());
                     changes.Set($"Channels.{channel}.Status.{configurationId}.Detail", result.Detail);
                     changes.Max($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
                 }
@@ -128,14 +129,14 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
             {
-                if (ShouldUpdate(channelInfo.FirstConfirmed, now))
+                if (ShouldUpdateFirst(channelInfo.FirstConfirmed))
                 {
                     channelInfo.FirstConfirmed = now;
 
                     changes.Min($"Channels.{channel}.FirstConfirmed", now);
                 }
 
-                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstConfirmed, now))
+                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdateFirst(status.FirstConfirmed))
                 {
                     status.FirstConfirmed = now;
 
@@ -179,14 +180,14 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
             {
-                if (ShouldUpdate(channelInfo.FirstSeen, now))
+                if (ShouldUpdateFirst(channelInfo.FirstSeen))
                 {
                     channelInfo.FirstSeen = now;
 
                     changes.Min($"Channels.{channel}.FirstSeen", now);
                 }
 
-                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstSeen, now))
+                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdateFirst(status.FirstSeen))
                 {
                     status.FirstSeen = now;
 
@@ -230,14 +231,14 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
             {
-                if (ShouldUpdate(channelInfo.FirstDelivered, now))
+                if (ShouldUpdateFirst(channelInfo.FirstDelivered))
                 {
                     channelInfo.FirstDelivered = now;
 
                     changes.Min($"Channels.{channel}.FirstDelivered", now);
                 }
 
-                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstDelivered, now))
+                if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdateFirst(status.FirstDelivered))
                 {
                     status.FirstDelivered = now;
 
@@ -261,6 +262,12 @@ public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
     private static bool ShouldUpdate(Instant? current, Instant now)
     {
         return current == null || current < now;
+    }
+
+    private static bool ShouldUpdateFirst(Instant? current)
+    {
+        // The first timestamp is only written once, otherwise every tracking would report a change.
+        return current == null;
     }
 
     private static bool TryGetConfiguration(UserNotificationChannel channel, TrackingToken token, out ChannelSendInfo configuration, out Guid configurationId)

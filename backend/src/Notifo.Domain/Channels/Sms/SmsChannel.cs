@@ -147,7 +147,8 @@ public sealed class SmsChannel(
 
                 var result = await SendCoreAsync(commonApp, message!, integrations, ct);
 
-                if (result.Status > DeliveryStatus.Attempt)
+                // Skipped is lower than Attempt, but must also be tracked.
+                if (result.Status != DeliveryStatus.Unknown && result.Status != DeliveryStatus.Attempt)
                 {
                     await UpdateAsync(jobs, result);
                 }

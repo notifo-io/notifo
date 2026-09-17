@@ -240,19 +240,19 @@ public sealed class IntegrationManager(
                         continue;
                     }
 
-                    IntegrationStatus newStatus = configured.Status;
+                    var newStatus = status;
                     try
                     {
-                        await integration.CheckStatusAsync(BuildContext(app, id, integration, configured), ct);
+                        newStatus = await integration.CheckStatusAsync(BuildContext(app, id, integration, configured), ct);
                     }
                     catch (Exception ex)
                     {
                         log.LogError(ex, "Check integrations failed.");
                     }
 
-                    if (status != configured.Status)
+                    if (newStatus != status)
                     {
-                        updates[id] = IntegrationStatus.Verified;
+                        updates[id] = newStatus;
                     }
                 }
 

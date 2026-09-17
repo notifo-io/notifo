@@ -77,6 +77,22 @@ public class MessagingChannelTests
     }
 
     [Fact]
+    public async Task Should_track_skipped_result_of_integration()
+    {
+        var job = CreateJob();
+
+        var context1 = SetupIntegrations("integration1");
+
+        A.CallTo(() => sender.SendAsync(context1, A<MessagingMessage>._, A<CancellationToken>._))
+            .Returns(DeliveryResult.Skipped());
+
+        await sut.HandleAsync([job], false, default);
+
+        A.CallTo(() => userNotificationStore.TrackAsync(A<TrackingKey>._, A<DeliveryResult>.That.Matches(x => x.Status == DeliveryStatus.Skipped), A<CancellationToken>._))
+            .MustHaveHappened();
+    }
+
+    [Fact]
     public async Task Should_fallback_to_next_integration_of_same_type_if_first_failed()
     {
         var job = CreateJob();

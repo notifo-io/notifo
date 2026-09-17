@@ -100,7 +100,8 @@ public sealed class WebhookChannel(IServiceProvider serviceProvider) : Schedulin
 
                 var result = await SendCoreAsync(job, integration, ct);
 
-                if (result.Status > DeliveryStatus.Attempt)
+                // Skipped is lower than Attempt, but must also be tracked.
+                if (result.Status != DeliveryStatus.Unknown && result.Status != DeliveryStatus.Attempt)
                 {
                     await UpdateAsync(job, result);
                 }

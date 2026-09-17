@@ -153,6 +153,17 @@ public sealed class MobilePushChannel(IServiceProvider serviceProvider) : Schedu
         }
     }
 
+    protected override Task UpdateAsync(MobilePushJob job, DeliveryResult result)
+    {
+        // Wakeup jobs have no formatting and do not belong to a notification, therefore they must not be tracked.
+        if (job.Notification.Formatting == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return base.UpdateAsync(job, result);
+    }
+
     protected override async Task SendJobsAsync(List<MobilePushJob> jobs,
         CancellationToken ct)
     {
@@ -188,7 +199,8 @@ public sealed class MobilePushChannel(IServiceProvider serviceProvider) : Schedu
 
                 var result = await SendCoreAsync(job, message, integrations, ct);
 
-                if (result.Status > DeliveryStatus.Attempt)
+                // Skipped is lower than Attempt, but must also be tracked.
+                if (result.Status != DeliveryStatus.Unknown && result.Status != DeliveryStatus.Attempt)
                 {
                     await UpdateAsync(job, result);
                 }
