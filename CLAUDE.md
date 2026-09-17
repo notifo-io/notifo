@@ -62,6 +62,7 @@ dotnet test --filter "Category=TestContainer&Category!=Dependencies"
 - Code style is enforced by StyleCop (`backend/stylecop.json`) and `.editorconfig` — follow the surrounding file's conventions.
 - Do not write XML comments.
 - Do not log `OperationCanceledException`, it is too noisy.
+- Use pattern matching for enums in conditions, for example `if (status is not A and not B)`.
 
 ## Shared best practices
 

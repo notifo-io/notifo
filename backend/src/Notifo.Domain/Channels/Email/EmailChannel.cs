@@ -130,7 +130,7 @@ public sealed class EmailChannel(
                 var result = await SendCoreAsync(lastJob.Notification.AppId, message!, integrations, ct);
 
                 // Skipped is lower than Attempt, but must also be tracked.
-                if (result.Status != DeliveryStatus.Unknown && result.Status != DeliveryStatus.Attempt)
+                if (result.Status is not DeliveryStatus.Unknown and not DeliveryStatus.Attempt)
                 {
                     await UpdateAsync(jobs, result);
                 }
