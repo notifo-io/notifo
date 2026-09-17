@@ -7,27 +7,38 @@
 
 using System.Diagnostics;
 using MongoDB.Bson;
+using NodaTime;
 using Notifo.Domain.Integrations;
-
-#pragma warning disable SA1300 // Element should begin with upper-case letter
+using Notifo.Infrastructure.Fixtures;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
-[Trait("Category", "Dependencies")]
-public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture) : IClassFixture<MongoDbSubscriptionRepositoryFixture>
+[Trait("Category", "TestContainer")]
+[Collection(MongoFixtureCollection.Name)]
+public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : IAsyncLifetime
 {
+    private readonly MongoDbSubscriptionRepository repository = new MongoDbSubscriptionRepository(fixture.Database);
     private readonly string topic = Guid.NewGuid().ToString();
     private readonly string appId = "my-app";
     private readonly string userId1 = Guid.NewGuid().ToString();
     private readonly string userId2 = Guid.NewGuid().ToString();
     private readonly string empty = Guid.Empty.ToString();
 
-    public MongoDbSubscriptionRepositoryFixture _ { get; } = fixture;
+    public Task InitializeAsync()
+    {
+        return repository.InitializeAsync(default);
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
     [Fact]
+    [Trait("Category", "Dependencies")]
     public async Task Should_be_fast()
     {
-        var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
+        var count = await repository.Collection.CountDocumentsAsync(new BsonDocument());
 
         const int Count = 1_000_000;
 
@@ -49,17 +60,17 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
                 });
             }
 
-            await _.Repository.Collection.InsertManyAsync(inserts);
+            await repository.Collection.InsertManyAsync(inserts);
         }
 
         var topicToSearch = $"{Guid.NewGuid()}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}a";
 
-        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
-        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+        await ToList(repository.QueryAsync(empty, topicToSearch));
+        await ToList(repository.QueryAsync(empty, topicToSearch));
 
         var watch = Stopwatch.StartNew();
 
-        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+        await ToList(repository.QueryAsync(empty, topicToSearch));
 
         watch.Stop();
 
@@ -80,7 +91,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
         await SubscribeAsync(userId2, subscriptionTopic1);
         await SubscribeAsync(userId2, subscriptionTopic2, true);
 
-        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
 
         Assert.Equal(2, subscriptions.Count);
         Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
@@ -94,7 +105,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
 
         await SubscribeAsync(userId1, subscriptionTopic);
 
-        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
 
         Assert.Single(subscriptions);
         Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -107,7 +118,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
 
         await SubscribeAsync(userId1, subscriptionTopic);
 
-        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
 
         Assert.Single(subscriptions);
         Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -120,7 +131,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
 
         await SubscribeAsync(userId1, subscriptionTopic);
 
-        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
 
         Assert.Empty(subscriptions);
     }
@@ -139,7 +150,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
             "tenant1/updates/news"
         }, subscriptions_0);
 
-        await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
+        await repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
 
         var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -167,7 +178,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
             "tenant2/updates/news"
         }, subscriptions_0);
 
-        await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
+        await repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
 
         var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -178,9 +189,33 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
         }, subscriptions_1);
     }
 
+    [Fact]
+    public async Task Should_store_scheduling()
+    {
+        var scheduling = new Scheduling
+        {
+            Type = SchedulingType.UTC,
+            Time = new LocalTime(8, 0),
+            NextWeekDay = IsoDayOfWeek.Monday
+        };
+
+        await repository.UpsertAsync(new Subscription
+        {
+            AppId = appId,
+            UserId = userId1,
+            TopicPrefix = "news",
+            TopicSettings = [],
+            Scheduling = scheduling
+        });
+
+        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId1 }, default);
+
+        subscriptions.Single().Scheduling.Should().BeEquivalentTo(scheduling);
+    }
+
     private async Task<string[]> QuerySubscriptionTopics(string userId)
     {
-        var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
+        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
 
         return subscriptions.Select(x => x.TopicPrefix.ToString()).Order().ToArray();
     }
@@ -203,7 +238,7 @@ public class MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFix
             };
         }
 
-        return _.Repository.UpsertAsync(subscription);
+        return repository.UpsertAsync(subscription);
     }
 
     private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)

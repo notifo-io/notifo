@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using NodaTime;
@@ -152,19 +153,33 @@ public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerO
     {
         using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteByKeyAsync"))
         {
+            var jobField = $"JobsV2.{key}";
+
+            // Multiple batches can have the same group key, therefore we have to find the batch that contains the job.
             var result =
-                await Collection.FindOneAndUpdateAsync(x => x.GroupKey == groupKey,
-                    Update.Unset($"JobsV2.{key}"),
+                await Collection.FindOneAndUpdateAsync(
+                    Filter.And(
+                        Filter.Eq(x => x.GroupKey, groupKey),
+                        Filter.Eq(x => x.Progressing, false),
+                        Filter.Exists(jobField)),
+                    Update.Unset(jobField),
                     cancellationToken: ct);
 
-            var hasDeleted = result?.JobsV2?.ContainsKey(key) == true;
-
-            if (result?.JobsV2?.Count == 1 && hasDeleted)
+            if (result == null)
             {
-                await Collection.DeleteOneAsync(x => x.Id == result.Id, ct);
+                return false;
             }
 
-            return hasDeleted;
+            // Only delete the batch if it is still empty, because other jobs could have been added in the meantime.
+            await Collection.DeleteOneAsync(
+                Filter.And(
+                    Filter.Eq(x => x.Id, result.Id),
+                    Filter.Eq(x => x.Progressing, false),
+                    Filter.Eq(x => x.JobsV2, new Dictionary<string, T>()),
+                    Filter.Eq("Jobs", BsonNull.Value)),
+                ct);
+
+            return true;
         }
     }
 }

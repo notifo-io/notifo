@@ -24,7 +24,8 @@ public sealed class MobilePushJob : ChannelJob
         get => string.Join('_',
             Notification.AppId,
             Notification.UserId,
-            GroupKey.OrDefault(Notification.Id),
+            // Wakeup jobs have no formatting and must not replace the actual notification with the same group key.
+            Notification.Formatting == null ? "wakeup" : GroupKey.OrDefault(Notification.Id),
             DeviceToken);
     }
 

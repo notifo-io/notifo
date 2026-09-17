@@ -101,6 +101,26 @@ public sealed class SchedulingTests
     }
 
     [Fact]
+    public void Should_return_user_datetime_if_time_is_skipped_by_daylight_saving()
+    {
+        var time = new LocalTime(2, 30, 0);
+
+        var sut = new Scheduling
+        {
+            Type = SchedulingType.UserTime,
+            Time = time,
+            Date = new LocalDate(2010, 3, 28)
+        };
+
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+
+        // 02:30 does not exist in Berlin on this day and is shifted by one hour to 03:30 (UTC+2).
+        var expected = Instant.FromUtc(2010, 3, 28, 1, 30, 0);
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
     public void Should_return_weekday_utc_datetime()
     {
         var time = new LocalTime(15, 13, 12);

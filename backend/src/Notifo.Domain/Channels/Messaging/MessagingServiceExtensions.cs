@@ -27,7 +27,8 @@ public static class MessagingServiceExtensions
 
         services.AddScheduler<MessagingJob>(Providers.Messaging, new SchedulerOptions
         {
-            ExecutionRetries = []
+            // Domain exceptions are marked as failed without a retry, so only unexpected errors like timeouts are retried.
+            ExecutionRetries = [5000, 30000, 60000]
         });
     }
 }

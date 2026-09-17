@@ -57,7 +57,7 @@ public sealed class Scheduling
     {
         var zone = GetZone(userTimeZone);
 
-        var dateTime = zone.AtStrictly(date + Time);
+        var dateTime = zone.AtLeniently(date + Time);
 
         return dateTime.ToInstant();
     }
@@ -73,7 +73,7 @@ public sealed class Scheduling
             date = date.Next(dayOfWeek);
         }
 
-        var dateTime = zone.AtStrictly(date + Time);
+        var dateTime = zone.AtLeniently(date + Time);
 
         return dateTime.ToInstant();
     }

@@ -61,7 +61,7 @@ public sealed class UserNotificationService(
             }
 
             // The scheduling from the event has preference over the user scheduling.
-            userEvent.Scheduling = Scheduling.Merged(user.Scheduling, userEvent.Scheduling);
+            userEvent.Scheduling = Scheduling.Merged(userEvent.Scheduling, user.Scheduling);
 
             var scheduleKey = ScheduleKey(userEvent);
             var scheduleTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);

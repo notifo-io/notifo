@@ -19,7 +19,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
         CancellationToken ct)
     {
-        var phoneNumberFrom = PhoneNumberProperty.GetString(context.Properties);
+        var phoneNumberFrom = PhoneNumberProperty.GetNumber(context.Properties).ToString(CultureInfo.InvariantCulture);
         var phoneNumberTo = message.To;
 
         var apiKey = ApiKeyProperty.GetString(context.Properties);

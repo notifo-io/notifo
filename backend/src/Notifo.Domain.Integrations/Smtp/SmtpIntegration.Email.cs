@@ -74,7 +74,7 @@ public sealed partial class SmtpIntegration : IEmailSender
         return DeliveryResult.Sent;
     }
 
-    private static bool IsTransient(Exception exception)
+    public static bool IsTransient(Exception exception)
     {
         switch (exception)
         {

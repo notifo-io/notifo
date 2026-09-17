@@ -32,6 +32,10 @@ public sealed class MongoDbSubscription : MongoDbEntity
     [BsonElement("s")]
     public ChannelSettings? TopicSettings { get; set; }
 
+    [BsonIgnoreIfNull]
+    [BsonElement("sc")]
+    public Scheduling? Scheduling { get; set; }
+
     public static string CreateId(string appId, string userId, string topicPrefix)
     {
         return $"{appId}_{userId}_{topicPrefix}";
@@ -48,6 +52,7 @@ public sealed class MongoDbSubscription : MongoDbEntity
             TopicArray = subscription.TopicPrefix.GetParts(),
             TopicPrefix = subscription.TopicPrefix,
             TopicSettings = subscription.TopicSettings,
+            Scheduling = subscription.Scheduling,
             UserId = subscription.UserId,
             Etag = GenerateEtag()
         };
@@ -62,6 +67,7 @@ public sealed class MongoDbSubscription : MongoDbEntity
             AppId = AppId,
             TopicPrefix = TopicPrefix,
             TopicSettings = TopicSettings,
+            Scheduling = Scheduling,
             UserId = UserId
         };
     }

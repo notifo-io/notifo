@@ -189,10 +189,10 @@ public sealed class MessagingChannel(
         {
             try
             {
-                var result = await sender.SendAsync(context, message, ct);
+                lastResult = await sender.SendAsync(context, message, ct);
 
                 // We only sent notifications over the first successful integration.
-                if (result.Status >= DeliveryStatus.Sent)
+                if (lastResult.Status >= DeliveryStatus.Sent)
                 {
                     break;
                 }

@@ -65,7 +65,7 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
         }
     }
 
-    private static bool IsTransient(Exception exception)
+    public static bool IsTransient(Exception exception)
     {
         switch (exception)
         {

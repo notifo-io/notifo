@@ -13,7 +13,6 @@
     <None Remove="Channels\Email\CustomText.liquid.text" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EphemeralMongo6" Version="2.0.0" />
     <PackageReference Include="FakeItEasy" Version="9.0.1" />
     <PackageReference Include="FluentAssertions" Version="8.11.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.259">

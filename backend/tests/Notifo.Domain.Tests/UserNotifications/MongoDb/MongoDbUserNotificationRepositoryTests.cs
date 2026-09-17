@@ -5,19 +5,25 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using NodaTime;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
-
-#pragma warning disable SA1300 // Element should begin with upper-case letter
+using Notifo.Infrastructure.Fixtures;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
-[Trait("Category", "Dependencies")]
-public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepositoryFixture fixture) : IClassFixture<MongoDbUserNotificationRepositoryFixture>
+[Trait("Category", "TestContainer")]
+[Collection(MongoFixtureCollection.Name)]
+public class MongoDbUserNotificationRepositoryTests(MongoFixture fixture) : IAsyncLifetime
 {
+    private readonly MongoDbUserNotificationRepository repository =
+        new MongoDbUserNotificationRepository(fixture.Database,
+            Options.Create(new UserNotificationsOptions { MaxItemsPerUser = 100 }),
+            A.Fake<ILogger<MongoDbUserNotificationRepository>>());
     private readonly Guid configurationId1 = Guid.NewGuid();
     private readonly Guid configurationId2 = Guid.NewGuid();
     private readonly Instant now = Instant.FromUtc(2022, 11, 10, 9, 8, 7);
@@ -28,7 +34,15 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     private readonly string userId1 = Guid.NewGuid().ToString();
     private readonly string userId2 = Guid.NewGuid().ToString();
 
-    public MongoDbUserNotificationRepositoryFixture _ { get; } = fixture;
+    public Task InitializeAsync()
+    {
+        return repository.InitializeAsync(default);
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
     [Fact]
     public async Task Should_store_notification()
@@ -36,11 +50,11 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         var notification1 = CreateNotification(userId1);
         var notification2 = CreateNotification(userId2);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
-        var notifications2 = await _.Repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications2 = await repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
         notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
@@ -53,12 +67,12 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
 
         for (var i = 0; i < 200; i++)
         {
-            await _.Repository.InsertAsync(CreateNotification(userId1, time), default);
+            await repository.InsertAsync(CreateNotification(userId1, time), default);
 
             time = time.Plus(Duration.FromSeconds(1));
         }
 
-        var notifications = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery { TotalNeeded = true }, default);
+        var notifications = await repository.QueryAsync(appId, userId1, new UserNotificationQuery { TotalNeeded = true }, default);
 
         Assert.Equal(100, notifications.Total);
     }
@@ -69,12 +83,12 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         var notification1 = CreateNotification(userId1);
         var notification2 = CreateNotification(userId2);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
 
         var result = new DeliveryResult(DeliveryStatus.Handled, "Update Details");
 
-        await _.Repository.BatchWriteAsync(
+        await repository.BatchWriteAsync(
         [
             (new TrackingToken(notification1.Id, channel, configurationId1), result),
             (new TrackingToken(notification1.Id, channel, configurationId2), result),
@@ -87,8 +101,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         UpdateStatus(notification2, channel, configurationId1, result);
         UpdateStatus(notification2, channel, configurationId2, result);
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
-        var notifications2 = await _.Repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications2 = await repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
         notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
@@ -100,12 +114,12 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         var notification1 = CreateNotification(userId1);
         var notification2 = CreateNotification(userId2);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
 
         var result = new DeliveryResult(DeliveryStatus.Handled, "Update Details");
 
-        await _.Repository.BatchWriteAsync(
+        await repository.BatchWriteAsync(
         [
             (new TrackingToken(notification1.Id, channel, default, configuration1), result),
             (new TrackingToken(notification1.Id, channel, default, configuration2), result),
@@ -118,8 +132,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         UpdateStatus(notification2, channel, configurationId1, result);
         UpdateStatus(notification2, channel, configurationId2, result);
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
-        var notifications2 = await _.Repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications2 = await repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
         notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
@@ -131,19 +145,19 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         var notification1 = CreateNotification(userId1);
         var notification2 = CreateNotification(userId2);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
 
         var result = new DeliveryResult(DeliveryStatus.Handled, "Update Details");
 
-        await _.Repository.BatchWriteAsync(
+        await repository.BatchWriteAsync(
         [
             (new TrackingToken(notification1.Id), result),
             (new TrackingToken(notification2.Id), result),
         ], now, default);
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
-        var notifications2 = await _.Repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications2 = await repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
         notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
@@ -155,19 +169,19 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         var notification1 = CreateNotification(userId1);
         var notification2 = CreateNotification(userId2);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
 
         var result = new DeliveryResult(DeliveryStatus.Handled, "Update Details");
 
-        await _.Repository.BatchWriteAsync(
+        await repository.BatchWriteAsync(
         [
             (new TrackingToken(notification1.Id, channel), result),
             (new TrackingToken(notification2.Id, channel), result),
         ], now, default);
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
-        var notifications2 = await _.Repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications2 = await repository.QueryAsync(appId, userId2, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
         notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
@@ -178,8 +192,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -187,7 +201,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -199,9 +213,9 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
 
         await InsertOldRepresentation(notification);
 
-        await _.Repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
-        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+        var result = (await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
 
         Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstDelivered == now);
     }
@@ -211,8 +225,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -220,7 +234,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -230,15 +244,15 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackDeliveredAsync([new TrackingToken(notification.Id, channel)], now, default);
 
         var info = new HandledInfo(now, channel);
 
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -248,14 +262,14 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackDeliveredAsync([new TrackingToken(notification.Id)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackDeliveredAsync([new TrackingToken(notification.Id)], now, default);
 
         var info = new HandledInfo(now, null);
 
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -265,8 +279,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -277,7 +291,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -289,9 +303,9 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
 
         await InsertOldRepresentation(notification);
 
-        await _.Repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
-        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+        var result = (await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
 
         Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstSeen == now);
         Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstDelivered == now);
@@ -302,8 +316,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackSeenAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -314,7 +328,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -324,8 +338,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackSeenAsync([new TrackingToken(notification.Id, channel)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackSeenAsync([new TrackingToken(notification.Id, channel)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -334,7 +348,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -344,15 +358,15 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackSeenAsync([new TrackingToken(notification.Id)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackSeenAsync([new TrackingToken(notification.Id)], now, default);
 
         var info = new HandledInfo(now, null);
 
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -364,8 +378,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
 
         notification.Formatting.ConfirmMode = ConfirmMode.None;
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -376,7 +390,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -386,8 +400,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, configurationId1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -402,7 +416,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -414,9 +428,9 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
 
         await InsertOldRepresentation(notification);
 
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
-        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+        var result = (await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
 
         Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstConfirmed == now);
         Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstSeen == now);
@@ -428,8 +442,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel, default, configuration1)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -444,7 +458,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -454,8 +468,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id, channel)], now, default);
 
         var info = new HandledInfo(now, channel);
 
@@ -467,7 +481,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -477,8 +491,8 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
     {
         var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification, default);
-        await _.Repository.TrackConfirmedAsync([new TrackingToken(notification.Id)], now, default);
+        await repository.InsertAsync(notification, default);
+        await repository.TrackConfirmedAsync([new TrackingToken(notification.Id)], now, default);
 
         var info = new HandledInfo(now, null);
 
@@ -487,7 +501,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
-        var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
+        var notifications1 = await repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
         notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
@@ -516,7 +530,7 @@ public class MongoDbUserNotificationRepositoryTests(MongoDbUserNotificationRepos
             element.Value.AsBsonDocument["Status"] = oldStatus;
         }
 
-        var collection = _.MongoDatabase.GetCollection<BsonDocument>(_.Repository.Collection.CollectionNamespace.CollectionName);
+        var collection = fixture.Database.GetCollection<BsonDocument>(repository.Collection.CollectionNamespace.CollectionName);
 
         await collection.InsertOneAsync(bsonDocument);
     }
