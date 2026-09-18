@@ -131,12 +131,23 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
     private async Task<DeliveryResult> SendCoreAsync(WebPushJob job,
         CancellationToken ct)
     {
+        if (job.Subscription.Keys?.TryGetValue("p256dh", out var publicKey) != true || !job.Subscription.Keys.TryGetValue("auth", out var authKey))
+        {
+            // Use the same log message for the delivery result later.
+            var invalidMessage = LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint);
+
+            await LogStore.LogAsync(job.Notification.AppId, invalidMessage);
+            await RemoveTokenAsync(job);
+
+            return DeliveryResult.Failed(invalidMessage.Reason);
+        }
+
         try
         {
             var pushSubscription = new PushSubscription(
                 job.Subscription.Endpoint,
-                job.Subscription.Keys["p256dh"],
-                job.Subscription.Keys["auth"]);
+                publicKey,
+                authKey);
 
             var json = job.Payload;
 

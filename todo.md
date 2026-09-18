@@ -68,4 +68,33 @@ Paths are relative to `backend/src/`. Each item has a status: **Fixed**, **By de
 
 - **No unique index on the scheduler group key** (`MongoDbSchedulerStore`): two nodes enqueuing the same key at the same moment can insert duplicate batches and send a message twice. A partial unique index would make concurrent upserts fail, so this needs a decision on the error handling.
 - **Batch endpoints** still apply items one by one, so a failure inside a handler (not during validation) leaves the earlier items applied.
-- **Not tested:** the SMTP reconnect after a stale pooled connection, the SMS and Messaging retry settings, and the Mailchimp, Telegram, Discord and Firebase changes, which all need the provider APIs.
+
+
+## Round 4
+
+Paths are relative to `backend/src/`.
+
+| # | Status | Issue |
+|---|--------|-------|
+| 1 | Fixed | **Emails were dropped when no template was primary.** `CreateChannelTemplate` makes the first template of an app primary. Covered by `CreateChannelTemplateTests`. |
+| 2 | By design | **A grouped email fails when the rendered body does not contain every subject** (`EmailContext.cs:70`). |
+| 3 | Fixed | **OpenNotifications got the seen url instead of the status webhook.** The provider now gets `context.WebhookUrl`. Not tested (needs a provider). |
+| 4 | Fixed | **The OpenNotifications webhook body was truncated.** It is read completely now and the reader is disposed. Not tested (needs a provider). |
+| 5 | Fixed | **MessageBird webhooks ignored terminal failures.** `Expired`, `Failed` and `Rejected` are mapped to failed, for SMS and WhatsApp. Not tested (needs the API). |
+| 6 | Fixed | **A web push subscription without keys burned every retry.** The registration validates the keys, the DTOs use the real `Required` attribute, and the channel removes such a subscription instead of throwing. Covered by `AddUserWebPushSubscriptionTests` and `WebPushChannelTests`. |
+| 7 | Fixed | **Web polling lost notifications beyond 100 per interval.** A query that continues from a timestamp is sorted by `Updated`. Covered by `MongoDbUserNotificationRepositoryTests`. |
+| 8 | Fixed | **A filtered upsert could resurrect a deleted document.** The etag replace does not insert anymore and reports a conflict instead. Duplicate keys are no longer reported as concurrency errors. Covered by `MongoDbSubscriptionRepositoryTests`. |
+| 9 | Fixed | **The OpenNotifications callback response was overwritten.** The statuses are applied before the response is written and the controller keeps a started response. Not tested (needs a provider). |
+| 10 | Fixed | **`imageLarge` returned the small image.** Fixed in the liquid notification and in `ChannelExtensions`. Covered by `ChannelExtensionsTests`. |
+| 11 | Fixed | **The email display name was the sender address.** `FromName` comes from the template's `FromName` now. Not tested. |
+| 12 | Fixed | **Mailjet threw a `FormatException`.** The "no result" branch uses `Mailjet_ErrorUnknown`. Not tested (needs the API). |
+| 13 | Fixed | **The Discord logout never ran.** `CachePool` checks `IAsyncDisposable` first. **Still open:** pooled clients can be disposed while other senders use them, which the integrations work around with a retry loop. |
+| 14 | Fixed | **Amazon SES reported verified without asking SES.** The check for unconfirmed addresses also runs when the address set is unchanged. Not tested (needs AWS). |
+| 15 | Fixed | **A failed follow up action left a stale user in the cache.** The user and app stores update the cache before the follow up actions run. Not tested. |
+
+### Open
+
+- **No unique index on the scheduler group key** (`MongoDbSchedulerStore`): two nodes enqueuing the same key at the same moment can insert duplicate batches and send a message twice. A partial unique index would make concurrent upserts fail, so this needs a decision on the error handling.
+- **Batch endpoints** still apply items one by one, so a failure inside a handler (not during validation) leaves the earlier items applied.
+- **Pooled integration clients** are still disposed after five minutes while senders may hold them (see 13).
+- **Not tested:** the SMTP reconnect after a stale pooled connection, the SMS and Messaging retry settings, and all changes that need a provider API (Mailchimp, Telegram, Discord, Firebase, MessageBird, Mailjet, Amazon SES, OpenNotifications).

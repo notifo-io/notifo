@@ -34,7 +34,6 @@ public sealed class AddUserMobileToken : UserCommand
         Validate<Validator>.It(this);
 
         var existing = target.MobilePushTokens.FirstOrDefault(x => x.Token == Token.Token);
-
         if (existing != null)
         {
             // A client can register the token again with the correct device type or identifier.

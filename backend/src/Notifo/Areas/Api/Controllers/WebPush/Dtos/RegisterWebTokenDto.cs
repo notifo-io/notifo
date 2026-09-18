@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Build.Framework;
+using System.ComponentModel.DataAnnotations;
 using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Users;
 

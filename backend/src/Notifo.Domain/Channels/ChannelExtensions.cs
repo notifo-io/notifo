@@ -29,7 +29,7 @@ public static class ChannelExtensions
 
     public static string? ImageLarge(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
     {
-        return imageFormatter.AddPreset(notification.Formatting.ImageSmall, preset);
+        return imageFormatter.AddPreset(notification.Formatting.ImageLarge, preset);
     }
 
     public static string Subject(this BaseUserNotification notification, bool asHtml = false)

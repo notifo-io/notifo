@@ -56,18 +56,7 @@ public abstract class CachePool<TItem>(IMemoryCache memoryCache)
     {
         switch (item)
         {
-            case IDisposable disposable:
-                {
-                    entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
-                    {
-                        EvictionCallback = (key, value, reason, state) =>
-                        {
-                            disposable.Dispose();
-                        }
-                    });
-                    break;
-                }
-
+            // Check the async disposal first, because it usually does more work, e.g. a logout.
             case IAsyncDisposable asyncDisposable:
                 {
                     entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
@@ -79,6 +68,18 @@ public abstract class CachePool<TItem>(IMemoryCache memoryCache)
                             asyncDisposable.DisposeAsync();
 #pragma warning restore MA0134 // Observe result of async calls
 #pragma warning restore CA2012 // Use ValueTasks correctly
+                        }
+                    });
+                    break;
+                }
+
+            case IDisposable disposable:
+                {
+                    entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
+                    {
+                        EvictionCallback = (key, value, reason, state) =>
+                        {
+                            disposable.Dispose();
                         }
                     });
                     break;

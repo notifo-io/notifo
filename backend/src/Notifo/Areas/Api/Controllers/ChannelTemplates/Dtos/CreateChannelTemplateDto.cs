@@ -14,7 +14,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 [OpenApiRequest]
 public sealed class CreateChannelTemplateDto
 {
-    public CreateChannelTemplate<T> ToUpdate<T>(string language)
+    public CreateChannelTemplate<T> ToUpdate<T>(string language) where T : class
     {
         var result = SimpleMapper.Map(this, new CreateChannelTemplate<T>());
 

@@ -198,7 +198,6 @@ public sealed class MobilePushChannel(IServiceProvider serviceProvider) : Schedu
                 var message = BuildMessage(job);
 
                 var result = await SendCoreAsync(job, message, integrations, ct);
-
                 // Skipped is lower than Attempt, but must also be tracked.
                 if (result.Status is not DeliveryStatus.Unknown and not DeliveryStatus.Attempt)
                 {

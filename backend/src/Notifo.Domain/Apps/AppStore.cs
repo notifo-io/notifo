@@ -98,7 +98,6 @@ public sealed class AppStore(
         var (app, _) = await repository.GetAsync(id, ct);
 
         await DeliverAsync(app);
-
         return app;
     }
 
@@ -110,7 +109,6 @@ public sealed class AppStore(
         var (app, _) = await repository.GetByApiKeyAsync(apiKey, ct);
 
         await DeliverAsync(app);
-
         return app;
     }
 
@@ -122,7 +120,6 @@ public sealed class AppStore(
         var (app, _) = await repository.GetByAuthDomainAsync(domain, ct);
 
         await DeliverAsync(app);
-
         return app;
     }
 
@@ -158,7 +155,6 @@ public sealed class AppStore(
             }
 
             var newApp = await command.ExecuteAsync(app, serviceProvider, ct);
-
             if (newApp != null && !ReferenceEquals(app, newApp))
             {
                 newApp = newApp with
@@ -169,11 +165,14 @@ public sealed class AppStore(
                 await repository.UpsertAsync(newApp, etag, ct);
                 app = newApp;
 
+                // Update the cache before the follow up actions, otherwise a failure would keep the old app.
+                await DeliverAsync(app, true);
+
                 await command.ExecutedAsync(serviceProvider);
+                return app;
             }
 
             await DeliverAsync(app, true);
-
             return app;
         });
     }

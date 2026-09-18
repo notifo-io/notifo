@@ -63,6 +63,7 @@ dotnet test --filter "Category=TestContainer&Category!=Dependencies"
 - Do not write XML comments.
 - Do not log `OperationCanceledException`, it is too noisy.
 - Use pattern matching for enums in conditions, for example `if (status is not A and not B)`.
+- Do not add a blank line between a single line assignment and an `if` that checks the assigned value. Keep the blank line when the assignment spans multiple lines.
 
 ## Shared best practices
 

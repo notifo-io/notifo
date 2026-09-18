@@ -71,7 +71,6 @@ public sealed class MediaStore(
         }
 
         await mediaRepository.UpsertAsync(media, ct);
-
         return media;
     }
 

@@ -81,7 +81,6 @@ public sealed class UserStore(
         var (user, _) = await repository.GetByApiKeyAsync(apiKey, ct);
 
         await DeliverAsync(user);
-
         return user;
     }
 
@@ -94,7 +93,6 @@ public sealed class UserStore(
         var (user, _) = await repository.GetAsync(appId, id, ct);
 
         await DeliverAsync(user);
-
         return user;
     }
 
@@ -107,7 +105,6 @@ public sealed class UserStore(
         var (user, _) = await repository.GetByPropertyAsync(appId, key, value, ct);
 
         await DeliverAsync(user);
-
         return user;
     }
 
@@ -144,7 +141,6 @@ public sealed class UserStore(
             }
 
             var newUser = await command.ExecuteAsync(user, serviceProvider, ct);
-
             if (newUser != null && !ReferenceEquals(newUser, user))
             {
                 newUser = newUser with
@@ -155,11 +151,14 @@ public sealed class UserStore(
                 await repository.UpsertAsync(newUser, etag, ct);
                 user = newUser;
 
+                // Update the cache before the follow up actions, otherwise a failure would keep the old user.
+                await DeliverAsync(user);
+
                 await command.ExecutedAsync(serviceProvider);
+                return user;
             }
 
             await DeliverAsync(user);
-
             return user;
         });
     }

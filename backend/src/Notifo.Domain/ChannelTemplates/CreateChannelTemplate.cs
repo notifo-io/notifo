@@ -10,7 +10,7 @@ using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T>
+public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T> where T : class
 {
     public string? Language { get; set; }
 
@@ -29,6 +29,18 @@ public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T>
             newTemplate = newTemplate with
             {
                 Languages = target.Languages.Set(Language, channelInstance)
+            };
+        }
+
+        var repository = serviceProvider.GetRequiredService<IChannelTemplateRepository<T>>();
+
+        var existing = await repository.QueryAsync(AppId, new ChannelTemplateQuery { Take = 1 }, ct);
+        // The first template must be the primary template, otherwise it would never be resolved without a name.
+        if (existing.Total == 0)
+        {
+            newTemplate = newTemplate with
+            {
+                Primary = true
             };
         }
 

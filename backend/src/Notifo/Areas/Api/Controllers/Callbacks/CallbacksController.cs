@@ -35,6 +35,13 @@ public sealed class CallbacksController(IAppStore appStore) : BaseController
         var integrationManager = HttpContext.RequestServices.GetRequiredService<IIntegrationManager>();
 
         await integrationManager.OnCallbackAsync(integrationId, app, HttpContext, default);
+
+        // The integration can write its own response, which must not be overriden.
+        if (HttpContext.Response.HasStarted)
+        {
+            return new EmptyResult();
+        }
+
         return Ok();
     }
 }

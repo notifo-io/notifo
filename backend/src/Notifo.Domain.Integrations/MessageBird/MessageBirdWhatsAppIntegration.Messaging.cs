@@ -133,6 +133,9 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
                 case MessageBirdStatus.Delivered:
                     return DeliveryStatus.Handled;
                 case MessageBirdStatus.Delivery_Failed:
+                case MessageBirdStatus.Expired:
+                case MessageBirdStatus.Failed:
+                case MessageBirdStatus.Rejected:
                     return DeliveryStatus.Failed;
                 case MessageBirdStatus.Sent:
                     return DeliveryStatus.Sent;

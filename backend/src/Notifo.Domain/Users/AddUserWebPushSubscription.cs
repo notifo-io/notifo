@@ -25,6 +25,10 @@ public sealed class AddUserWebPushSubscription : UserCommand
         {
             RuleFor(x => x.Subscription).NotNull();
             RuleFor(x => x.Subscription.Endpoint).NotNull().NotEmpty();
+
+            // Without these keys the payload cannot be encrypted and the subscription is useless.
+            RuleFor(x => x.Subscription.Keys).NotNull()
+                .Must(x => x != null && x.ContainsKey("p256dh") && x.ContainsKey("auth"));
         }
     }
 

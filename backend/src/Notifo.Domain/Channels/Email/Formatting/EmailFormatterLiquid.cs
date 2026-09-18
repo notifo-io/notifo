@@ -107,7 +107,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
             BodyHtml = bodyHtml,
             BodyText = bodyText,
             FromEmail = template.FromEmail.OrDefault(firstJob.FromEmail!),
-            FromName = template.FromEmail.OrDefault(firstJob.FromName!),
+            FromName = template.FromName.OrDefault(firstJob.FromName!),
             Subject = subject,
             ToEmail = context.User.EmailAddress!,
             ToName = context.User.FullName

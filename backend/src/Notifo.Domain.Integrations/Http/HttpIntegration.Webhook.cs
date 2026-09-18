@@ -34,7 +34,6 @@ public sealed partial class HttpIntegration : IWebhookSender
         };
 
         using var response = await httpClient.SendAsync(httpRequest, ct);
-
         if (!response.IsSuccessStatusCode)
         {
             var error = $"Webhook failed with status code {(int)response.StatusCode}.";

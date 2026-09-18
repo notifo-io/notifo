@@ -36,7 +36,7 @@ public abstract class LiquidNotificationBase(
 
     public string? ImageLarge
     {
-        get => imageLarge ??= imageFormatter.AddPreset(formatting.ImageSmall, imagePresetLarge);
+        get => imageLarge ??= imageFormatter.AddPreset(formatting.ImageLarge, imagePresetLarge);
     }
 
     public Dictionary<string, string> Properties

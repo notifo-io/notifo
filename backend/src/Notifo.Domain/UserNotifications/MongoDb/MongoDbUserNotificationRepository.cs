@@ -180,16 +180,6 @@ public sealed class MongoDbUserNotificationRepository(
         }
     }
 
-    private static FilterDefinition<UserNotification> IsHandledFilter(string channel, Guid configurationId)
-    {
-        var path = $"Channels.{channel}.Status.{configurationId}.Status";
-
-        // Older documents have been written with the numeric representation of the status.
-        return Filter.Or(
-            Filter.Eq(path, DeliveryStatus.Handled.ToString()),
-            Filter.Eq(path, (int)DeliveryStatus.Handled));
-    }
-
     public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default)
     {
@@ -197,7 +187,14 @@ public sealed class MongoDbUserNotificationRepository(
         {
             var filter = BuildFilter(appId, userId, query);
 
-            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
+            // When the query continues from a timestamp, the results must be sorted by the same field.
+            // Otherwise the continuation token would skip the notifications that do not fit on the page.
+            var find =
+                query.After != default ?
+                Collection.Find(filter).SortBy(x => x.Updated) :
+                Collection.Find(filter).SortByDescending(x => x.Created);
+
+            var resultItems = await find.ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
             if (query.ShouldQueryTotal(resultItems))
@@ -385,6 +382,16 @@ public sealed class MongoDbUserNotificationRepository(
                 log.LogError(ex, "Failed to cleanup notifications.");
             }
         }
+    }
+
+    private static FilterDefinition<UserNotification> IsHandledFilter(string channel, Guid configurationId)
+    {
+        var path = $"Channels.{channel}.Status.{configurationId}.Status";
+
+        // Older documents have been written with the numeric representation of the status.
+        return Filter.Or(
+            Filter.Eq(path, DeliveryStatus.Handled.ToString()),
+            Filter.Eq(path, (int)DeliveryStatus.Handled));
     }
 
     private static FilterDefinition<UserNotification> BuildFilter(UserNotification notification)

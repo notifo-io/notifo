@@ -109,11 +109,6 @@ public sealed class IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore,
 
         var previousEmails = GetEmailAddresses(previous?.Properties).ToList();
 
-        if (previousEmails.SetEquals(fromEmails, StringComparer.OrdinalIgnoreCase))
-        {
-            return IntegrationStatus.Verified;
-        }
-
         // Remove unused email addresses to make them available for other apps.
         await CleanEmailsAsync(previousEmails.Except(fromEmails), ct);
 

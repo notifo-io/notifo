@@ -33,7 +33,16 @@ public class MongoDbStore<T>(IMongoDatabase database) : MongoDbRepository<T>(dat
         {
             if (!string.IsNullOrWhiteSpace(oldEtag))
             {
-                await Collection.ReplaceOneAsync(x => x.DocId == id && x.Etag == oldEtag, value, UpsertReplace, ct);
+                // Do not insert the document again, because it could have been deleted in the meantime.
+                var result = await Collection.ReplaceOneAsync(x => x.DocId == id && x.Etag == oldEtag, value, cancellationToken: ct);
+                if (result.MatchedCount == 0)
+                {
+                    var existingVersion =
+                        await Collection.Find(x => x.DocId == id).Only(x => x.DocId, x => x.Etag)
+                            .FirstOrDefaultAsync(ct);
+
+                    throw new InconsistentStateException(existingVersion?["e"].AsString ?? string.Empty, oldEtag);
+                }
             }
             else
             {
@@ -44,18 +53,6 @@ public class MongoDbStore<T>(IMongoDatabase database) : MongoDbRepository<T>(dat
         {
             if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
             {
-                if (oldEtag != null)
-                {
-                    var existingVersion =
-                        await Collection.Find(x => x.DocId == id).Only(x => x.DocId, x => x.Etag)
-                            .FirstOrDefaultAsync(ct);
-
-                    if (existingVersion != null)
-                    {
-                        throw new InconsistentStateException(existingVersion["e"].AsString, oldEtag, ex);
-                    }
-                }
-
                 throw new UniqueConstraintException();
             }
             else

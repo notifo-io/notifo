@@ -33,7 +33,7 @@ public sealed class MailjetEmailServer(MailjetClient mailjetClient)
 
         if (responses.Messages is not { Length: 1 })
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, message.FromEmail);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_ErrorUnknown, message.FromEmail);
 
             throw new DomainException(errorMessage);
         }

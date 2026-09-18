@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Fixtures;
+using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
@@ -239,6 +240,30 @@ public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : IAsyncLi
         }
 
         return repository.UpsertAsync(subscription);
+    }
+
+    [Fact]
+    public async Task Should_not_insert_deleted_subscription_again()
+    {
+        await SubscribeAsync(userId1, topic);
+
+        var (_, etag) = await repository.GetAsync(appId, userId1, topic, default);
+
+        await repository.DeleteAsync(appId, userId1, topic, default);
+
+        var subscription = new Subscription
+        {
+            AppId = appId,
+            UserId = userId1,
+            TopicPrefix = topic,
+            TopicSettings = []
+        };
+
+        await Assert.ThrowsAsync<InconsistentStateException>(() => repository.UpsertAsync(subscription, etag));
+
+        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId1 }, default);
+
+        Assert.Empty(subscriptions);
     }
 
     [Fact]

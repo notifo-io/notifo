@@ -206,7 +206,6 @@ public sealed class TimerConsumer<T>
                     var time = clock.GetCurrentInstant();
 
                     var document = await schedulerStore.DequeueAsync(time, ct);
-
                     // Also reset dead entries regularly when we are busy, otherwise they would never be handled.
                     if (document == null || time - lastReset > Duration.FromTimeSpan(schedulerOptions.FailedTimeout))
                     {

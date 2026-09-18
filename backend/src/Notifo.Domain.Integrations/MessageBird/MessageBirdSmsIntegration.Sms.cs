@@ -119,6 +119,9 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
                 case MessageBirdStatus.Delivered:
                     return DeliveryResult.Handled;
                 case MessageBirdStatus.Delivery_Failed:
+                case MessageBirdStatus.Expired:
+                case MessageBirdStatus.Failed:
+                case MessageBirdStatus.Rejected:
                     return DeliveryResult.Failed();
                 case MessageBirdStatus.Sent:
                     return DeliveryResult.Sent;

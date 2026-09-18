@@ -29,7 +29,8 @@ public sealed class OpenNotificationsSmsIntegration(string fullName, string prov
                 Properties = context.Properties.ToProperties(Definition),
                 Provider = ProviderName,
                 TrackingToken = message.TrackingToken,
-                TrackingWebhookUrl = message.TrackSeenUrl ?? "none",
+                // The webhook url is the only url that is routed to the integration.
+                TrackingWebhookUrl = context.WebhookUrl,
             };
 
             var status = await Client.Providers.SendSmsAsync(requestDto, ct);
@@ -47,6 +48,13 @@ public sealed class OpenNotificationsSmsIntegration(string fullName, string prov
     {
         var httpRequest = httpContext.Request;
 
+        string? body;
+
+        using (var reader = new StreamReader(httpRequest.Body))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
         var requestDto = new WebhookRequestDto
         {
             Context = context.ToContext(),
@@ -58,10 +66,19 @@ public sealed class OpenNotificationsSmsIntegration(string fullName, string prov
             Headers = httpRequest.Headers.ToDictionary(
                 x => x.Key,
                 x => x.Value.ToString()),
-            Body = await new StreamReader(httpRequest.Body).ReadLineAsync(default),
+            Body = body,
         };
 
         var response = await Client.Providers.HandleWebhookAsync(requestDto, default);
+
+        // Update the statuses first, because the response must be written at the end of the request.
+        if (response.Statuses != null)
+        {
+            foreach (var status in response.Statuses)
+            {
+                await context.UpdateStatusAsync(status.TrackingToken, status.ToDeliveryResult());
+            }
+        }
 
         if (response.Http != null)
         {
@@ -82,15 +99,7 @@ public sealed class OpenNotificationsSmsIntegration(string fullName, string prov
 
             if (response.Http.Body != null)
             {
-                await httpResponse.WriteAsync(response.Http.Body, default);
-            }
-        }
-
-        if (response.Statuses != null)
-        {
-            foreach (var status in response.Statuses)
-            {
-                await context.UpdateStatusAsync(status.TrackingToken, status.ToDeliveryResult());
+                await httpResponse.WriteAsync(response.Http.Body, ct);
             }
         }
     }

@@ -82,7 +82,6 @@ public sealed class TemplateStore(
             }
 
             var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
-
             if (newTemplate != null && !ReferenceEquals(newTemplate, template))
             {
                 newTemplate = newTemplate with

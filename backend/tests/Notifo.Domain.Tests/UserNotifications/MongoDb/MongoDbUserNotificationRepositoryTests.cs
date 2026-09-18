@@ -556,6 +556,29 @@ public class MongoDbUserNotificationRepositoryTests(MongoFixture fixture) : IAsy
     }
 
     [Fact]
+    public async Task Should_query_notifications_after_timestamp_sorted_by_update()
+    {
+        // The newest notification by created time is the oldest by updated time.
+        var notification1 = CreateNotification(userId2, now.Plus(Duration.FromMinutes(3)));
+        var notification2 = CreateNotification(userId2, now.Plus(Duration.FromMinutes(2)));
+        var notification3 = CreateNotification(userId2, now.Plus(Duration.FromMinutes(1)));
+
+        notification1.Updated = now.Plus(Duration.FromMinutes(1));
+        notification2.Updated = now.Plus(Duration.FromMinutes(2));
+        notification3.Updated = now.Plus(Duration.FromMinutes(3));
+
+        await repository.InsertAsync(notification1, default);
+        await repository.InsertAsync(notification2, default);
+        await repository.InsertAsync(notification3, default);
+
+        var notifications = await repository.QueryAsync(appId, userId2, new UserNotificationQuery { After = now }, default);
+
+        Assert.Equal(
+            [notification1.Id, notification2.Id, notification3.Id],
+            notifications.Select(x => x.Id).ToArray());
+    }
+
+    [Fact]
     public async Task Should_query_notification_with_correlation_id()
     {
         var notification = CreateNotification(userId1);

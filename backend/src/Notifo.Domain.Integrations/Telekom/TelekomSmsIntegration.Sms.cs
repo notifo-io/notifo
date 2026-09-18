@@ -43,7 +43,6 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
             httpRequest.Headers.TryAddWithoutValidation("Authorization", apiKey);
 
             var response = await httpClient.SendAsync(httpRequest, ct);
-
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync(ct);
