@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Notifo.Identity\Notifo.Identity.csproj" />
+    <ProjectReference Include="..\Notifo.Infrastructure.Tests\Notifo.Infrastructure.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />

@@ -149,7 +149,8 @@ public sealed class MongoDbLogRepository(IMongoDatabase database) : MongoDbStore
 
             foreach (var system in query.Systems)
             {
-                ors.Add(Filter.Regex(x => x.Doc.System, new BsonRegularExpression($"^{system}:", "i")));
+                // Older entries have no system, but the message is prefixed with the system, e.g. "EMAIL: Text".
+                ors.Add(Filter.Regex(x => x.Doc.Message, new BsonRegularExpression($"^{Regex.Escape(system)}:", "i")));
             }
 
             filters.Add(Filter.Or(ors));

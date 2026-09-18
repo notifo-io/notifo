@@ -7,38 +7,28 @@
 
 using System.Diagnostics;
 using MongoDB.Bson;
-using NodaTime;
-using Notifo.Domain.Integrations;
+using Notifo.Domain.Shared;
 using Notifo.Infrastructure.Fixtures;
-using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]
-public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : IAsyncLifetime
+public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : SubscriptionRepositoryTests
 {
-    private readonly MongoDbSubscriptionRepository repository = new MongoDbSubscriptionRepository(fixture.Database);
-    private readonly string topic = Guid.NewGuid().ToString();
-    private readonly string appId = "my-app";
-    private readonly string userId1 = Guid.NewGuid().ToString();
-    private readonly string userId2 = Guid.NewGuid().ToString();
     private readonly string empty = Guid.Empty.ToString();
 
-    public Task InitializeAsync()
+    protected override async Task<ISubscriptionRepository> CreateSutAsync()
     {
-        return repository.InitializeAsync(default);
-    }
-
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
+        return await CreateRepositoryAsync();
     }
 
     [Fact]
     [Trait("Category", "Dependencies")]
     public async Task Should_be_fast()
     {
+        var repository = await CreateRepositoryAsync();
+
         var count = await repository.Collection.CountDocumentsAsync(new BsonDocument());
 
         const int Count = 1_000_000;
@@ -78,214 +68,11 @@ public class MongoDbSubscriptionRepositoryTests(MongoFixture fixture) : IAsyncLi
         Assert.InRange(watch.ElapsedMilliseconds, 0, 20);
     }
 
-    [Fact]
-    public async Task Should_find_most_concrete_subscriptions()
+    private async Task<MongoDbSubscriptionRepository> CreateRepositoryAsync()
     {
-        var eventTopic = $"{topic}/child";
+        var sut = new MongoDbSubscriptionRepository(fixture.Database);
 
-        var subscriptionTopic1 = topic;
-        var subscriptionTopic2 = $"{topic}/child";
-
-        await SubscribeAsync(userId1, subscriptionTopic1);
-        await SubscribeAsync(userId1, subscriptionTopic2, true);
-
-        await SubscribeAsync(userId2, subscriptionTopic1);
-        await SubscribeAsync(userId2, subscriptionTopic2, true);
-
-        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
-
-        Assert.Equal(2, subscriptions.Count);
-        Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
-        Assert.Equal(subscriptionTopic2, subscriptions[1].TopicPrefix);
-    }
-
-    [Fact]
-    public async Task Should_find_same_subscription()
-    {
-        string eventTopic = topic, subscriptionTopic = topic;
-
-        await SubscribeAsync(userId1, subscriptionTopic);
-
-        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
-
-        Assert.Single(subscriptions);
-        Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
-    }
-
-    [Fact]
-    public async Task Should_find_parent_subscription()
-    {
-        string eventTopic = $"{topic}/child", subscriptionTopic = topic;
-
-        await SubscribeAsync(userId1, subscriptionTopic);
-
-        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
-
-        Assert.Single(subscriptions);
-        Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
-    }
-
-    [Fact]
-    public async Task Should_not_find_child_subscription()
-    {
-        string eventTopic = topic, subscriptionTopic = $"{topic}/child";
-
-        await SubscribeAsync(userId1, subscriptionTopic);
-
-        var subscriptions = await ToList(repository.QueryAsync(appId, eventTopic));
-
-        Assert.Empty(subscriptions);
-    }
-
-    [Fact]
-    public async Task Should_unsubscribe_by_topic()
-    {
-        await SubscribeAsync(userId1, "tenant1/updates");
-        await SubscribeAsync(userId1, "tenant1/updates/news");
-
-        var subscriptions_0 = await QuerySubscriptionTopics(userId1);
-
-        Assert.Equal(new[]
-        {
-            "tenant1/updates",
-            "tenant1/updates/news"
-        }, subscriptions_0);
-
-        await repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
-
-        var subscriptions_1 = await QuerySubscriptionTopics(userId1);
-
-        Assert.Equal(new[]
-        {
-            "tenant1/updates/news"
-        }, subscriptions_1);
-    }
-
-    [Fact]
-    public async Task Should_unsubscribe_by_prefix()
-    {
-        await SubscribeAsync(userId1, "tenant1/updates");
-        await SubscribeAsync(userId1, "tenant1/updates/news");
-        await SubscribeAsync(userId1, "tenant2/updates");
-        await SubscribeAsync(userId1, "tenant2/updates/news");
-
-        var subscriptions_0 = await QuerySubscriptionTopics(userId1);
-
-        Assert.Equal(new[]
-        {
-            "tenant1/updates",
-            "tenant1/updates/news",
-            "tenant2/updates",
-            "tenant2/updates/news"
-        }, subscriptions_0);
-
-        await repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
-
-        var subscriptions_1 = await QuerySubscriptionTopics(userId1);
-
-        Assert.Equal(new[]
-        {
-            "tenant1/updates",
-            "tenant1/updates/news"
-        }, subscriptions_1);
-    }
-
-    [Fact]
-    public async Task Should_store_scheduling()
-    {
-        var scheduling = new Scheduling
-        {
-            Type = SchedulingType.UTC,
-            Time = new LocalTime(8, 0),
-            NextWeekDay = IsoDayOfWeek.Monday
-        };
-
-        await repository.UpsertAsync(new Subscription
-        {
-            AppId = appId,
-            UserId = userId1,
-            TopicPrefix = "news",
-            TopicSettings = [],
-            Scheduling = scheduling
-        });
-
-        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId1 }, default);
-
-        subscriptions.Single().Scheduling.Should().BeEquivalentTo(scheduling);
-    }
-
-    private async Task<string[]> QuerySubscriptionTopics(string userId)
-    {
-        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
-
-        return subscriptions.Select(x => x.TopicPrefix.ToString()).Order().ToArray();
-    }
-
-    private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)
-    {
-        var subscription = new Subscription
-        {
-            AppId = appId,
-            UserId = userId,
-            TopicPrefix = topicPrefix,
-            TopicSettings = []
-        };
-
-        if (sendEmail)
-        {
-            subscription.TopicSettings[Providers.Email] = new ChannelSetting
-            {
-                Send = ChannelSend.Send
-            };
-        }
-
-        return repository.UpsertAsync(subscription);
-    }
-
-    [Fact]
-    public async Task Should_not_insert_deleted_subscription_again()
-    {
-        await SubscribeAsync(userId1, topic);
-
-        var (_, etag) = await repository.GetAsync(appId, userId1, topic, default);
-
-        await repository.DeleteAsync(appId, userId1, topic, default);
-
-        var subscription = new Subscription
-        {
-            AppId = appId,
-            UserId = userId1,
-            TopicPrefix = topic,
-            TopicSettings = []
-        };
-
-        await Assert.ThrowsAsync<InconsistentStateException>(() => repository.UpsertAsync(subscription, etag));
-
-        var subscriptions = await repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId1 }, default);
-
-        Assert.Empty(subscriptions);
-    }
-
-    [Fact]
-    public async Task Should_throw_exception_if_query_is_cancelled()
-    {
-        await SubscribeAsync(userId1, topic);
-
-        using var cts = new CancellationTokenSource();
-        await cts.CancelAsync();
-
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ToList(repository.QueryAsync(appId, topic, null, cts.Token)));
-    }
-
-    private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)
-    {
-        var list = new List<T>();
-
-        await foreach (var item in enumerable)
-        {
-            list.Add(item);
-        }
-
-        return list;
+        await sut.InitializeAsync(default);
+        return sut;
     }
 }

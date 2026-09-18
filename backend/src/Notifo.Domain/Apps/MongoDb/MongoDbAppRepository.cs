@@ -15,7 +15,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb;
 
-internal sealed class MongoDbAppRepository(IMongoDatabase database) : MongoDbStore<MongoDbApp>(database), IAppRepository
+public sealed class MongoDbAppRepository(IMongoDatabase database) : MongoDbStore<MongoDbApp>(database), IAppRepository
 {
     static MongoDbAppRepository()
     {

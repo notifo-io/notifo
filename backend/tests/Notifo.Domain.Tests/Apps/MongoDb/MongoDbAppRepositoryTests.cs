@@ -5,19 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.Options;
 using Notifo.Domain.Shared;
 using Notifo.Infrastructure.Fixtures;
 
-namespace Notifo.Domain.Events.MongoDb;
+namespace Notifo.Domain.Apps.MongoDb;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]
-public class MongoDbEventRepositoryTests(MongoFixture fixture) : EventRepositoryTests
+public class MongoDbAppRepositoryTests(MongoFixture fixture) : AppRepositoryTests
 {
-    protected override async Task<IEventRepository> CreateSutAsync()
+    protected override async Task<IAppRepository> CreateSutAsync()
     {
-        var sut = new MongoDbEventRepository(fixture.Database, Options.Create(new EventsOptions()));
+        var sut = new MongoDbAppRepository(fixture.Database);
 
         await sut.InitializeAsync(default);
         return sut;

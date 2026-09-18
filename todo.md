@@ -98,3 +98,14 @@ Paths are relative to `backend/src/`.
 - **Batch endpoints** still apply items one by one, so a failure inside a handler (not during validation) leaves the earlier items applied.
 - **Pooled integration clients** are still disposed after five minutes while senders may hold them (see 13).
 - **Not tested:** the SMTP reconnect after a stale pooled connection, the SMS and Messaging retry settings, and all changes that need a provider API (Mailchimp, Telegram, Discord, Firebase, MessageBird, Mailjet, Amazon SES, OpenNotifications).
+
+## Round 5: Found by the repository tests
+
+Paths are relative to `backend/src/`.
+
+| # | Status | Issue |
+|---|--------|-------|
+| 1 | Fixed | **Users could never be found by a property.** `MongoDbUserRepository.GetByPropertyAsync` used `d.properties` instead of `d.Properties`, which broke linking Telegram chats to users. Covered by `UserRepositoryTests.Should_get_user_by_property`. |
+| 2 | Fixed | **Writing only empty user counters threw.** The bulk write is skipped when there are no requests. Covered by `UserRepositoryTests.Should_ignore_empty_counters`. |
+| 3 | Fixed | **Old log entries could not be found by system.** The fallback matches the escaped `SYSTEM:` prefix of the message, which is how entries were written before the system field existed. Covered by `LogRepositoryTests.Should_query_entries_by_systems_derived_from_message`. |
+| 4 | Open (unclear) | **Deleting a subscription prefix also deletes the parent** (`MongoDbSubscriptionRepository.cs:217`). Nothing calls `DeletePrefixAsync`, so the intended behavior is unclear. |

@@ -99,7 +99,7 @@ public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStor
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByPropertyAsync"))
         {
-            var document = await Collection.Find(Filter.And(Filter.Eq(x => x.Doc.AppId, appId), Filter.Eq($"d.properties.{key}", value))).FirstOrDefaultAsync(ct);
+            var document = await Collection.Find(Filter.And(Filter.Eq(x => x.Doc.AppId, appId), Filter.Eq($"d.Properties.{key}", value))).FirstOrDefaultAsync(ct);
 
             return (document?.ToUser(), document?.Etag);
         }
@@ -166,7 +166,11 @@ public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStor
                 }
             }
 
-            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            // MongoDB does not accept a bulk write without requests.
+            if (writes.Count > 0)
+            {
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
         }
     }
 
