@@ -28,7 +28,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     public async Task Should_send_self_formatted_notifications()
     {
         // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 1: Send Notification
@@ -77,8 +77,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         var correlationId = Guid.NewGuid().ToString();
 
         // STEP 0: Create users.
-        var user_0 = await CreateUserAsync();
-        var user_1 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
+        var user_1 = await _.CreateUserAsync();
 
 
         // STEP 1: Send Notification
@@ -131,7 +131,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     public async Task Should_send_template_formatted_notifications()
     {
         // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 1: Create template.
@@ -200,7 +200,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     public async Task Should_mark_notification_as_confirmed(TrackingStrategy strategy)
     {
         // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 1: Send Notification
@@ -245,7 +245,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     public async Task Should_mark_notification_as_seen(TrackingStrategy strategy)
     {
         // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 1: Send Notification
@@ -287,7 +287,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     public async Task Should_mark_notification_as_delivered(TrackingStrategy strategy)
     {
         // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 1: Send Notification
@@ -434,22 +434,6 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
                 break;
         }
-    }
-
-    private async Task<UserDto> CreateUserAsync()
-    {
-        var userRequest = new UpsertUsersDto
-        {
-            Requests =
-            [
-                new UpsertUserDto()
-            ]
-        };
-
-        var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-        var user_0 = users_0.First();
-
-        return user_0;
     }
 
     private async Task CreateNotificationAsync(UserDto user_0)

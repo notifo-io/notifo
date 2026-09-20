@@ -189,16 +189,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
     private async Task<UserDto> CreateUserAsync()
     {
-        var userRequest = new UpsertUsersDto
-        {
-            Requests =
-            [
-                new UpsertUserDto()
-            ]
-        };
-
-        var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-        var user_0 = users_0.First();
+        var user_0 = await _.CreateUserAsync();
 
         await _.BuildUserClient(user_0)
             .MobilePush.PostMyTokenAsync(new RegisterMobileTokenDto

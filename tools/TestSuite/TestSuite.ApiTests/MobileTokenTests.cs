@@ -28,7 +28,7 @@ public class MobileTokenTests : IClassFixture<CreatedAppFixture>
     public async Task Should_create_and_fetch_token_as_user()
     {
         // STEP 1: Create user.
-        var user = await CreateUserAsync();
+        var user = await _.CreateUserAsync();
 
         var client = _.BuildUserClient(user);
 
@@ -49,21 +49,5 @@ public class MobileTokenTests : IClassFixture<CreatedAppFixture>
         var tokens_1 = await client.MobilePush.GetMyTokenAsync();
 
         Assert.DoesNotContain(tokens_1.Items, x => x.Token == token);
-    }
-
-    private async Task<UserDto> CreateUserAsync()
-    {
-        var userRequest = new UpsertUsersDto
-        {
-            Requests =
-            [
-                new UpsertUserDto()
-            ]
-        };
-
-        var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-        var user_0 = users_0.First();
-
-        return user_0;
     }
 }

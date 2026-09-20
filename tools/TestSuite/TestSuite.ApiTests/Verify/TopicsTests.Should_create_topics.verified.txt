@@ -1,0 +1,11 @@
+﻿{
+  IsExplicit: true,
+  Name: {
+    de: name1_0_de,
+    en: name1_0
+  },
+  Description: {
+    en: description1_0
+  },
+  ShowAutomatically: true
+}

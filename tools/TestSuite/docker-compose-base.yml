@@ -3,7 +3,7 @@ services:
   notifo_base:
     image: notifo-local
     environment:
-      - ASSETS__RESIZERURL=http://resizer:9000
+      - ASSETS__RESIZERURL=http://resizer
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
       - SSRF__WHITELISTEDHOSTS__0=*

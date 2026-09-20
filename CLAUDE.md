@@ -54,7 +54,7 @@ Run the database tests like this:
 dotnet test --filter "Category=TestContainer&Category!=Dependencies"
 ```
 
-The API integration tests in `tools/TestSuite` run against a Docker image of Notifo (`docker build -t notifo-local .` in the root folder) with one compose file per database: `docker-compose.yml` (MongoDB), `docker-compose-mysql.yml`, `docker-compose-postgres.yml` and `docker-compose-sqlserver.yml`. Run them for every database when changing the persistence:
+The API integration tests in `tools/TestSuite` run against a Docker image of Notifo (`docker build -t notifo-local .` in the root folder) with one compose file per database in `tools/TestSuite`: `docker-compose.yml` (MongoDB), `docker-compose-mysql.yml`, `docker-compose-postgres.yml` and `docker-compose-sqlserver.yml`. Run them for every database when changing the persistence:
 
 ```bash
 docker compose -f docker-compose-postgres.yml up -d

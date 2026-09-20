@@ -1,0 +1,7 @@
+﻿{
+  IsExplicit: true,
+  Name: {
+    en: name1_1
+  },
+  ShowAutomatically: true
+}

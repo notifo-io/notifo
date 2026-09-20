@@ -1,4 +1,3 @@
-version: '2.3'
 services:
   NOTIFO_mongo:
     image: mongo:5
@@ -19,8 +18,6 @@ services:
       - IDENTITY__GOOGLESECRET=${NOTIFO_GOOGLESECRET}
       - IDENTITY__GITHUBCLIENT=${NOTIFO_GITHUBCLIENT}
       - IDENTITY__GITHUBSECRET=${NOTIFO_GITHUBSECRET}
-      - IDENTITY__MICROSOFTCLIENT=${NOTIFO_MICROSOFTCLIENT}
-      - IDENTITY__MICROSOFTSECRET=${NOTIFO_MICROSOFTSECRET}
       - ASPNETCORE_URLS=http://+:5000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]

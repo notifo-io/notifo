@@ -126,7 +126,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     [Produces(typeof(SubscriptionDto))]
     public async Task<IActionResult> GetMySubscription(string topic)
     {
-        var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
+        var subscription = await subscriptionStore.GetAsync(App.Id, UserId, Uri.UnescapeDataString(topic), HttpContext.RequestAborted);
         if (subscription == null)
         {
             return NotFound();
@@ -176,7 +176,7 @@ public class UserController(ISubscriptionStore subscriptionStore, ITopicStore to
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
     [HttpPost("api/me/subscriptions/{*prefix}")]
-    [AutorizeAppUser(NotifoRoles.AppAdmin)]
+    [AutorizeAppUser(NotifoRoles.AppUser)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string prefix)
     {

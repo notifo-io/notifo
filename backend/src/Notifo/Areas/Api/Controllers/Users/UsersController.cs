@@ -249,7 +249,7 @@ public sealed class UsersController(
             return NotFound();
         }
 
-        var command = new RemoveUserAllowedTopic { UserId = id, Prefix = prefix };
+        var command = new RemoveUserAllowedTopic { UserId = id, Prefix = Uri.UnescapeDataString(prefix) };
 
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
         return NoContent();

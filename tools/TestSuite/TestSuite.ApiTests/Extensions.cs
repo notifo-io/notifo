@@ -35,102 +35,85 @@ public static class Extensions
     public static async Task<LogEntryDto[]> PollAsync(this ILogsClient logsClient, string appId, string? userId,
         PollingArguments<LogEntryDto>? args = null)
     {
-        var result = Array.Empty<LogEntryDto>();
-
-        args ??= new PollingArguments<LogEntryDto>();
-
-        using (var cts = new CancellationTokenSource(args.Timeout))
+        return await PollCoreAsync(args, async ct =>
         {
-            while (!cts.IsCancellationRequested)
-            {
-                var response = await logsClient.GetLogsAsync(appId, userId: userId, cancellationToken: cts.Token);
+            var response = await logsClient.GetLogsAsync(appId, userId: userId, cancellationToken: ct);
 
-                if (args.IsConditionMet(response.Items))
-                {
-                    result = response.Items.ToArray();
-                    break;
-                }
-
-                await Task.Delay(50, cts.Token);
-            }
-        }
-
-        return result;
+            return response.Items;
+        });
     }
 
     public static async Task<UserNotificationDetailsDto[]> PollAsync(this INotificationsClient notificationsClient, string appId, string? userId,
         PollingArguments<UserNotificationDetailsDto>? args = null)
     {
-        var result = Array.Empty<UserNotificationDetailsDto>();
-
-        args ??= new PollingArguments<UserNotificationDetailsDto>();
-
-        using (var cts = new CancellationTokenSource(args.Timeout))
+        return await PollCoreAsync(args, async ct =>
         {
-            while (!cts.IsCancellationRequested)
-            {
-                var response = await notificationsClient.GetNotificationsAsync(appId, userId, cancellationToken: cts.Token);
+            var response = await notificationsClient.GetNotificationsAsync(appId, userId, cancellationToken: ct);
 
-                if (args.IsConditionMet(response.Items))
-                {
-                    result = response.Items.ToArray();
-                    break;
-                }
-
-                await Task.Delay(50, cts.Token);
-            }
-        }
-
-        return result;
+            return response.Items;
+        });
     }
 
     public static async Task<UserNotificationDetailsDto[]> PollCorrelatedAsync(this INotificationsClient notificationsClient, string appId, string? correlationId,
         PollingArguments<UserNotificationDetailsDto>? args = null)
     {
-        var result = Array.Empty<UserNotificationDetailsDto>();
-
-        args ??= new PollingArguments<UserNotificationDetailsDto>();
-
-        using (var cts = new CancellationTokenSource(args.Timeout))
+        return await PollCoreAsync(args, async ct =>
         {
-            while (!cts.IsCancellationRequested)
-            {
-                var response = await notificationsClient.GetAllNotificationsAsync(appId, correlationId: correlationId, cancellationToken: cts.Token);
+            var response = await notificationsClient.GetAllNotificationsAsync(appId, correlationId: correlationId, cancellationToken: ct);
 
-                if (args.IsConditionMet(response.Items))
-                {
-                    result = response.Items.ToArray();
-                    break;
-                }
-
-                await Task.Delay(50, cts.Token);
-            }
-        }
-
-        return result;
+            return response.Items;
+        });
     }
 
     public static async Task<UserNotificationDto[]> PollMyAsync(this INotificationsClient notificationsClient,
         PollingArguments<UserNotificationDto>? args = null)
     {
-        var result = Array.Empty<UserNotificationDto>();
-
-        args ??= new PollingArguments<UserNotificationDto>();
-
-        using (var cts = new CancellationTokenSource(args.Timeout))
+        return await PollCoreAsync(args, async ct =>
         {
-            while (!cts.IsCancellationRequested)
+            var response = await notificationsClient.GetMyNotificationsAsync(cancellationToken: ct);
+
+            return response.Items;
+        });
+    }
+
+    public static async Task<EventDto[]> PollAsync(this IEventsClient eventsClient, string appId,
+        PollingArguments<EventDto>? args = null)
+    {
+        return await PollCoreAsync(args, async ct =>
+        {
+            var response = await eventsClient.GetEventsAsync(appId, cancellationToken: ct);
+
+            return response.Items;
+        });
+    }
+
+    private static async Task<T[]> PollCoreAsync<T>(PollingArguments<T>? args, Func<CancellationToken, Task<IReadOnlyCollection<T>>> query)
+    {
+        var result = Array.Empty<T>();
+
+        args ??= new PollingArguments<T>();
+
+        // The polling timeout is not a failure, the caller asserts over the result instead.
+        try
+        {
+            using (var cts = new CancellationTokenSource(args.Timeout))
             {
-                var response = await notificationsClient.GetMyNotificationsAsync(cancellationToken: cts.Token);
-
-                if (args.IsConditionMet(response.Items))
+                while (!cts.IsCancellationRequested)
                 {
-                    result = response.Items.ToArray();
-                    break;
-                }
+                    var items = await query(cts.Token);
 
-                await Task.Delay(50, cts.Token);
+                    if (args.IsConditionMet(items))
+                    {
+                        result = items.ToArray();
+                        break;
+                    }
+
+                    await Task.Delay(50, cts.Token);
+                }
             }
+        }
+        catch (OperationCanceledException)
+        {
         }
 
         return result;

@@ -34,16 +34,7 @@ public class EventsTests : IClassFixture<CreatedAppFixture>
     public async Task Should_cancel_known_event()
     {
         // STEP 1: Create user
-        var userRequest = new UpsertUsersDto
-        {
-            Requests =
-            [
-                new UpsertUserDto(),
-            ]
-        };
-
-        var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-        var user_0 = users_0.First();
+        var user_0 = await _.CreateUserAsync();
 
 
         // STEP 2: Publish event.
@@ -82,21 +73,116 @@ public class EventsTests : IClassFixture<CreatedAppFixture>
         Assert.True(hasCancelled);
     }
 
+    [Fact]
+    public async Task Should_query_events()
+    {
+        var subject = Guid.NewGuid().ToString();
+
+        // STEP 0: Create user.
+        var user_0 = await _.CreateUserAsync();
+
+        var topic = $"users/{user_0.Id}";
+
+
+        // STEP 1: Publish event.
+        var publishRequest = new PublishManyDto
+        {
+            Requests =
+            [
+                new PublishDto
+                {
+                    Topic = topic,
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subject
+                        }
+                    },
+                    Properties = new NotificationProperties
+                    {
+                        ["custom"] = "value"
+                    }
+                },
+            ]
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+        // Test that the event has been stored.
+        var args = new PollingArguments<EventDto>
+        {
+            Condition = x => x.Topic == topic
+        };
+
+        var events = await _.Client.Events.PollAsync(_.AppId, args);
+
+        var event_0 = events.SingleOrDefault(x => x.Topic == topic);
+
+        Assert.NotNull(event_0);
+        Assert.Equal(subject, event_0.Formatting.Subject["en"]);
+        Assert.Equal("value", event_0.Properties["custom"]);
+    }
+
+    [Fact]
+    public async Task Should_publish_own_event()
+    {
+        var subject = Guid.NewGuid().ToString();
+
+        // STEP 0: Create user.
+        var user_0 = await _.CreateUserAsync();
+
+        var client = _.BuildUserClient(user_0);
+
+
+        // STEP 1: Publish an event as the user itself.
+        // The topic is required by the model, but the server overrides it with the topic of the user.
+        var publishRequest = new PublishDto
+        {
+            Topic = $"users/{user_0.Id}",
+            Preformatted = new NotificationFormattingDto
+            {
+                Subject = new LocalizedText
+                {
+                    ["en"] = subject
+                }
+            }
+        };
+
+        await client.Events.PostMyEventsAsync(publishRequest);
+
+
+        // Test that the user got the notification, the topic is derived from the api key.
+        var notifications = await client.Notifications.PollMyAsync();
+
+        Assert.Contains(notifications, x => x.Subject == subject);
+    }
+
     private async Task<bool> PollCancelAsync(string userId, string eventId)
     {
         var request = new CancelEventDto { UserId = userId, Test = false, EventId = eventId };
 
-        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+        // The cancellation is not a failure, the caller asserts over the result instead.
+        try
         {
-            while (!cts.IsCancellationRequested)
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             {
-                var result = await _.Client.Events.CancelEventAsync(_.AppId, request, default);
-
-                if (result.HasCancelled)
+                while (!cts.IsCancellationRequested)
                 {
-                    return true;
+                    var result = await _.Client.Events.CancelEventAsync(_.AppId, request, cts.Token);
+
+                    if (result.HasCancelled)
+                    {
+                        return true;
+                    }
+
+                    await Task.Delay(50, cts.Token);
                 }
             }
+        }
+        catch (OperationCanceledException)
+        {
         }
 
         return false;

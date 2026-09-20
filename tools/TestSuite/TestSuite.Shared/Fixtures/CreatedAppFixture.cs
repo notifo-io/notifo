@@ -109,6 +109,17 @@ public class CreatedAppFixture : ClientFixture
         return apps.FirstOrDefault(x => x.Name == AppName);
     }
 
+    public async Task<UserDto> CreateUserAsync(Action<UpsertUserDto>? configure = null)
+    {
+        var request = new UpsertUserDto();
+
+        configure?.Invoke(request);
+
+        var users = await Client.Users.PostUsersAsync(AppId, new UpsertUsersDto { Requests = [request] });
+
+        return users.First();
+    }
+
     public INotifoClient GetClient(ClientMode mode)
     {
         if (mode == ClientMode.ClientId)
