@@ -11,7 +11,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class ActivityContextSerializer : SerializerBase<ActivityContext>
 {
@@ -65,8 +65,7 @@ public sealed class ActivityContextSerializer : SerializerBase<ActivityContext>
                             spanId = ActivitySpanId.CreateFromString(reader.ReadString());
                             break;
                         default:
-                            ThrowHelper.BsonSerializationException($"Invalid property {name}.");
-                            return default;
+                            throw new BsonSerializationException($"Invalid property {name}.");
                     }
                 }
 
@@ -74,8 +73,7 @@ public sealed class ActivityContextSerializer : SerializerBase<ActivityContext>
 
                 return new ActivityContext(traceId, spanId, traceFlags, traceState, isRemote);
             default:
-                ThrowHelper.BsonSerializationException($"Expected BsonType.Document or JsonTokenType.Null, got {reader.CurrentBsonType}.");
-                return default;
+                throw new BsonSerializationException($"Expected BsonType.Document or JsonTokenType.Null, got {reader.CurrentBsonType}.");
         }
     }
 

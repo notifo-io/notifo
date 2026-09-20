@@ -8,7 +8,7 @@
 using NodaTime;
 using Notifo.Domain.Media;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class MediaRepositoryTests
 {
@@ -140,9 +140,9 @@ public abstract class MediaRepositoryTests
         Assert.Empty(result);
     }
 
-    private Media.Media CreateMedia(string fileName)
+    private Media CreateMedia(string fileName)
     {
-        return new Media.Media(appId, fileName, now)
+        return new Media(appId, fileName, now)
         {
             FileInfo = "Info",
             FileSize = 1024,

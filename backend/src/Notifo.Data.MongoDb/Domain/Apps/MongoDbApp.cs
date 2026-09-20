@@ -7,10 +7,10 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Domain.Integrations;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Apps.MongoDb;
+namespace Notifo.Domain.Apps;
 
 public sealed class MongoDbApp : MongoDbEntity<App>
 {

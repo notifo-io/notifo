@@ -6,10 +6,11 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.DataProtection.Repositories;
-using Notifo.Identity.Shared;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.Identity;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.MongoDb.Identity;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

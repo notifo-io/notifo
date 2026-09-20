@@ -6,11 +6,12 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class SubscriptionRepositoryTests
 {

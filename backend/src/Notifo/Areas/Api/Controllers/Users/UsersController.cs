@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using NodaTime;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;

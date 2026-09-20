@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Domain.Media;
-using Notifo.Domain.Media.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -22,11 +21,5 @@ public static class MediaServiceExtensions
 
         services.AddSingletonAs<ImageMediaMetadataSource>()
             .As<IMediaMetadataSource>();
-    }
-
-    public static void AddMyMongoMedia(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbMediaRepository>()
-            .As<IMediaRepository>();
     }
 }

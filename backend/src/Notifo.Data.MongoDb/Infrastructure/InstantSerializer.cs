@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using NodaTime;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class InstantSerializer : SerializerBase<Instant>, IBsonPolymorphicSerializer
 {

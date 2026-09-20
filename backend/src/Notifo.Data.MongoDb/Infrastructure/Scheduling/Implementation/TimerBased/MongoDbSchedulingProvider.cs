@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
+namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased;
 
 public sealed class MongoDbSchedulingProvider : ISchedulingProvider
 {

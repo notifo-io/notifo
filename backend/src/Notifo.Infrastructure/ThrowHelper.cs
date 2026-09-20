@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Text.Json;
-using MongoDB.Bson;
 
 namespace Notifo.Infrastructure;
 
@@ -45,10 +44,5 @@ public static class ThrowHelper
     public static void NotSupportedException(string? message = null)
     {
         throw new NotSupportedException(message);
-    }
-
-    public static void BsonSerializationException(string? message = null)
-    {
-        throw new BsonSerializationException(message);
     }
 }

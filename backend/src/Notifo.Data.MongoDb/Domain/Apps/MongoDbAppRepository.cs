@@ -11,9 +11,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Apps.MongoDb;
+namespace Notifo.Domain.Apps;
 
 public sealed class MongoDbAppRepository(IMongoDatabase database) : MongoDbStore<MongoDbApp>(database), IAppRepository
 {

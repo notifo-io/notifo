@@ -6,9 +6,9 @@
 // ==========================================================================
 
 using MongoDB.Bson.Serialization.Attributes;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Log.MongoDb;
+namespace Notifo.Domain.Log;
 
 public sealed class MongoDbLogEntry : MongoDbEntity
 {

@@ -10,7 +10,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class LocalTimeSerializer : SerializerBase<LocalTime>, IBsonPolymorphicSerializer
 {

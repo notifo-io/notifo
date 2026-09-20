@@ -93,19 +93,4 @@ public class ReadonlyDictionaryTests
 
         Assert.Equal(sut, serialized);
     }
-
-    [Fact]
-    public void Should_serialize_and_deserialize_bson()
-    {
-        var sut = new Dictionary<string, int>
-        {
-            ["11"] = 1,
-            ["12"] = 2,
-            ["13"] = 3
-        }.ToReadonlyDictionary();
-
-        var serialized = sut.SerializeAndDeserializeBson();
-
-        Assert.Equal(sut, serialized);
-    }
 }

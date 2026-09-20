@@ -12,7 +12,7 @@ using Squidex.Hosting.Configuration;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public abstract class MongoDbRepository<TEntity>(IMongoDatabase database) : IInitializable
 {

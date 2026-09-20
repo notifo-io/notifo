@@ -5,10 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Shared;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.Domain.Media;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Domain.Media.MongoDb;
+namespace Notifo.MongoDb.Domain.Media;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

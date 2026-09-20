@@ -13,7 +13,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.Collections.Bson;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public static class MongoClientFactory
 {

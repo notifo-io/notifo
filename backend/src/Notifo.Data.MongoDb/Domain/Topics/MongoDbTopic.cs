@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Topics.MongoDb;
+namespace Notifo.Domain.Topics;
 
 public sealed class MongoDbTopic : MongoDbEntity<Topic>
 {

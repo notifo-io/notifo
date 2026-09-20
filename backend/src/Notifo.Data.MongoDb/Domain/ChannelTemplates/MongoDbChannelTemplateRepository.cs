@@ -9,9 +9,8 @@ using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.ChannelTemplates.MongoDb;
+namespace Notifo.Domain.ChannelTemplates;
 
 public sealed class MongoDbChannelTemplateRepository<T>(IMongoDatabase database) : MongoDbStore<MongoDbChannelTemplate<T>>(database), IChannelTemplateRepository<T> where T : class
 {

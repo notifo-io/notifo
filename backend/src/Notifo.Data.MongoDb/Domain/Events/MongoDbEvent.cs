@@ -5,17 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Text;
-using Microsoft.Extensions.ObjectPool;
 using MongoDB.Bson.Serialization.Attributes;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
+using Notifo.Infrastructure.ObjectPool;
 
-namespace Notifo.Domain.Events.MongoDb;
+namespace Notifo.Domain.Events;
 
 public sealed class MongoDbEvent : MongoDbEntity<Event>
 {
-    private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
-
     public string SearchText { get; set; }
 
     [BsonIgnoreIfDefault]
@@ -41,7 +38,7 @@ public sealed class MongoDbEvent : MongoDbEntity<Event>
 
     private static string BuildSearchText(Event @event)
     {
-        var sb = StringBuilderPool.Get();
+        var sb = DefaultPools.StringBuilder.Get();
         try
         {
             foreach (var text in @event.Formatting.Subject.Values)
@@ -61,7 +58,7 @@ public sealed class MongoDbEvent : MongoDbEntity<Event>
         }
         finally
         {
-            StringBuilderPool.Return(sb);
+            DefaultPools.StringBuilder.Return(sb);
         }
     }
 

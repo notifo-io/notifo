@@ -12,7 +12,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class SoftEnumSerializer<T> : SerializerBase<T>, IBsonPolymorphicSerializer where T : struct
 {

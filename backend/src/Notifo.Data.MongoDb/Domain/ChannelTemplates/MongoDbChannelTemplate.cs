@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.ChannelTemplates.MongoDb;
+namespace Notifo.Domain.ChannelTemplates;
 
 public sealed class MongoDbChannelTemplate<T> : MongoDbEntity<ChannelTemplate<T>>
 {

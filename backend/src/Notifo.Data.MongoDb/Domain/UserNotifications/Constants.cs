@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.UserNotifications;
 
 public static class Constants
 {

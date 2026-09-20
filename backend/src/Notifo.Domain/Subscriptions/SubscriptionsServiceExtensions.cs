@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Domain.Subscriptions;
-using Notifo.Domain.Subscriptions.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -18,11 +17,5 @@ public static class SubscriptionsServiceExtensions
             .As<ISubscriptionStore>();
 
         services.AddRequestHandler<SubscriptionStore, SubscriptionCommand, Subscription?>();
-    }
-
-    public static void AddMyMongoSubscriptions(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbSubscriptionRepository>()
-            .As<ISubscriptionRepository>();
     }
 }

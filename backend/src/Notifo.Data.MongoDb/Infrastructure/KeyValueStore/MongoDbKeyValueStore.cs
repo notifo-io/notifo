@@ -6,9 +6,9 @@
 // ==========================================================================
 
 using MongoDB.Driver;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Infrastructure.KeyValueStore.MongoDb;
+namespace Notifo.Infrastructure.KeyValueStore;
 
 public sealed class MongoDbKeyValueStore(IMongoDatabase database) : MongoDbRepository<MongoDbKeyValue>(database), IKeyValueStore
 {

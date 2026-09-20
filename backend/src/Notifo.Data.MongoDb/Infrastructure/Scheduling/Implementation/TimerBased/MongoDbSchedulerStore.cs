@@ -9,9 +9,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using NodaTime;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
+namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased;
 
 public sealed class MongoDbSchedulerStore<T>(IMongoDatabase database, SchedulerOptions options) : MongoDbRepository<SchedulerBatch<T>>(database), ISchedulerStore<T>
 {

@@ -11,9 +11,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Users.MongoDb;
+namespace Notifo.Domain.Users;
 
 public sealed class MongoDbUserRepository(IMongoDatabase database) : MongoDbStore<MongoDbUser>(database), IUserRepository
 {

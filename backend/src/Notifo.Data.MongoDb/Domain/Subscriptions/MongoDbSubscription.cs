@@ -6,9 +6,9 @@
 // ==========================================================================
 
 using MongoDB.Bson.Serialization.Attributes;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Subscriptions.MongoDb;
+namespace Notifo.Domain.Subscriptions;
 
 public sealed class MongoDbSubscription : MongoDbEntity
 {

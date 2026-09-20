@@ -42,7 +42,15 @@ public sealed class DefaultUserService(
     public async IAsyncEnumerable<IUser> StreamAsync(
         [EnumeratorCancellation] CancellationToken ct = default)
     {
+        var users = new List<IdentityUser>();
+
+        // Read all users first, because some stores cannot run other queries while the users are streamed.
         await foreach (var user in userManager.Users.ToAsyncEnumerable().WithCancellation(ct))
+        {
+            users.Add(user);
+        }
+
+        foreach (var user in users)
         {
             yield return await ResolveAsync(user);
         }
@@ -370,21 +378,26 @@ public sealed class DefaultUserService(
         return user ?? throw new DomainObjectNotFoundException(id);
     }
 
-    private Task<IUser[]> ResolveAsync(IEnumerable<IdentityUser> users)
+    private async Task<IUser[]> ResolveAsync(IEnumerable<IdentityUser> users)
     {
-        return Task.WhenAll(users.Select(async user =>
+        var result = new List<IUser>();
+
+        // The user manager is not thread safe for all stores, therefore we cannot resolve the users in parallel.
+        foreach (var user in users)
         {
-            return await ResolveAsync(user);
-        }));
+            result.Add(await ResolveAsync(user));
+        }
+
+        return result.ToArray();
     }
 
     private async Task<IUser> ResolveAsync(IdentityUser user)
     {
-        var (claims, roles, logins, hasPassword) = await AsyncHelper.WhenAll(
-            userManager.GetClaimsAsync(user),
-            userManager.GetRolesAsync(user),
-            userManager.GetLoginsAsync(user),
-            userManager.HasPasswordAsync(user));
+        // The user manager is not thread safe for all stores, therefore we cannot run the queries in parallel.
+        var claims = await userManager.GetClaimsAsync(user);
+        var roles = await userManager.GetRolesAsync(user);
+        var logins = await userManager.GetLoginsAsync(user);
+        var hasPassword = await userManager.HasPasswordAsync(user);
 
         return new UserWithClaims(user, claims.ToList(), roles.ToHashSet(), logins.Any() || hasPassword);
     }

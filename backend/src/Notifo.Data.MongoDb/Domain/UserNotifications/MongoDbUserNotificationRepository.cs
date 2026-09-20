@@ -15,9 +15,8 @@ using MongoDB.Driver;
 using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.UserNotifications;
 
 public sealed class MongoDbUserNotificationRepository(
     IMongoDatabase database,

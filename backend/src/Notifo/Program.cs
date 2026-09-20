@@ -27,6 +27,12 @@ public static class Program
             {
                 // Step 0: Log all configuration.
                 services.AddHostedService<LogConfigurationHost>();
+
+                // Step 1: Initialize all services, e.g. run the database migrations, before other hosted services use them.
+                services.AddInitializer();
+
+                // Step 2: Start background processes.
+                services.AddBackgroundProcesses();
             })
             .ConfigureWebHostDefaults(builder =>
             {

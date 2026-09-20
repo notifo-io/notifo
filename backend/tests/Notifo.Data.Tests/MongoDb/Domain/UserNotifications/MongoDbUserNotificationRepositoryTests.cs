@@ -8,11 +8,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
-using Notifo.Domain.Shared;
+using Notifo.Domain;
+using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.MongoDb.Domain.UserNotifications;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

@@ -1,0 +1,57 @@
+services:
+  db_sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04
+    environment:
+      - MSSQL_SA_PASSWORD=1q2w3e!R
+      - ACCEPT_EULA=Y
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '1q2w3e!R' -C -Q 'SELECT 1'"]
+      interval: 10s
+      retries: 10
+
+  db_sqlserver_init:
+    image: mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04
+    entrypoint: >
+      /opt/mssql-tools18/bin/sqlcmd -S db_sqlserver -U sa -P '1q2w3e!R' -C -d master -Q "IF DB_ID('notifo') IS NULL CREATE DATABASE notifo"
+    depends_on:
+      db_sqlserver:
+        condition: service_healthy
+
+  notifo_sqlserver:
+    extends:
+      file: docker-compose-base.yml
+      service: notifo_base
+    ports:
+      - "8080:80"
+    environment:
+      - STORAGE__TYPE=Sql
+      - STORAGE__SQL__CONNECTIONSTRING=Server=db_sqlserver;Database=notifo;User=sa;Password=1q2w3e!R;TrustServerCertificate=True;
+      - STORAGE__SQL__PROVIDER=SqlServer
+      - MESSAGING__TYPE=Sql
+      - URLS__BASEURL=http://localhost:8080
+    depends_on:
+      db_sqlserver_init:
+        condition: service_completed_successfully
+      mailcatcher:
+        condition: service_started
+      resizer:
+        condition: service_started
+      webhookcatcher:
+        condition: service_started
+
+  resizer:
+    image: squidex/resizer:dev-40
+    ports:
+      - "9000:80"
+
+  webhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 1026
+    ports:
+      - "1026:1026"
+
+  mailcatcher:
+    image: jeanberu/mailcatcher:0.8.0
+    ports:
+      - "1025:1025"
+      - "1080:1080"

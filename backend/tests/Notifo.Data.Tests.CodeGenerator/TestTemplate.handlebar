@@ -1,0 +1,26 @@
+#pragma warning disable
+// Auto-generated code
+using Notifo.EntityFramework.TestHelpers;
+using Notifo.SqlProviders.MySql.App;
+using Notifo.SqlProviders.Postgres.App;
+using Notifo.SqlProviders.SqlServer.App;
+
+namespace {{classNamespace}};
+
+[Trait("Category", "TestContainer")]
+[Collection(Postgres{{CollectionSuffix}}FixtureCollection.Name)]
+public class Postgres{{className}}(Postgres{{CollectionSuffix}}Fixture fixture) : {{baseName}}<PostgresAppDbContext>(fixture)
+{
+}
+
+[Trait("Category", "TestContainer")]
+[Collection(MySql{{CollectionSuffix}}FixtureCollection.Name)]
+public class MySql{{className}}(MySql{{CollectionSuffix}}Fixture fixture) : {{baseName}}<MySqlAppDbContext>(fixture)
+{
+}
+
+[Trait("Category", "TestContainer")]
+[Collection(SqlServer{{CollectionSuffix}}FixtureCollection.Name)]
+public class SqlServer{{className}}(SqlServer{{CollectionSuffix}}Fixture fixture) : {{baseName}}<SqlServerAppDbContext>(fixture)
+{
+}

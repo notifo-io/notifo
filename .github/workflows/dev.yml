@@ -26,9 +26,66 @@ jobs:
       - name: Test - TestContainers
         run: dotnet test backend/Notifo.slnx --filter "Category=TestContainer&Category!=Dependencies"
 
-  build_test:
+  test_sql:
     runs-on: ubuntu-latest
     needs: test_containers
+    strategy:
+      matrix:
+        include:
+          - name: mysql
+            compose: docker-compose-mysql.yml
+          - name: postgres
+            compose: docker-compose-postgres.yml
+          - name: sqlserver
+            compose: docker-compose-sqlserver.yml
+    steps:
+      - name: Prepare - Checkout
+        uses: actions/checkout@v4.0.0
+
+      - name: Prepare - Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Build - BUILD
+        uses: docker/build-push-action@v6.2.0
+        with:
+          load: true
+          cache-from: type=gha
+          tags: notifo-local
+
+      - name: Test - Start Compose
+        run: docker compose -f ${{ matrix.compose }} up -d
+        working-directory: tools/TestSuite
+
+      - name: Test - RUN on ${{ matrix.name }}
+        uses: kohlerdominik/docker-run-action@v2.0.0
+        with:
+          image: mcr.microsoft.com/dotnet/sdk:10.0
+          environment: |
+            MAILCATCHER__HOST__SMTP=mailcatcher
+            MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}
+            CONFIG__WAIT=60
+            CONFIG__SERVER__URL=http://localhost:8080
+            WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
+          default_network: host
+          options: --name test_${{ matrix.name }}
+          volumes: ${{ github.workspace }}:/src
+          run: dotnet test /src/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
+
+      - name: Test - Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2.2.1
+        with:
+         images: 'notifo-local,squidex/resizer'
+         tail: '100'
+
+      - name: Test - Cleanup
+        if: always()
+        run: docker compose -f ${{ matrix.compose }} down
+        working-directory: tools/TestSuite
+
+  build_test:
+    runs-on: ubuntu-latest
+    needs: [test_containers, test_sql]
     steps:
       - name: Prepare - Checkout
         uses: actions/checkout@v4.0.0

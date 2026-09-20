@@ -7,9 +7,9 @@
 
 using MongoDB.Driver;
 using Notifo.Identity.Dynamic;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbConfigurationStore<T>(IMongoDatabase database) : MongoDbRepository<MongoDbConfiguration<T>>(database), IConfigurationStore<T> where T : class
 {

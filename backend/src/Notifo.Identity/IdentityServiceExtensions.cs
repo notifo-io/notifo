@@ -19,7 +19,6 @@ using Notifo.Identity;
 using Notifo.Identity.ApiKey;
 using Notifo.Identity.Dynamic;
 using Notifo.Identity.InMemory;
-using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -43,7 +42,7 @@ public static class IdentityServiceExtensions
         services.AddSingletonAs<UserCreator>()
             .AsSelf();
 
-        services.AddSingletonAs<TokenStoreInitializer>()
+        services.AddSingletonAs<TokenStoreCleaner>()
             .AsSelf();
 
         services.AddSingletonAs<OpenIdConnectPostConfigureOptions>()
@@ -57,6 +56,11 @@ public static class IdentityServiceExtensions
 
         services.AddScopedAs<DefaultUserService>()
             .As<IUserService>();
+
+        services.Configure<KeyManagementOptions>((c, options) =>
+        {
+            options.XmlRepository = c.GetRequiredService<IXmlRepository>();
+        });
 
         services.AddMyOpenIdDict();
         services.AddAuthorization();
@@ -89,6 +93,20 @@ public static class IdentityServiceExtensions
         });
 
         services.AddOpenIddict()
+            .AddCore(builder =>
+            {
+                builder.SetDefaultScopeEntity<ImmutableScope>();
+
+                builder.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
+                    .As<IOpenIddictScopeStore<ImmutableScope>>();
+
+                builder.SetDefaultApplicationEntity<ImmutableApplication>();
+
+                builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
+                    .As<IOpenIddictApplicationStore<ImmutableApplication>>();
+
+                builder.ReplaceApplicationManager(typeof(ApplicationManager<>));
+            })
             .AddServer(builder =>
             {
                 builder
@@ -123,45 +141,5 @@ public static class IdentityServiceExtensions
                 builder.UseLocalServer();
                 builder.UseAspNetCore();
             });
-    }
-
-    public static void AddMyMongoDbIdentity(this IServiceCollection services)
-    {
-        services.AddOpenIddict()
-            .AddCore(builder =>
-            {
-                builder.UseMongoDb();
-
-                builder.SetDefaultScopeEntity<ImmutableScope>();
-
-                builder.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
-                    .As<IOpenIddictScopeStore<ImmutableScope>>();
-
-                builder.SetDefaultApplicationEntity<ImmutableApplication>();
-
-                builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
-                    .As<IOpenIddictApplicationStore<ImmutableApplication>>();
-
-                builder.ReplaceApplicationManager(typeof(ApplicationManager<>));
-            });
-
-        services.AddSingletonAs<MongoDbUserStore>()
-            .As<IUserStore<IdentityUser>>().As<IUserFactory>();
-
-        services.AddSingletonAs<MongoDbRoleStore>()
-            .As<IRoleStore<IdentityRole>>();
-
-        services.AddSingletonAs<MongoDbXmlRepository>()
-            .As<IXmlRepository>();
-
-        services.AddSingletonAs<MongoDbConfigurationStore<AppAuthScheme>>()
-            .As<IConfigurationStore<AppAuthScheme>>();
-
-        services.ConfigureOptions<MongoDbKeyOptions>();
-
-        services.Configure<KeyManagementOptions>((c, options) =>
-        {
-            options.XmlRepository = c.GetRequiredService<IXmlRepository>();
-        });
     }
 }

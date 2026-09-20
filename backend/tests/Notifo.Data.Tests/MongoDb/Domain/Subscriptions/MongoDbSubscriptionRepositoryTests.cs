@@ -7,10 +7,12 @@
 
 using System.Diagnostics;
 using MongoDB.Bson;
-using Notifo.Domain.Shared;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.Domain;
+using Notifo.Domain.Subscriptions;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Domain.Subscriptions.MongoDb;
+namespace Notifo.MongoDb.Domain.Subscriptions;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

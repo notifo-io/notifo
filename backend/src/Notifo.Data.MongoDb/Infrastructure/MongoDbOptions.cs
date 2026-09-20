@@ -7,7 +7,7 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class MongoDbOptions : IValidatableOptions
 {

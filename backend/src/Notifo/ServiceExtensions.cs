@@ -6,9 +6,8 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Authentication;
-using Notifo.Domain;
-using Notifo.Infrastructure.MongoDb;
 using Notifo.Pipeline;
+using Squidex.Hosting.Configuration;
 using Squidex.Messaging.Implementation.Null;
 using Squidex.Messaging.Redis;
 using StackExchange.Redis;
@@ -38,21 +37,50 @@ public static class ServiceExtensions
         {
             ["MongoDB"] = () =>
             {
-                SoftEnumSerializer<ConfirmMode>.Register();
+                services.AddMyMongoDbStore(config);
+            },
+            ["Sql"] = () =>
+            {
+                services.AddMyEntityFrameworkStore(config);
+            }
+        });
+    }
 
-                services.AddMyMongoApps();
-                services.AddMyMongoDb(config);
-                services.AddMyMongoDbIdentity();
-                services.AddMyMongoDbKeyValueStore();
-                services.AddMyMongoDbScheduler();
-                services.AddMyMongoEvents();
-                services.AddMyMongoLog();
-                services.AddMyMongoMedia();
-                services.AddMyMongoSubscriptions();
-                services.AddMyMongoTemplates();
-                services.AddMyMongoTopics();
-                services.AddMyMongoUserNotifications();
-                services.AddMyMongoUsers();
+    public static void AddMyAssetStore(this IServiceCollection services, IConfiguration config)
+    {
+        config.ConfigureByOption("assetStore:type", new Alternatives
+        {
+            ["Folder"] = () =>
+            {
+                services.AddFolderAssetStore(config);
+            },
+            ["FTP"] = () =>
+            {
+                services.AddFTPAssetStore(config);
+            },
+            ["GoogleCloud"] = () =>
+            {
+                services.AddGoogleCloudAssetStore(config);
+            },
+            ["AzureBlob"] = () =>
+            {
+                services.AddAzureBlobAssetStore(config);
+            },
+            ["AmazonS3"] = () =>
+            {
+                services.AddAmazonS3AssetStore(config);
+            },
+            ["MongoDb"] = () =>
+            {
+                if (IsSqlStorage(config))
+                {
+                    throw new ConfigurationException(
+                        new ConfigurationError(
+                            "MongoDb asset store is only allowed, when 'storage:type' is set to 'MongoDB'.",
+                            "assetStore:type"));
+                }
+
+                services.AddMyMongoDbAssetStore(config);
             }
         });
     }
@@ -63,9 +91,22 @@ public static class ServiceExtensions
             .AddMyUserEvents(config)
             .AddMyUserNotifications(config);
 
-#if INCLUDE_KAFKA
         var type = config.GetValue<string>("messaging:type");
+        if (string.Equals(type, "Sql", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!IsSqlStorage(config))
+            {
+                throw new ConfigurationException(
+                    new ConfigurationError(
+                        "Sql messaging transport is only allowed, when 'storage:type' is also set to 'Sql'.",
+                        "messaging:type"));
+            }
 
+            builder.AddMyEntityFrameworkTransport(config);
+            return;
+        }
+
+#if INCLUDE_KAFKA
         if (string.Equals(type, "Kafka", StringComparison.OrdinalIgnoreCase))
         {
             builder.AddKafkaTransport(config);
@@ -73,7 +114,21 @@ public static class ServiceExtensions
         }
 #endif
 
+        // The scheduler transport stores the messages in the MongoDB database of the storage.
+        if (string.Equals(type, "Scheduler", StringComparison.OrdinalIgnoreCase) && IsSqlStorage(config))
+        {
+            throw new ConfigurationException(
+                new ConfigurationError(
+                    "Scheduler messaging transport is only allowed, when 'storage:type' is set to 'MongoDB'. Use 'Sql' instead.",
+                    "messaging:type"));
+        }
+
         builder.AddTransport(config);
+    }
+
+    private static bool IsSqlStorage(IConfiguration config)
+    {
+        return string.Equals(config.GetValue<string>("storage:type"), "Sql", StringComparison.OrdinalIgnoreCase);
     }
 
     public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)

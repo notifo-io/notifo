@@ -6,12 +6,13 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Templates;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class TemplateRepositoryTests
 {

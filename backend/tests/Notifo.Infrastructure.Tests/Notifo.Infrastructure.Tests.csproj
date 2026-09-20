@@ -25,7 +25,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="Testcontainers.MongoDb" Version="4.15.0" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="FakeItEasy" />

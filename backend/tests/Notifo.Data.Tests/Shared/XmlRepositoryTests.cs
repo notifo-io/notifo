@@ -8,7 +8,7 @@
 using System.Xml.Linq;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 
-namespace Notifo.Identity.Shared;
+namespace Notifo.Shared;
 
 public abstract class XmlRepositoryTests
 {

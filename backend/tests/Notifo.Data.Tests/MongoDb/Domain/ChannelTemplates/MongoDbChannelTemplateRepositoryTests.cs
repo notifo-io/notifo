@@ -6,10 +6,11 @@
 // ==========================================================================
 
 using Notifo.Domain.Channels.Sms;
-using Notifo.Domain.Shared;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.Domain.ChannelTemplates;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Domain.ChannelTemplates.MongoDb;
+namespace Notifo.MongoDb.Domain.ChannelTemplates;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

@@ -7,7 +7,7 @@
 
 using MongoDB.Bson.Serialization;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public static class Field
 {

@@ -11,9 +11,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using NodaTime;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Log.MongoDb;
+namespace Notifo.Domain.Log;
 
 public sealed class MongoDbLogRepository(IMongoDatabase database) : MongoDbStore<MongoDbLogEntry>(database), ILogRepository
 {

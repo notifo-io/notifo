@@ -6,12 +6,12 @@
 // ==========================================================================
 
 using MongoDB.Driver;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 using Testcontainers.MongoDb;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Infrastructure.Fixtures;
+namespace Notifo.MongoDb.TestHelpers;
 
 [CollectionDefinition(Name)]
 public sealed class MongoFixtureCollection : ICollectionFixture<MongoFixture>

@@ -7,7 +7,7 @@
 
 using MongoDB.Driver;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.UserNotifications;
 
 internal sealed class TrackingChange
 {

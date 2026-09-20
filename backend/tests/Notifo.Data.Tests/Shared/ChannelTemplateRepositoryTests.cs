@@ -8,10 +8,10 @@
 using NodaTime;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class ChannelTemplateRepositoryTests
 {
@@ -214,6 +214,45 @@ public abstract class ChannelTemplateRepositoryTests
         var result = await sut.GetBestAsync(appId, null);
 
         Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task Should_get_primary_template_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var template = CreateTemplate("template2", "Name2");
+
+        await sut.UpsertAsync(CreateTemplate("template1", "Name1"));
+        await sut.UpsertAsync(template);
+
+        var (_, etag) = await sut.GetAsync(appId, template.Id);
+
+        await sut.UpsertAsync(template with { Primary = true }, etag);
+
+        var result = await sut.GetBestAsync(appId, null);
+
+        Assert.Equal(template.Id, result?.Id);
+    }
+
+    [Fact]
+    public async Task Should_get_best_template_by_new_name_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var template = CreateTemplate("template1", "Name1");
+
+        await sut.UpsertAsync(template);
+
+        var (_, etag) = await sut.GetAsync(appId, template.Id);
+
+        await sut.UpsertAsync(template with { Name = "Name2" }, etag);
+
+        var result1 = await sut.GetBestAsync(appId, "Name1");
+        var result2 = await sut.GetBestAsync(appId, "Name2");
+
+        Assert.Null(result1);
+        Assert.Equal(template.Id, result2?.Id);
     }
 
     [Fact]

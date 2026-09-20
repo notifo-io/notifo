@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using Squidex.Assets;
 #if INCLUDE_MAGICK
 using Squidex.Assets.ImageMagick;
@@ -58,43 +56,5 @@ public static class AssetsServiceExtensions
             services.AddSingletonAs<IAssetThumbnailGenerator>(c => c.GetRequiredService<CompositeThumbnailGenerator>())
                 .AsSelf();
         }
-
-        config.ConfigureByOption("assetStore:type", new Alternatives
-        {
-            ["Folder"] = () =>
-            {
-                services.AddFolderAssetStore(config);
-            },
-            ["FTP"] = () =>
-            {
-                services.AddFTPAssetStore(config);
-            },
-            ["GoogleCloud"] = () =>
-            {
-                services.AddGoogleCloudAssetStore(config);
-            },
-            ["AzureBlob"] = () =>
-            {
-                services.AddAzureBlobAssetStore(config);
-            },
-            ["AmazonS3"] = () =>
-            {
-                services.AddAmazonS3AssetStore(config);
-            },
-            ["MongoDb"] = () =>
-            {
-                var mongoGridFsBucketName = config.GetRequiredValue("assetStore:mongoDb:bucket");
-
-                services.AddMongoAssetStore(c =>
-                {
-                    var mongoDatabase = c.GetRequiredService<IMongoDatabase>();
-
-                    return new GridFSBucket<string>(mongoDatabase, new GridFSBucketOptions
-                    {
-                        BucketName = mongoGridFsBucketName
-                    });
-                });
-            }
-        });
     }
 }

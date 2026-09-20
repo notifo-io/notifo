@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Notifo.Areas.Account.Pages.Utils;
 using Notifo.Identity;
-using Notifo.Infrastructure.Tasks;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable MA0048 // File name must match type name
@@ -48,10 +47,10 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
             return;
         }
 
-        var (providers, hasPassword, logins) = await AsyncHelper.WhenAll(
-            SignInManager.GetExternalAuthenticationSchemesAsync(),
-            UserService.HasPasswordAsync(user, HttpContext.RequestAborted),
-            UserService.GetLoginsAsync(user, HttpContext.RequestAborted));
+        // The user store is not thread safe for all databases, therefore we cannot run the queries in parallel.
+        var providers = await SignInManager.GetExternalAuthenticationSchemesAsync();
+        var hasPassword = await UserService.HasPasswordAsync(user, HttpContext.RequestAborted);
+        var logins = await UserService.GetLoginsAsync(user, HttpContext.RequestAborted);
 
         ChangeForm.Email ??= user.Email;
         ExternalLogins = logins;

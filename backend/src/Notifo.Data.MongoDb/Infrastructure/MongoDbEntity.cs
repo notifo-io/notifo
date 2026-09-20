@@ -7,7 +7,7 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public abstract class MongoDbEntity
 {

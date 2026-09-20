@@ -12,9 +12,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Events.MongoDb;
+namespace Notifo.Domain.Events;
 
 public sealed class MongoDbEventRepository(IMongoDatabase database, IOptions<EventsOptions> options) : MongoDbStore<MongoDbEvent>(database), IEventRepository
 {

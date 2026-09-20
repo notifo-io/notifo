@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
-using Notifo.Domain.Topics.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,11 +18,5 @@ public static class TopicsServiceExtensions
             .As<ITopicStore>().As<ICounterTarget>();
 
         services.AddRequestHandler<TopicStore, TopicCommand, Topic?>();
-    }
-
-    public static void AddMyMongoTopics(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbTopicRepository>()
-            .As<ITopicRepository>();
     }
 }

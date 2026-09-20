@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Domain.Templates;
-using Notifo.Domain.Templates.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -18,11 +17,5 @@ public static class TemplatesServiceExtensions
             .As<ITemplateStore>();
 
         services.AddRequestHandler<TemplateStore, TemplateCommand, Template?>();
-    }
-
-    public static void AddMyMongoTemplates(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbTemplateRepository>()
-            .As<ITemplateRepository>();
     }
 }

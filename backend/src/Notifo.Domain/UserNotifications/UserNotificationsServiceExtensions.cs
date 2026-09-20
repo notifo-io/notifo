@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.UserNotifications.MongoDb;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Messaging;
 
@@ -41,11 +40,5 @@ public static class UserNotificationsServiceExtensions
         builder.Services.AddScheduler<UserEventMessage>("UserNotifications");
 
         return builder;
-    }
-
-    public static void AddMyMongoUserNotifications(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbUserNotificationRepository>()
-            .As<IUserNotificationRepository>();
     }
 }

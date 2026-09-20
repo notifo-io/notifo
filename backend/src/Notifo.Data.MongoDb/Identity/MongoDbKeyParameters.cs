@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 
 #pragma warning disable IDE0017 // Simplify object initialization
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbKeyParameters
 {

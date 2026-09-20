@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 [Serializable]
 public class InconsistentStateException(string currentEtag, string expectedEtag, Exception? inner = null) : Exception(FormatMessage(currentEtag, expectedEtag), inner)

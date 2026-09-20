@@ -10,7 +10,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public sealed class ActivityTraceIdSerializer : SerializerBase<ActivityTraceId>
 {
@@ -38,8 +38,7 @@ public sealed class ActivityTraceIdSerializer : SerializerBase<ActivityTraceId>
 
                 return ActivityTraceId.CreateFromString(text);
             default:
-                ThrowHelper.BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
-                return default;
+                throw new BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
         }
     }
 

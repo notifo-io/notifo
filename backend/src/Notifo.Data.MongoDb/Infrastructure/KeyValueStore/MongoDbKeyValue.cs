@@ -7,7 +7,7 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Infrastructure.KeyValueStore.MongoDb;
+namespace Notifo.Infrastructure.KeyValueStore;
 
 public sealed class MongoDbKeyValue
 {

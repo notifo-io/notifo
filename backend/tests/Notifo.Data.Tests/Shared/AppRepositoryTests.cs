@@ -11,9 +11,8 @@ using Notifo.Domain.Counters;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class AppRepositoryTests
 {
@@ -185,6 +184,100 @@ public abstract class AppRepositoryTests
     }
 
     [Fact]
+    public async Task Should_get_app_by_multiple_api_keys()
+    {
+        var sut = await CreateSutAsync();
+
+        var apiKey1 = Guid.NewGuid().ToString();
+        var apiKey2 = Guid.NewGuid().ToString();
+
+        var app = CreateApp(appId) with
+        {
+            ApiKeys = new Dictionary<string, string>
+            {
+                [apiKey1] = AppRoles.Admin,
+                [apiKey2] = AppRoles.Owner
+            }.ToReadonlyDictionary()
+        };
+
+        await sut.UpsertAsync(app);
+
+        var (result1, _) = await sut.GetByApiKeyAsync(apiKey1);
+        var (result2, _) = await sut.GetByApiKeyAsync(apiKey2);
+
+        Assert.Equal(appId, result1?.Id);
+        Assert.Equal(appId, result2?.Id);
+    }
+
+    [Fact]
+    public async Task Should_not_get_app_by_removed_api_key()
+    {
+        var sut = await CreateSutAsync();
+
+        var apiKey1 = Guid.NewGuid().ToString();
+        var apiKey2 = Guid.NewGuid().ToString();
+
+        var app = CreateApp(appId) with
+        {
+            ApiKeys = new Dictionary<string, string>
+            {
+                [apiKey1] = AppRoles.Admin,
+                [apiKey2] = AppRoles.Owner
+            }.ToReadonlyDictionary()
+        };
+
+        await sut.UpsertAsync(app);
+
+        await sut.UpsertAsync(app with
+        {
+            ApiKeys = new Dictionary<string, string>
+            {
+                [apiKey2] = AppRoles.Owner
+            }.ToReadonlyDictionary()
+        });
+
+        var (result1, _) = await sut.GetByApiKeyAsync(apiKey1);
+        var (result2, _) = await sut.GetByApiKeyAsync(apiKey2);
+
+        Assert.Null(result1);
+        Assert.Equal(appId, result2?.Id);
+    }
+
+    [Fact]
+    public async Task Should_not_query_app_by_removed_contributor()
+    {
+        var sut = await CreateSutAsync();
+
+        var contributorId1 = Guid.NewGuid().ToString();
+        var contributorId2 = Guid.NewGuid().ToString();
+
+        var app = CreateApp(appId) with
+        {
+            Contributors = new Dictionary<string, string>
+            {
+                [contributorId1] = AppRoles.Owner,
+                [contributorId2] = AppRoles.Admin
+            }.ToReadonlyDictionary()
+        };
+
+        await sut.UpsertAsync(app);
+
+        await sut.UpsertAsync(app with
+        {
+            Contributors = new Dictionary<string, string>
+            {
+                [contributorId2] = AppRoles.Admin
+            }.ToReadonlyDictionary()
+        });
+
+        var result1 = await sut.QueryAsync(contributorId1);
+        var result2 = await sut.QueryAsync(contributorId2);
+
+        Assert.Empty(result1);
+        Assert.Equal([appId], result2.Select(x => x.Id));
+    }
+
+    [Fact]
     public async Task Should_return_null_if_api_key_not_found()
     {
         var sut = await CreateSutAsync();
@@ -224,6 +317,27 @@ public abstract class AppRepositoryTests
         Assert.Equal(appId, result?.Id);
         Assert.Equal(domain, result?.AuthScheme?.Domain);
         Assert.NotNull(etag);
+    }
+
+    [Fact]
+    public async Task Should_get_app_by_new_auth_domain_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var domain1 = $"{Guid.NewGuid()}.io";
+        var domain2 = $"{Guid.NewGuid()}.io";
+
+        await sut.UpsertAsync(CreateApp(appId) with { AuthScheme = CreateAuthScheme(domain1) });
+
+        var (app, etag) = await sut.GetAsync(appId);
+
+        await sut.UpsertAsync(app! with { AuthScheme = CreateAuthScheme(domain2) }, etag);
+
+        var (result1, _) = await sut.GetByAuthDomainAsync(domain1);
+        var (result2, _) = await sut.GetByAuthDomainAsync(domain2);
+
+        Assert.Null(result1);
+        Assert.Equal(appId, result2?.Id);
     }
 
     [Fact]

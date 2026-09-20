@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
-using Notifo.Domain.Events.MongoDb;
 using Notifo.Domain.Events.Pipeline;
 using Squidex.Messaging;
 
@@ -38,13 +37,5 @@ public static class EventsServiceExtensions
 
         services.AddSingletonAs<EventPublisher>()
             .As<IEventPublisher>();
-    }
-
-    public static void AddMyMongoEvents(this IServiceCollection services)
-    {
-        NotificationSendSerializer.Register();
-
-        services.AddSingletonAs<MongoDbEventRepository>()
-            .As<IEventRepository>();
     }
 }

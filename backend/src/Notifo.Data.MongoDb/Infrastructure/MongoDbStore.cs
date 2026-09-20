@@ -7,7 +7,7 @@
 
 using MongoDB.Driver;
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public class MongoDbStore<T>(IMongoDatabase database) : MongoDbRepository<T>(database) where T : MongoDbEntity
 {

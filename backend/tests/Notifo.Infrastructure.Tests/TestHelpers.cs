@@ -7,12 +7,8 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
-using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Infrastructure;
 
@@ -27,13 +23,10 @@ public static class TestHelpers
         DefaultOptions.Converters.Add(new JsonActivityContextConverter());
         DefaultOptions.Converters.Add(new JsonActivitySpanIdConverter());
         DefaultOptions.Converters.Add(new JsonActivityTraceIdConverter());
-
-        MongoClientFactory.RegisterDefaultSerializers();
     }
 
     public sealed class ObjectHolder<T>
     {
-        [BsonRequired]
         public T Value { get; set; }
     }
 
@@ -47,58 +40,6 @@ public static class TestHelpers
         var json = JsonSerializer.Serialize(obj, DefaultOptions);
 
         return JsonSerializer.Deserialize<ObjectHolder<T>>(json, DefaultOptions)!.Value;
-    }
-
-    public static T SerializeAndDeserializeBson<T>(this T value)
-    {
-        var obj = new ObjectHolder<T>
-        {
-            Value = value
-        };
-
-        var stream = new MemoryStream();
-
-        using (var writer = new BsonBinaryWriter(stream))
-        {
-            BsonSerializer.Serialize(writer, obj);
-
-            writer.Flush();
-        }
-
-        stream.Position = 0;
-
-        using (var reader = new BsonBinaryReader(stream))
-        {
-            var result = BsonSerializer.Deserialize<ObjectHolder<T>>(reader);
-
-            return result.Value;
-        }
-    }
-
-    public static TOut SerializeAndDeserializeBson<TIn, TOut>(this TIn value)
-    {
-        var obj = new ObjectHolder<TIn>
-        {
-            Value = value
-        };
-
-        var stream = new MemoryStream();
-
-        using (var writer = new BsonBinaryWriter(stream))
-        {
-            BsonSerializer.Serialize(writer, obj);
-
-            writer.Flush();
-        }
-
-        stream.Position = 0;
-
-        using (var reader = new BsonBinaryReader(stream))
-        {
-            var result = BsonSerializer.Deserialize<ObjectHolder<TOut>>(reader);
-
-            return result.Value;
-        }
     }
 
     public static T Deserialize<T>(string value)

@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Counters;
 using Notifo.Domain.Users;
-using Notifo.Domain.Users.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,11 +18,5 @@ public static class UsersServiceExtensions
             .As<IUserStore>().As<ICounterTarget>();
 
         services.AddRequestHandler<UserStore, UserCommand, User?>();
-    }
-
-    public static void AddMyMongoUsers(this IServiceCollection services)
-    {
-        services.AddSingletonAs<MongoDbUserRepository>()
-            .As<IUserRepository>();
     }
 }

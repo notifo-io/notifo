@@ -11,9 +11,8 @@ using MongoDB.Driver;
 using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Topics.MongoDb;
+namespace Notifo.Domain.Topics;
 
 public sealed class MongoDbTopicRepository(IMongoDatabase database) : MongoDbStore<MongoDbTopic>(database), ITopicRepository
 {

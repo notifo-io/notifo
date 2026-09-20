@@ -35,12 +35,14 @@ npm run lint
 
 - .NET solution `backend/Notifo.slnx`. Projects under `backend/src`, tests under `backend/tests`.
 - Layering: `Notifo.Infrastructure` (generic building blocks) → `Notifo.Domain.Integrations.Abstractions` / `Notifo.Domain.Integrations` (channel providers like SMTP, Twilio, Firebase, ...) → `Notifo.Domain` (apps, users, topics, subscriptions, templates, channels, user events pipeline) → `Notifo.Identity` → `Notifo` (API host).
-- Domain areas are organized by folder, each with its own `MongoDb/` subfolder for the repository implementations.
+- Domain areas are organized by folder. The core projects must not depend on a database.
+- Persistence lives in `Notifo.Data.MongoDb` (`storage:type=MongoDB`) and `Notifo.Data.EntityFramework` (`storage:type=Sql` with MySql, Postgres or SqlServer). Like Squidex, repositories and models use the namespace of the domain area they implement, without a store suffix, and the folders mirror it (e.g. `Domain/Apps/EFAppRepository.cs` → `Notifo.Domain.Apps`). All services of a store are registered in its `MongoDbServiceExtensions` or `EFServiceExtensions`. A change to a repository interface must be implemented in both stores.
+- Entity Framework: entities are registered as `DbSet` in `AppDbContext` and configured with attributes (`[Table]`, `[Index]`, `[PrimaryKey]`, `[MaxLength]`, `[Json]` for serialized documents). Never write or edit migrations by hand. Change the model, run `dotnet tool restore` once, start the databases with `docker compose up -d` and run `.\run-migration.ps1 <Name>` in `src/Notifo.Data.EntityFramework` to create the migrations for all providers.
 - The .NET and TypeScript SDKs live in `tools/sdk-dotnet` and `tools/sdk-ts`, API tests in `tools/TestSuite`.
 
 ### Tests
 
-Some tests need external setup (credentials for integrations) and are marked with `Category=Dependencies`. Database tests start MongoDB with Testcontainers, need Docker and are marked with `Category=TestContainer`. Run the unit tests like this:
+Some tests need external setup (credentials for integrations) and are marked with `Category=Dependencies`. Database tests start MongoDB, MySQL, Postgres and SQL Server with Testcontainers, need Docker and are marked with `Category=TestContainer`. Run the unit tests like this:
 
 ```bash
 dotnet test --filter "Category!=Dependencies&Category!=TestContainer"
@@ -52,7 +54,18 @@ Run the database tests like this:
 dotnet test --filter "Category=TestContainer&Category!=Dependencies"
 ```
 
-- Database tests use the shared `MongoFixture` (`tests/Notifo.Infrastructure.Tests/Fixtures`) via `[Collection(MongoFixtureCollection.Name)]` and create their repository in `InitializeAsync`.
+The API integration tests in `tools/TestSuite` run against a Docker image of Notifo (`docker build -t notifo-local .` in the root folder) with one compose file per database: `docker-compose.yml` (MongoDB), `docker-compose-mysql.yml`, `docker-compose-postgres.yml` and `docker-compose-sqlserver.yml`. Run them for every database when changing the persistence:
+
+```bash
+docker compose -f docker-compose-postgres.yml up -d
+```
+
+```bash
+CONFIG__SERVER__URL=http://localhost:8080 CONFIG__WAIT=60 MAILCATCHER__HOST__SMTP=mailcatcher WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher dotnet test TestSuite.ApiTests/TestSuite.ApiTests.csproj
+```
+
+- Database tests live in `tests/Notifo.Data.Tests`. Abstract tests that apply to every store go in `Shared/`. The MongoDB implementations go in `MongoDb/`, use the shared `MongoFixture` (`MongoDb/TestHelpers`) via `[Collection(MongoFixtureCollection.Name)]`, and create their repository in `CreateSutAsync` or `InitializeAsync`.
+- The Entity Framework implementations go in `EntityFramework/` as abstract `EF...Tests<TContext>(ISqlFixture<TContext> fixture)` classes. The source generator in `tests/Notifo.Data.Tests.CodeGenerator` creates the MySql, Postgres and SqlServer test classes for them. The fixtures create the schema with the migrations.
 
 - Use xUnit assertions (`Assert.Equal`, `Assert.True`, `Assert.Single`, `Assert.Empty`, ...) for simple properties and values.
 - Use FluentAssertions (`Should().BeEquivalentTo(...)`) only for deep, structural comparisons of objects and collections.
@@ -64,6 +77,17 @@ dotnet test --filter "Category=TestContainer&Category!=Dependencies"
 - Do not log `OperationCanceledException`, it is too noisy.
 - Use pattern matching for enums in conditions, for example `if (status is not A and not B)`.
 - Do not add a blank line between a single line assignment and an `if` that checks the assigned value. Keep the blank line when the assignment spans multiple lines.
+
+#### Entity Framework
+
+- Give every string column a max length. Only serialized documents are unbounded.
+- Configure entities with attributes. Only use builder code when attributes cannot express it.
+- Mark serialized JSON with `[Json]`, also when the property is already a string.
+- When creating an entity, initialize all of its properties, also the default values.
+- Sort the property assignments of an object initializer by name.
+- Do not add comments within property assignments, put them above the statement.
+- Declare properties with annotations before properties without them.
+- Use the bulk library (`BulkInsertAsync`, `BulkUpsertAsync`) when writing multiple rows.
 
 ## Shared best practices
 

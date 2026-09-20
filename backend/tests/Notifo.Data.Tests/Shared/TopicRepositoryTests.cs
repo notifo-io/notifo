@@ -8,10 +8,10 @@
 using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class TopicRepositoryTests
 {
@@ -108,6 +108,26 @@ public abstract class TopicRepositoryTests
         Assert.Equal(["explicit"], explicitTopics.Select(x => x.Path));
         Assert.Equal(["implicit"], implicitTopics.Select(x => x.Path));
         Assert.Equal(["explicit", "implicit"], allTopics.Select(x => x.Path).Order());
+    }
+
+    [Fact]
+    public async Task Should_query_topic_by_scope_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var topic = CreateTopic("news");
+
+        await sut.UpsertAsync(topic);
+
+        var (_, etag) = await sut.GetAsync(appId, topic.Path);
+
+        await sut.UpsertAsync(topic with { IsExplicit = true }, etag);
+
+        var explicitTopics = await sut.QueryAsync(appId, new TopicQuery { Scope = TopicQueryScope.Explicit });
+        var implicitTopics = await sut.QueryAsync(appId, new TopicQuery { Scope = TopicQueryScope.Implicit });
+
+        Assert.Equal(["news"], explicitTopics.Select(x => x.Path));
+        Assert.Empty(implicitTopics);
     }
 
     [Fact]

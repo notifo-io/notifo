@@ -9,9 +9,8 @@ using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Media.MongoDb;
+namespace Notifo.Domain.Media;
 
 public sealed class MongoDbMediaRepository(IMongoDatabase database) : MongoDbStore<MongoDbMedia>(database), IMediaRepository
 {

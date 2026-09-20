@@ -6,13 +6,14 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class EventRepositoryTests
 {
@@ -182,6 +183,23 @@ public abstract class EventRepositoryTests
     }
 
     [Fact]
+    public async Task Should_store_and_query_event_with_long_subject()
+    {
+        var sut = await CreateSutAsync();
+
+        var @event = CreateEvent();
+
+        @event.Formatting.Subject["en"] = $"Hello World {new string('x', 10000)}";
+
+        await sut.InsertAsync(@event);
+
+        var result = await sut.QueryAsync(appId, new EventQuery { Query = "world" });
+
+        Assert.Equal([@event.Id], result.Select(x => x.Id));
+        Assert.Equal(@event.Formatting.Subject["en"], result[0].Formatting.Subject["en"]);
+    }
+
+    [Fact]
     public async Task Should_query_events_by_channels()
     {
         var sut = await CreateSutAsync();
@@ -201,6 +219,22 @@ public abstract class EventRepositoryTests
         var result = await sut.QueryAsync(appId, new EventQuery { Channels = [Providers.Email, Providers.WebPush] });
 
         Assert.Equal([event1.Id], result.Select(x => x.Id));
+    }
+
+    [Fact]
+    public async Task Should_not_query_events_by_partial_channel_name()
+    {
+        var sut = await CreateSutAsync();
+
+        var @event = CreateEvent();
+
+        @event.Settings[Providers.WebPush] = new ChannelSetting { Send = ChannelSend.Send };
+
+        await sut.InsertAsync(@event);
+
+        var result = await sut.QueryAsync(appId, new EventQuery { Channels = ["push"] });
+
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -260,6 +294,23 @@ public abstract class EventRepositoryTests
 
         Assert.Equal(3, result.Counters!["counter1"]);
         Assert.Equal(5, result.Counters!["counter2"]);
+    }
+
+    [Fact]
+    public async Task Should_not_create_event_when_writing_counters()
+    {
+        var sut = await CreateSutAsync();
+
+        var eventId = Guid.NewGuid().ToString();
+
+        await sut.BatchWriteAsync(
+        [
+            ((appId, eventId), new CounterMap { ["counter1"] = 1 })
+        ], default);
+
+        var result = await sut.QueryAsync(appId, new EventQuery());
+
+        Assert.Empty(result);
     }
 
     [Fact]

@@ -29,23 +29,4 @@ public class TrackingKeyTests
 
         Assert.Equal(sut, serialized);
     }
-
-    [Fact]
-    public void Should_serialize_and_deserialize_bson()
-    {
-        var sut = new TrackingKey
-        {
-            AppId = "app",
-            Channel = "channel",
-            ConfigurationId = Guid.NewGuid(),
-            EventId = "event",
-            Topic = "topic",
-            UserId = "user",
-            UserNotificationId = Guid.NewGuid()
-        };
-
-        var serialized = sut.SerializeAndDeserializeBson();
-
-        Assert.Equal(sut, serialized);
-    }
 }

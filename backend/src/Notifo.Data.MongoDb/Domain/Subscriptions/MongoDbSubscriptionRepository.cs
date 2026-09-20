@@ -10,9 +10,8 @@ using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Subscriptions.MongoDb;
+namespace Notifo.Domain.Subscriptions;
 
 public sealed class MongoDbSubscriptionRepository(IMongoDatabase database) : MongoDbStore<MongoDbSubscription>(database), ISubscriptionRepository
 {

@@ -10,9 +10,8 @@ using Notifo.Domain.Counters;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
-using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class UserRepositoryTests
 {
@@ -169,6 +168,64 @@ public abstract class UserRepositoryTests
     }
 
     [Fact]
+    public async Task Should_get_user_by_new_api_key_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var user = CreateUser("user1");
+
+        await sut.UpsertAsync(user);
+
+        var (_, etag) = await sut.GetAsync(appId, user.Id);
+
+        var newApiKey = Guid.NewGuid().ToString();
+
+        await sut.UpsertAsync(user with { ApiKey = newApiKey }, etag);
+
+        var (result1, _) = await sut.GetByApiKeyAsync(user.ApiKey);
+        var (result2, _) = await sut.GetByApiKeyAsync(newApiKey);
+
+        Assert.Null(result1);
+        Assert.Equal(user.Id, result2?.Id);
+    }
+
+    [Fact]
+    public async Task Should_query_user_by_new_email_address_after_update()
+    {
+        var sut = await CreateSutAsync();
+
+        var user = CreateUser("user1") with { EmailAddress = "john@email.com" };
+
+        await sut.UpsertAsync(user);
+
+        var (_, etag) = await sut.GetAsync(appId, user.Id);
+
+        await sut.UpsertAsync(user with { EmailAddress = "jane@email.com" }, etag);
+
+        var result1 = await sut.QueryAsync(appId, new UserQuery { Query = "john@" });
+        var result2 = await sut.QueryAsync(appId, new UserQuery { Query = "jane@" });
+
+        Assert.Empty(result1);
+        Assert.Equal([user.Id], result2.Select(x => x.Id));
+    }
+
+    [Fact]
+    public async Task Should_throw_exception_if_existing_user_is_updated_with_api_key_of_other_user()
+    {
+        var sut = await CreateSutAsync();
+
+        var user1 = CreateUser("user1");
+        var user2 = CreateUser("user2");
+
+        await sut.UpsertAsync(user1);
+        await sut.UpsertAsync(user2);
+
+        var (_, etag) = await sut.GetAsync(appId, user2.Id);
+
+        await Assert.ThrowsAsync<UniqueConstraintException>(() => sut.UpsertAsync(user2 with { ApiKey = user1.ApiKey }, etag));
+    }
+
+    [Fact]
     public async Task Should_get_user_by_property()
     {
         var sut = await CreateSutAsync();
@@ -194,6 +251,66 @@ public abstract class UserRepositoryTests
 
         Assert.Equal(user.Id, result?.Id);
         Assert.NotNull(etag);
+    }
+
+    [Fact]
+    public async Task Should_get_user_by_multiple_properties()
+    {
+        var sut = await CreateSutAsync();
+
+        var user = CreateUser("user1") with
+        {
+            Properties = new Dictionary<string, string>
+            {
+                ["key1"] = "value1",
+                ["key2"] = "value2",
+                ["key3"] = "value3"
+            }.ToReadonlyDictionary()
+        };
+
+        await sut.UpsertAsync(user);
+
+        var (result1, _) = await sut.GetByPropertyAsync(appId, "key1", "value1");
+        var (result3, _) = await sut.GetByPropertyAsync(appId, "key3", "value3");
+
+        Assert.Equal(user.Id, result1?.Id);
+        Assert.Equal(user.Id, result3?.Id);
+    }
+
+    [Fact]
+    public async Task Should_not_get_user_by_changed_property()
+    {
+        var sut = await CreateSutAsync();
+
+        var user = CreateUser("user1") with
+        {
+            Properties = new Dictionary<string, string>
+            {
+                ["key1"] = "value1",
+                ["key2"] = "value2"
+            }.ToReadonlyDictionary()
+        };
+
+        await sut.UpsertAsync(user);
+
+        var (_, etag) = await sut.GetAsync(appId, user.Id);
+
+        await sut.UpsertAsync(
+            user with
+            {
+                Properties = new Dictionary<string, string>
+                {
+                    ["key1"] = "updated"
+                }.ToReadonlyDictionary()
+            }, etag);
+
+        var (result1, _) = await sut.GetByPropertyAsync(appId, "key1", "value1");
+        var (result2, _) = await sut.GetByPropertyAsync(appId, "key2", "value2");
+        var (result3, _) = await sut.GetByPropertyAsync(appId, "key1", "updated");
+
+        Assert.Null(result1);
+        Assert.Null(result2);
+        Assert.Equal(user.Id, result3?.Id);
     }
 
     [Fact]
@@ -276,6 +393,23 @@ public abstract class UserRepositoryTests
 
         var result = await sut.QueryAsync(appId, new UserQuery { Query = "john" });
 
+        Assert.Equal(["user1"], result.Select(x => x.Id));
+    }
+
+    [Fact]
+    public async Task Should_store_and_query_user_with_long_full_name()
+    {
+        var sut = await CreateSutAsync();
+
+        var fullName = $"John Doe {new string('x', 5000)}";
+
+        await sut.UpsertAsync(CreateUser("user1") with { FullName = fullName });
+
+        var (stored, _) = await sut.GetAsync(appId, "user1");
+
+        var result = await sut.QueryAsync(appId, new UserQuery { Query = "john" });
+
+        Assert.Equal(fullName, stored?.FullName);
         Assert.Equal(["user1"], result.Select(x => x.Id));
     }
 

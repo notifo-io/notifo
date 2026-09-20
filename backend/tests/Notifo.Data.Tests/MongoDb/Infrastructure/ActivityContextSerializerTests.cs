@@ -6,10 +6,11 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Notifo.MongoDb.TestHelpers;
 
-namespace Notifo.Infrastructure.MongoDB;
+namespace Notifo.MongoDb.Infrastructure;
 
-public class ActivityContextTests
+public class ActivityContextSerializerTests
 {
     [Fact]
     public void Should_serialize_and_deserialize_trace_id()

@@ -8,7 +8,7 @@
 using NodaTime;
 using Notifo.Domain.Log;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class LogRepositoryTests
 {
@@ -95,19 +95,6 @@ public abstract class LogRepositoryTests
     }
 
     [Fact]
-    public async Task Should_derive_system_from_message_if_not_set()
-    {
-        var sut = await CreateSutAsync();
-
-        var result = await sut.BatchWriteAsync(
-        [
-            (new LogWrite(appId, null, 1, "Email: Failed to send", string.Empty), 1, now)
-        ]);
-
-        Assert.Equal("Email", result.Single().System);
-    }
-
-    [Fact]
     public async Task Should_query_app_entries_without_user_by_default()
     {
         var sut = await CreateSutAsync();
@@ -157,6 +144,26 @@ public abstract class LogRepositoryTests
     }
 
     [Fact]
+    public async Task Should_store_and_query_entry_with_long_message()
+    {
+        var sut = await CreateSutAsync();
+
+        var message = $"Failed to send email {new string('x', 10000)}";
+
+        await sut.BatchWriteAsync(
+        [
+            (new LogWrite(appId, null, 1, message, "System"), 1, now),
+            (new LogWrite(appId, null, 1, message, "System"), 1, now)
+        ]);
+
+        var result = await sut.QueryAsync(appId, new LogQuery { Query = "email" });
+
+        // Long messages can be shortened by the store.
+        Assert.StartsWith("Failed to send email", Assert.Single(result).Message, StringComparison.Ordinal);
+        Assert.Equal(2, result[0].Count);
+    }
+
+    [Fact]
     public async Task Should_query_entries_by_systems()
     {
         var sut = await CreateSutAsync();
@@ -171,22 +178,6 @@ public abstract class LogRepositoryTests
         var result = await sut.QueryAsync(appId, new LogQuery { Systems = ["Email", "Sms"] });
 
         Assert.Equal(["Message1", "Message2"], result.Select(x => x.Message).Order());
-    }
-
-    [Fact]
-    public async Task Should_query_entries_by_systems_derived_from_message()
-    {
-        var sut = await CreateSutAsync();
-
-        await sut.BatchWriteAsync(
-        [
-            (new LogWrite(appId, null, 1, "Email: Failed to send", string.Empty), 1, now),
-            (new LogWrite(appId, null, 1, "Sms: Failed to send", string.Empty), 1, now)
-        ]);
-
-        var result = await sut.QueryAsync(appId, new LogQuery { Systems = ["Email"] });
-
-        Assert.Equal(["Email: Failed to send"], result.Select(x => x.Message));
     }
 
     [Fact]

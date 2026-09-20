@@ -6,12 +6,13 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Shared;
+namespace Notifo.Shared;
 
 public abstract class UserNotificationRepositoryTests
 {
@@ -715,6 +716,24 @@ public abstract class UserNotificationRepositoryTests
         var result = await sut.QueryAsync(AppId, UserId1, new UserNotificationQuery { CorrelationId = notification1.CorrelationId });
 
         Assert.Equal([notification1.Id], result.Select(x => x.Id));
+    }
+
+    [Fact]
+    public async Task Should_store_and_query_notification_with_long_correlation_id_and_subject()
+    {
+        var sut = await CreateSutAsync();
+
+        var notification = CreateNotification(UserId1);
+
+        notification.CorrelationId = $"{Guid.NewGuid()}{new string('x', 1000)}";
+        notification.Formatting.Subject = $"Hello {new string('x', 5000)}";
+
+        await sut.InsertAsync(notification);
+
+        var result = await sut.QueryAsync(AppId, UserId1, new UserNotificationQuery { CorrelationId = notification.CorrelationId, Query = "hello" });
+
+        Assert.Equal([notification.Id], result.Select(x => x.Id));
+        Assert.Equal(notification.Formatting.Subject, result[0].Formatting.Subject);
     }
 
     [Fact]

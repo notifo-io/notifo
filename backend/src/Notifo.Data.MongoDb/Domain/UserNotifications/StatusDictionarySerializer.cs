@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.UserNotifications;
 
 public sealed class StatusDictionarySerializer : ClassSerializerBase<Dictionary<Guid, ChannelSendInfo>>
 {

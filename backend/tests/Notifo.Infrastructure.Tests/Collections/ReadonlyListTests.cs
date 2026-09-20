@@ -64,14 +64,4 @@ public class ReadonlyListTests
 
         Assert.Equal(sut, serialized);
     }
-
-    [Fact]
-    public void Should_serialize_and_deserialize_bson()
-    {
-        var sut = ReadonlyList.Create(1, 2, 3);
-
-        var serialized = sut.SerializeAndDeserializeBson();
-
-        Assert.Equal(sut, serialized);
-    }
 }

@@ -110,6 +110,7 @@ public class Startup(IConfiguration config)
         services.AddMyApiKey();
         services.AddMyApps();
         services.AddMyAssets(config);
+        services.AddMyAssetStore(config);
         services.AddMyCaching();
         services.AddMyClustering(config, signalROptions);
         services.AddMyCounters();
@@ -152,9 +153,6 @@ public class Startup(IConfiguration config)
         services.AddIntegrationTelegram();
         services.AddIntegrationThreema();
         services.AddIntegrationTwilio();
-
-        services.AddInitializer();
-        services.AddBackgroundProcesses();
     }
 
     private static void ConfigureJson(JsonSerializerOptions options)

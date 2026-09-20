@@ -7,7 +7,7 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbXmlEntity
 {

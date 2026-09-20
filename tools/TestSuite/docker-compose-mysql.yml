@@ -1,0 +1,52 @@
+services:
+  db_mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=notifo
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+    command: --local-infile=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "admin", "--password=secret"]
+      interval: 10s
+      retries: 10
+
+  notifo_mysql:
+    extends:
+      file: docker-compose-base.yml
+      service: notifo_base
+    ports:
+      - "8080:80"
+    environment:
+      - STORAGE__TYPE=Sql
+      - STORAGE__SQL__CONNECTIONSTRING=Server=db_mysql;Port=3306;Database=notifo;User=admin;Password=secret;AllowLoadLocalInfile=true;
+      - STORAGE__SQL__PROVIDER=MySql
+      - MESSAGING__TYPE=Sql
+      - URLS__BASEURL=http://localhost:8080
+    depends_on:
+      db_mysql:
+        condition: service_healthy
+      mailcatcher:
+        condition: service_started
+      resizer:
+        condition: service_started
+      webhookcatcher:
+        condition: service_started
+
+  resizer:
+    image: squidex/resizer:dev-40
+    ports:
+      - "9000:80"
+
+  webhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 1026
+    ports:
+      - "1026:1026"
+
+  mailcatcher:
+    image: jeanberu/mailcatcher:0.8.0
+    ports:
+      - "1025:1025"
+      - "1080:1080"

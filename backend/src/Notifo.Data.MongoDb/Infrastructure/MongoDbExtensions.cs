@@ -14,7 +14,7 @@ using MongoDB.Driver.Linq;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
-namespace Notifo.Infrastructure.MongoDb;
+namespace Notifo.Infrastructure;
 
 public static class MongoDbExtensions
 {

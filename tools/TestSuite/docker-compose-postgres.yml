@@ -1,0 +1,50 @@
+services:
+  db_postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=notifo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      retries: 10
+
+  notifo_postgres:
+    extends:
+      file: docker-compose-base.yml
+      service: notifo_base
+    ports:
+      - "8080:80"
+    environment:
+      - STORAGE__TYPE=Sql
+      - STORAGE__SQL__CONNECTIONSTRING=Server=db_postgres;Port=5432;Database=notifo;Username=admin;Password=secret;SSL Mode=Disable;
+      - STORAGE__SQL__PROVIDER=Postgres
+      - MESSAGING__TYPE=Sql
+      - URLS__BASEURL=http://localhost:8080
+    depends_on:
+      db_postgres:
+        condition: service_healthy
+      mailcatcher:
+        condition: service_started
+      resizer:
+        condition: service_started
+      webhookcatcher:
+        condition: service_started
+
+  resizer:
+    image: squidex/resizer:dev-40
+    ports:
+      - "9000:80"
+
+  webhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 1026
+    ports:
+      - "1026:1026"
+
+  mailcatcher:
+    image: jeanberu/mailcatcher:0.8.0
+    ports:
+      - "1025:1025"
+      - "1080:1080"

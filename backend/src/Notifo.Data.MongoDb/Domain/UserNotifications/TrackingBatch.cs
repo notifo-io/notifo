@@ -10,7 +10,7 @@ using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.UserNotifications.MongoDb;
+namespace Notifo.Domain.UserNotifications;
 
 public sealed class TrackingBatch(IMongoCollection<UserNotification> collection)
 {

@@ -6,10 +6,11 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Options;
-using Notifo.Domain.Shared;
-using Notifo.Infrastructure.Fixtures;
+using Notifo.Domain.Events;
+using Notifo.MongoDb.TestHelpers;
+using Notifo.Shared;
 
-namespace Notifo.Domain.Events.MongoDb;
+namespace Notifo.MongoDb.Domain.Events;
 
 [Trait("Category", "TestContainer")]
 [Collection(MongoFixtureCollection.Name)]

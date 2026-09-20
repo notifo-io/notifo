@@ -10,9 +10,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbRoleStore(IMongoDatabase database) : MongoDbRepository<IdentityRole>(database), IRoleStore<IdentityRole>
 {

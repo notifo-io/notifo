@@ -12,7 +12,7 @@ using MongoDB.Driver;
 using Notifo.Infrastructure;
 using OpenIddict.Server;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbKeyOptions(IMongoDatabase database) : IConfigureOptions<OpenIddictServerOptions>
 {

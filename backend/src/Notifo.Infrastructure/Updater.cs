@@ -5,12 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.MongoDb;
-
 namespace Notifo.Infrastructure;
 
 public static class Updater
 {
+    private const int MaxDelayInMs = 100;
+
     public static async Task<T> UpdateRetriedAsync<T>(int numRetries, Func<Task<T>> action)
     {
         for (var i = 1; i <= numRetries; i++)
@@ -19,19 +19,15 @@ public static class Updater
             {
                 return await action();
             }
-            catch (InconsistentStateException)
+            catch (Exception ex) when (ex is InconsistentStateException or UniqueConstraintException)
             {
                 if (i == numRetries)
                 {
                     throw;
                 }
-            }
-            catch (UniqueConstraintException)
-            {
-                if (i == numRetries)
-                {
-                    throw;
-                }
+
+                // Wait for a random time, otherwise concurrent updates would conflict again.
+                await Task.Delay(Random.Shared.Next(MaxDelayInMs));
             }
         }
 
@@ -47,19 +43,15 @@ public static class Updater
             {
                 await action();
             }
-            catch (InconsistentStateException)
+            catch (Exception ex) when (ex is InconsistentStateException or UniqueConstraintException)
             {
                 if (i == numRetries)
                 {
                     throw;
                 }
-            }
-            catch (UniqueConstraintException)
-            {
-                if (i == numRetries)
-                {
-                    throw;
-                }
+
+                // Wait for a random time, otherwise concurrent updates would conflict again.
+                await Task.Delay(Random.Shared.Next(MaxDelayInMs));
             }
         }
     }

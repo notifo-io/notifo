@@ -73,6 +73,12 @@ public static class ReadonlyDictionary
 
     public static ReadonlyDictionary<TKey, TValue> Set<TKey, TValue>(this ReadonlyDictionary<TKey, TValue>? source, TKey key, TValue value) where TKey : notnull
     {
+        // Return the source to allow the caller to detect unnecessary updates.
+        if (source != null && source.TryGetValue(key, out var existing) && Equals(existing, value))
+        {
+            return source;
+        }
+
         var mutable = source.ToMutable();
 
         mutable[key] = value;

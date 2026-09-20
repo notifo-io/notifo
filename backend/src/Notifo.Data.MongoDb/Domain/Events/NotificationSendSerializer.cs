@@ -10,7 +10,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Events.MongoDb;
+namespace Notifo.Domain.Events;
 
 public sealed class NotificationSendSerializer : SerializerBase<ChannelSend>
 {

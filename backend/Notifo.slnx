@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/data/">
+    <Project Path="src/Notifo.Data.EntityFramework/Notifo.Data.EntityFramework.csproj" />
+    <Project Path="src/Notifo.Data.MongoDb/Notifo.Data.MongoDb.csproj" />
+    <Project Path="tests/Notifo.Data.Tests.CodeGenerator/Notifo.Data.Tests.CodeGenerator.csproj" />
+    <Project Path="tests/Notifo.Data.Tests/Notifo.Data.Tests.csproj" />
+  </Folder>
   <Folder Name="/domain/">
     <Project Path="src/Notifo.Domain.Integrations.Abstractions/Notifo.Domain.Integrations.Abstractions.csproj" />
     <Project Path="src/Notifo.Domain.Integrations/Notifo.Domain.Integrations.csproj" />

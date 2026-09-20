@@ -9,9 +9,9 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Notifo.Infrastructure.MongoDb;
+using Notifo.Infrastructure;
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbXmlRepository : MongoDbRepository<MongoDbXmlEntity>, IXmlRepository
 {

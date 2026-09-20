@@ -33,6 +33,8 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Notifo.Data.EntityFramework\Notifo.Data.EntityFramework.csproj" />
+    <ProjectReference Include="..\Notifo.Data.MongoDb\Notifo.Data.MongoDb.csproj" />
     <ProjectReference Include="..\Notifo.Domain.Integrations\Notifo.Domain.Integrations.csproj" />
     <ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
     <ProjectReference Include="..\Notifo.Identity\Notifo.Identity.csproj" />

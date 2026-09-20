@@ -54,11 +54,15 @@ public sealed class AddContributor : AppCommand
 
         EmailOrId = user.Id;
 
-        var newApp = target with
+        var newContributors = target.Contributors.Set(user.Id, Role);
+        if (ReferenceEquals(newContributors, target.Contributors))
         {
-            Contributors = target.Contributors.Set(user.Id, Role)
-        };
+            return target;
+        }
 
-        return newApp;
+        return target with
+        {
+            Contributors = newContributors
+        };
     }
 }

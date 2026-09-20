@@ -12,11 +12,10 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.MongoDb;
 
 #pragma warning disable MA0020 // Use direct methods instead of LINQ methods
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbUserStore(IMongoDatabase database) :
     MongoDbRepository<MongoDbUser>(database),

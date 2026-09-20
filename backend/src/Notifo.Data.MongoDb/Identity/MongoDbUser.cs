@@ -12,7 +12,7 @@ using Notifo.Infrastructure;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Identity.MongoDb;
+namespace Notifo.Identity;
 
 public sealed class MongoDbUser : IdentityUser
 {
